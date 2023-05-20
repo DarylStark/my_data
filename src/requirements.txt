@@ -1,0 +1,5 @@
+# ---------------------------------------------------------------------
+# My
+--extra-index-url https://pypiserver.cb-kr23.dstark.nl/my/ --trusted-host pypiserver.cb-kr23.dstark.nl
+my-model
+# ---------------------------------------------------------------------
