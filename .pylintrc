@@ -1,0 +1,8 @@
+
+[MESSAGES CONTROL]
+# The `disable-too-few-public` (R0903) methods check gives a warning when there
+# is a class with very few, or even none, public methods. Since we use Pydantic
+# classes, it get's triggered a lot. We disabled it because we know we are
+# using classes with little to no methods. More information about this:
+# https://pylint.readthedocs.io/en/latest/user_guide/messages/refactor/too-few-public-methods.html
+disable=too-few-public-methods
