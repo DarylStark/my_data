@@ -1,0 +1,56 @@
+name: Test
+run-name: Test
+on:
+  workflow_call:
+    inputs:
+      code-quality-may-fail:
+        type: boolean
+        default: false
+        description: Determines if the workflow should continue when the Code Quality check fails
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install app requirements
+        run: pip install -r src/requirements.txt
+      - name: Install dev requirements
+        run: pip install -r src/requirements-dev.txt
+      - name: Run unit tests
+        run: pytest
+  code-quality:
+    name: Code quality
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ inputs.code-quality-may-fail }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - name: Install app requirements
+        run: pip install -r src/requirements.txt
+      - name: Install dev requirements
+        run: pip install -r src/requirements-dev.txt
+      - name: PyCodeStyle (source code)
+        run: pycodestyle --show-pep8 src/
+      - name: PyLint (source code)
+        run: pylint src/
+        # TODO: check the return code of PyLint. Not all return codes should
+        # stop the execution of the playbook. Exit codes are described on
+        # https://pylint.readthedocs.io/en/latest/user_guide/usage/run.html
+      - name: Flake8 (source code)
+        run: flake8 src/
+      - name: PyDocStyle (source code)
+        run: pydocstyle src/
+      - name: MyPy (source code)
+        run: mypy src/

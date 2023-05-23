@@ -1,0 +1,14 @@
+name: Test
+run-name: Test
+on:
+  push:
+    branches-ignore:
+    - dev*
+    - main
+
+jobs:
+  integration:
+    name: Integration testing
+    uses: ./.github/workflows/_integration.yml
+    with:
+      code-quality-may-fail: true
