@@ -1,18 +1,12 @@
-# TODO: Rename everything to 'Exception'
+"""Exceptions for the Database package.
+
+This module contains the exceptions that the Database package uses.
+"""
 
 
-class DatabaseError(Exception):
-    """ Base exception for Database-exceptions """
-    pass
+class DatabaseException(Exception):
+    """Base exception for Database-exceptions."""
 
 
-class DatabaseCriticalError(DatabaseError):
-    """ Exception that should result in complete termination of the
-        application """
-    pass
-
-
-class DatabaseConnectionError(DatabaseCriticalError):
-    """ Error that happends when the database credentials are not
-        correct """
-    pass
+class DatabaseConnectionException(DatabaseException):
+    """Error that happends when the database string is not correct."""
