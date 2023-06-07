@@ -1,6 +1,6 @@
 from pytest import fixture
 
-from my_data.db_connection import _db_connection
+from my_data.db_connection import db_connection
 from my_data.context import Context
 from database.database import Database
 from database.factories import create_memory_sqlite_database
@@ -36,12 +36,12 @@ def normal_user() -> User:
 @fixture
 def db() -> Database:
     # Create a connection to the in-memory database
-    create_memory_sqlite_database(_db_connection)
+    create_memory_sqlite_database(db_connection)
 
     # Create the tables
-    _db_connection.create_tables(drop_tables=False)
+    db_connection.create_tables(drop_tables=False)
 
-    with _db_connection.get_session() as a:
+    with db_connection.get_session() as a:
         # Root user
         root = DBUser(
             fullname='Root',
@@ -73,7 +73,7 @@ def db() -> Database:
         a.commit()
 
     # Return the connection object
-    return _db_connection
+    return db_connection
 
 
 def test_tags(db: Database, normal_user: User) -> None:
