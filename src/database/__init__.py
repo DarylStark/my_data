@@ -26,6 +26,6 @@ a factory method with the name `get_session()`. The `Session` object can be
 used as a Context Manager:
 
     with db.get_session() as s:
-        s.add(Movie(name='Star Wars', director='George Lucas')
+        s.add(Movie(name='Star Wars', director='George Lucas'))
         s.commit()
 """
