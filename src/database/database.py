@@ -25,7 +25,6 @@ class Database:
             reliability.
         pool_recycle: determines if used pools can be reused.
         pool_size: the amount of connections in the pool
-        pool_overflow: how much the pool can overflow in busy conditions.
 
         _engine: the SQLalchemy engine
     """
@@ -44,7 +43,6 @@ class Database:
         self.pool_pre_ping: bool = True
         self.pool_recycle: int = 10
         self.pool_size: int = 5
-        self.pool_overflow: int | None = None
 
         # Internal objects
         self._engine: Engine | None = None
@@ -73,20 +71,14 @@ class Database:
             DatabaseConnectionException: when a connection couldn't be made.
         """
         try:
-            # Create the engine arguments
-            engine_arguments = {
-                'url': self.connection_string,
-                'echo': self.echo,
-                'pool_pre_ping': self.pool_pre_ping,
-                'pool_recycle': self.pool_recycle,
-                'pool_size': self.pool_size
-            }
-
-            if self.pool_overflow:
-                engine_arguments['max_overflow'] = self.pool_overflow
-
             # Create the engine
-            self._engine = create_engine(**engine_arguments)
+            self._engine = create_engine(
+                url=self.connection_string,
+                echo=self.echo,
+                pool_pre_ping=self.pool_pre_ping,
+                pool_recycle=self.pool_recycle,
+                pool_size=self.pool_size
+            )
         except OperationalError as sa_error:
             raise DatabaseConnectionException(
                 'Couldn\'t connect to database') from sa_error

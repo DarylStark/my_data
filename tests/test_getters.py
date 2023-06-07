@@ -3,10 +3,10 @@ from pytest import fixture
 from my_data.db_connection import _db_connection
 from my_data.context import Context
 from database.database import Database
+from database.factories import create_memory_sqlite_database
 from my_data.db_models import DBTag, DBUser, UserRole
 from my_model.user import User
 from datetime import datetime
-from sqlmodel import Session, select
 
 
 @fixture
@@ -36,8 +36,7 @@ def normal_user() -> User:
 @fixture
 def db() -> Database:
     # Create a connection to the in-memory database
-    _db_connection.configure('sqlite:///:memory:')
-    _db_connection.create_engine()
+    create_memory_sqlite_database(_db_connection)
 
     # Create the tables
     _db_connection.create_tables(drop_tables=False)
