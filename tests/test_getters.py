@@ -4,8 +4,8 @@ from my_data.db_connection import db_connection
 from my_data.context import Context
 from database.database import Database
 from database.factories import create_memory_sqlite_database
-from my_data.db_models import DBTag, DBUser, UserRole
-from my_model.user import User
+from my_data.db_models import DBTag, DBUser
+from my_model.user import User, UserRole
 from datetime import datetime
 
 
