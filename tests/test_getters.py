@@ -1,4 +1,3 @@
-from fixtures_db_creation import *
 from my_model.user import User
 
 from database.database import Database

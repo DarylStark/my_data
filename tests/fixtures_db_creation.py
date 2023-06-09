@@ -1,36 +1,12 @@
 from datetime import datetime
 
-from my_model.user import User, UserRole
+from my_model.user import UserRole
 from pytest import fixture
 
 from database.database import Database
 from database.factories import create_memory_sqlite_database
 from my_data.db_connection import db_connection
 from my_data.db_models import DBTag, DBUser
-
-
-@fixture
-def root_user() -> User:
-    return User(
-        id=1,
-        fullname='Root',
-        username='root',
-        email='root@dstark.nl',
-        role=UserRole.ROOT,
-        password_hash='asdasdas',
-        password_date=datetime.now())
-
-
-@fixture
-def normal_user() -> User:
-    return User(
-        id=2,
-        fullname='Daryl Stark',
-        username='daryl.stark',
-        email='daryl@dstark.nl',
-        role=UserRole.USER,
-        password_hash='asdasdas',
-        password_date=datetime.now())
 
 
 @fixture
