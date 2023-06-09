@@ -13,13 +13,13 @@
     ],
     "python.linting.pylintEnabled": true,
     "python.linting.pycodestyleEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyCategorySeverity.note": "Information",
+    "python.linting.flake8Enabled": true,
+    "python.linting.pydocstyleEnabled": true,
     // Python formatting
     "editor.formatOnSave": true,
-    "python.formatting.provider": "none",
-    "python.formatting.autopep8Args": [
-        "--ignore",
-        "E402"
-    ],
+    "python.formatting.provider": "autopep8",
     // Python unit testing
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,

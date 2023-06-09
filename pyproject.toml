@@ -42,3 +42,6 @@ push = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/my_model/__init__.py" = ["{version}"]
+
+[tool.pytest.ini_options]
+pythonpath = ['./src/', './tests/']
