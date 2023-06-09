@@ -9,8 +9,7 @@ from my_model.user import UserRole
 from pytest import fixture
 
 from database.database import Database
-from database.factories import create_memory_sqlite_database
-from my_data.db_connection import db_connection
+from my_data.configure import DatabaseType, MyDataConfig, configure
 from my_data.db_models import DBTag, DBUser
 
 
@@ -25,7 +24,9 @@ def db() -> Database:
         Database: the database connection
     """
     # Create a connection to the in-memory database
-    create_memory_sqlite_database(db_connection)
+    db_connection = configure(MyDataConfig(
+        db_type=DatabaseType.SQLITE_MEMORY
+    ))
 
     # Create the tables
     db_connection.create_tables(drop_tables=False)
