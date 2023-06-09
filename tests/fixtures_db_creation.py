@@ -1,3 +1,8 @@
+"""Module with DB creation fixtures.
+
+Contains the fixture to connect to a database and create the needed tables for
+the unit tests.
+"""
 from datetime import datetime
 
 from my_model.user import UserRole
@@ -11,6 +16,14 @@ from my_data.db_models import DBTag, DBUser
 
 @fixture
 def db() -> Database:
+    """Fixture to connect to the DB.
+
+    Creates the database connection and creates the tables. For the unit tests
+    we use a SQLite database.
+
+    Returns:
+        Database: the database connection
+    """
     # Create a connection to the in-memory database
     create_memory_sqlite_database(db_connection)
 
