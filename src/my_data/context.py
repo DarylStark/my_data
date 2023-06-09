@@ -10,7 +10,8 @@ from my_model.user import User  # type: ignore
 
 from .context_data import ContextData
 from .db_models import DBTag, DBUser
-from .resource_manager import ResourceManager, UserGetter
+from .getters import UserGetter
+from .resource_manager import ResourceManager
 
 
 class Context:
