@@ -3,13 +3,13 @@
 This package contains the code to create, retrieve, update and delete data from
 a database containing the objects for the `my_model` package. To use this
 package, the application has to connect to a database first. To do this, the
-application should use the `db_connection` object in the `db_connection`
-module. An example:
+application should use the `configure` function in the `configure` module:
 
-    from my_data.db_connection import db_connection
-    from database.factories import create_memory_sqlite_database
+    from my_data.configure import configure, MyDataConfig
 
-    create_memory_sqlite_database(db_connection)
+    db_connection = configure(MyDataConfig(
+        db_type=DatabaseType.SQLITE_MEMORY
+    ))
 
 After that, you can optionally create the tables. The tables are defined in the
 `db_models` module of this package. To create the tables, use the

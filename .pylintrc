@@ -1,3 +1,8 @@
+[MASTER]
+# We whitelist `pydantic` since it is genreating import errors that are
+# incorrect. More information about this issue can be found on GitHub:
+# https://github.com/pydantic/pydantic/issues/1961
+extension-pkg-whitelist=pydantic
 
 [MESSAGES CONTROL]
 # The `disable-too-few-public` (R0903) methods check gives a warning when there
