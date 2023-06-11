@@ -11,6 +11,7 @@ from my_model.user import User  # type: ignore
 from .context_data import ContextData
 from .db_models import DBTag, DBUser
 from .getters import UserGetter
+from .creators import UserCreator
 from .resource_manager import ResourceManager
 
 
@@ -49,7 +50,8 @@ class Context:
         self.users = ResourceManager(model=User,
                                      db_model=DBUser,
                                      context_data=self.context_data,
-                                     getter=UserGetter)
+                                     getter=UserGetter,
+                                     creator=UserCreator)
 
     def __enter__(self) -> 'Context':
         """Start method for a Pythonic context manager.
