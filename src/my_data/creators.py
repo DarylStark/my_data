@@ -108,6 +108,7 @@ class Creator:
 
         with db_connection.get_session() as session:
             # TODO: add the resource to the DB
+            raise NotImplementedError('Not implemented yet')
 
 
 class UserSpecificCreator(Creator):
