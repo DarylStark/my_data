@@ -91,7 +91,11 @@ class UserSpecificGetter(Getter):
 
 
 class UserGetter(Getter):
-    """Getter for user resources."""
+    """Getter for user resources.
+
+    This getter should be used for User resources. These resources are not
+    bound to a specific user but depend on the role a user has.
+    """
 
     def filters(self) -> list[ColumnElement]:
         """Get the specific filters for this getter.
