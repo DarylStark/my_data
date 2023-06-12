@@ -73,15 +73,7 @@ class ResourceManager:
                 in the `my-models` package.
         """
         # Get all DB objects from the database
-        resources = self.getter.get()
-
-        # Convert the resources to 'my_model' models
-        new_resources: list[Model] = [
-            self._model(**x.dict())
-            for x in resources
-        ]
-
-        return new_resources
+        return self.getter.get()
 
     def create(self, models: list[Model] | Model) -> None:
         """Create resources.

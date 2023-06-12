@@ -3,9 +3,10 @@
 This module contains the Getters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
+from my_model._model import Model  # type: ignore
 from my_model.user import UserRole  # type: ignore
 from sqlalchemy.sql.elements import ColumnElement
-from sqlmodel import SQLModel, select
+from sqlmodel import select
 
 from .crud_base import CRUDBase
 from .db_connection import db_connection
@@ -32,21 +33,28 @@ class Getter(CRUDBase):
         """
         raise NotImplementedError('Filters are not implemented for this type')
 
-    def get(self) -> list[SQLModel]:
+    def get(self) -> list[Model]:
         """Get the resources.
 
         Get the resources for the specified DB object within the context of the
         given ContextData object.
 
         Returns:
-            list[SQLModel]: a list with the resources.
+            list[Model]: a list with the resources in `my-model` format.
         """
         with db_connection.get_session() as session:
             resources = select(self._db_model)
             for flt in self.filters():
                 resources = resources.where(flt)
             results = session.exec(resources)
-            return list(results)
+
+            # Convert them to the correct model
+            new_resources: list[Model] = [
+                self._model(**x.dict())
+                for x in results
+            ]
+
+        return new_resources
 
 
 class UserSpecificGetter(Getter):
