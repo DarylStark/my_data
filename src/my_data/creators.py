@@ -3,50 +3,23 @@
 This module contains the Creators for the ResourceManager. It contains the
 base-class and the subclasses.
 """
-from typing import Type
-
 from my_model._model import Model  # type: ignore
 from my_model.user import User, UserRole  # type: ignore
 from sqlmodel import SQLModel
 
-from .context_data import ContextData
+from .crud_base import CRUDBase
 from .db_connection import db_connection
 from .db_models import DBUser
 from .exceptions import PermissionDeniedException, WrongModelException
 
 
-class Creator:
+class Creator(CRUDBase):
     """Base Creator class.
 
     The base Creator class should be used as the base class for specific
     Creator-classes. The base class defines the interface for all
     Creator-classes.
-
-    Attributes:
-        _contxt_data: the passed ContextData object.
-        _model: the `my-model` model that should be used for this manager.
-        _db_model: the database model that should be used to create data.
     """
-
-    def __init__(self, context_data: ContextData,
-                 model: Type,
-                 db_model: Type) -> None:
-        """Set the specifics for the Creator.
-
-        To create the Creator, a ContextData object is required, and the DB
-        model that is used to select data.
-
-        Args:
-            context_data: the `ContextData` object for this Creator.
-            model: the `my-model` model for the project.
-            db_model: the DB Model for the object.
-        """
-        # TODO: this is the same for Getters as for Creators. They are most
-        # probably the same for Updaters and Deleters too. Maybe put these
-        # in a generic Base-class?
-        self._context_data = context_data
-        self._model = model
-        self._db_model = db_model
 
     def get_updated_model(self, data: Model) -> SQLModel:
         """Convert the `my-model` model to a DB model and set needed values.

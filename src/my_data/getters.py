@@ -3,46 +3,22 @@
 This module contains the Getters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
-from typing import Type
-
 from my_model.user import UserRole  # type: ignore
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel, select
 
-from .context_data import ContextData
+from .crud_base import CRUDBase
 from .db_connection import db_connection
 from .db_models import DBUser
 
 
-class Getter:
+class Getter(CRUDBase):
     """Base Getter class.
 
     The base Getter class should be used as the base class for specific
     Getter-classes. The base class defines the interface for all
     Getter-classes.
-
-    Attributes:
-        _context_data: the passed ContextData object.
-        _model: the `my-model` model that should be used for this manager.
-        _db_model: the database model that should be used to retrieve data.
     """
-
-    def __init__(self,
-                 context_data: ContextData,
-                 model: Type, db_model: Type) -> None:
-        """Set the specifics for the Getter.
-
-        To create the Getter, a ContextData object is required, and the DB
-        model that is used to select data.
-
-        Args:
-            context_data: the `ContextData` object for this Getter.
-            model: the `my-model` model for the project.
-            db_model: the DB Model for the object.
-        """
-        self._context_data = context_data
-        self._model = model
-        self._db_model = db_model
 
     def filters(self) -> list[ColumnElement]:
         """Get the specific filters for this Getter.
