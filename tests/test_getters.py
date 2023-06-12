@@ -1,6 +1,6 @@
-"""Tests for the getters of the ResourceModel.
+"""Tests for the getters of the ResourceManager.
 
-Module that contains tests for the getters of the ResourceModel.
+Module that contains tests for the getters of the ResourceManager.
 """
 from my_model.user import User
 

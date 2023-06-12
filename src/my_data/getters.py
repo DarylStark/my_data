@@ -23,10 +23,13 @@ class Getter:
 
     Attributes:
         _context_data: the passed ContextData object.
+        _model: the `my-model` model that should be used for this manager.
         _db_model: the database model that should be used to retrieve data.
     """
 
-    def __init__(self, context_data: ContextData, db_model: Type) -> None:
+    def __init__(self,
+                 context_data: ContextData,
+                 model: Type, db_model: Type) -> None:
         """Set the specifics for the Getter.
 
         To create the Getter, a ContextData object is required, and the DB
@@ -34,9 +37,11 @@ class Getter:
 
         Args:
             context_data: the `ContextData` object for this Getter.
+            model: the `my-model` model for the project.
             db_model: the DB Model for the object.
         """
         self._context_data = context_data
+        self._model = model
         self._db_model = db_model
 
     def filters(self) -> list[ColumnElement]:
@@ -91,7 +96,11 @@ class UserSpecificGetter(Getter):
 
 
 class UserGetter(Getter):
-    """Getter for user resources."""
+    """Getter for user resources.
+
+    This getter should be used for User resources. These resources are not
+    bound to a specific user but depend on the role a user has.
+    """
 
     def filters(self) -> list[ColumnElement]:
         """Get the specific filters for this getter.

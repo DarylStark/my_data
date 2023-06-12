@@ -40,6 +40,8 @@ class DBTag(SQLModel, Tag, table=True):
     # Primary key
     id: int | None = Field(default=None, primary_key=True)
 
+    # Relationship fields
+    user_id: int | None = Field(foreign_key='dbuser.id')
+
     # Relationships
-    user_id: int = Field(foreign_key='dbuser.id')
     user: DBUser = Relationship(back_populates='tags')
