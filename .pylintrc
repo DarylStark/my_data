@@ -5,9 +5,8 @@
 extension-pkg-whitelist=pydantic
 
 [MESSAGES CONTROL]
-# The `disable-too-few-public` (R0903) methods check gives a warning when there
-# is a class with very few, or even none, public methods. Since we use Pydantic
-# classes, it get's triggered a lot. We disabled it because we know we are
-# using classes with little to no methods. More information about this:
-# https://pylint.readthedocs.io/en/latest/user_guide/messages/refactor/too-few-public-methods.html
-disable=too-few-public-methods
+# The `disable-many-arguments` error is displayed when a function has too many
+# arguments (more then 5). This is not feasible for the ResourceManager right
+# now, since it needs to recieve the objects to Create, Retrieve, Update and
+# delete resources. We disable it for that specific reason.
+disable=too-many-arguments

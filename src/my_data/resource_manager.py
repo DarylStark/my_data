@@ -46,6 +46,7 @@ class ResourceManager:
             context_data: the context data in which the resources should be
                 managed.
             getter: a instance of a Getter that retrives the data.
+            creator: a instance of Creator that creates the data.
         """
         self._model: Type = model
         self._db_model: Type = db_model

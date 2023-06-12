@@ -52,7 +52,14 @@ def test_create_users_root(db: Database, root_user: User) -> None:
             role=UserRole.USER
         ))
 
-    # TODO: test is the resource is added
+    # Check if the resource is added
+    with Context(user=root_user) as c:
+        users = c.users.get()
+        for user in users:
+            if user.username == 'test.user':
+                assert True
+                return
+        assert False, "User not found in database"
 
 
 def test_tags(db: Database, normal_user: User) -> None:
@@ -60,3 +67,12 @@ def test_tags(db: Database, normal_user: User) -> None:
         c.tags.create(Tag(
             title='test'
         ))
+
+    # Check if the resource is added
+    with Context(user=normal_user) as c:
+        tags = c.tags.get()
+        for tag in tags:
+            if tag.title == 'test':
+                assert True
+                return
+        assert False, "Tag not found in database"

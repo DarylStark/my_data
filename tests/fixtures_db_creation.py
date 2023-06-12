@@ -3,18 +3,17 @@
 Contains the fixture to connect to a database and create the needed tables for
 the unit tests.
 """
-from datetime import datetime
-
-from my_model.user import UserRole
+from my_model.tag import Tag
+from my_model.user import User
 from pytest import fixture
 
 from database.database import Database
 from my_data.configure import DatabaseType, MyDataConfig, configure
-from my_data.db_models import DBTag, DBUser
+from my_data.context import Context
 
 
 @fixture
-def db() -> Database:
+def db(root_user: User, normal_user: User) -> Database:
     """Fixture to connect to the DB.
 
     Creates the database connection and creates the tables. For the unit tests
@@ -31,36 +30,18 @@ def db() -> Database:
     # Create the tables
     db_connection.create_tables(drop_tables=False)
 
-    with db_connection.get_session() as a:
-        # Root user
-        root = DBUser(
-            fullname='Root',
-            username='root',
-            email='root@dstark.nl',
-            role=UserRole.ROOT,
-            password_hash='asdasdas',
-            password_date=datetime.now())
-        root.tags = [
-            DBTag(title='test_root_1'),
-            DBTag(title='test_root_2'),
-        ]
-        a.add(root)
+    # Create the users. We use the object of the root user for this
+    with Context(user=root_user) as c:
+        c.users.create([root_user, normal_user])
+        c.tags.create([
+            Tag(title='root_tag_1'),
+            Tag(title='root_tag_2')])
 
-        # User for Daryl Stark
-        daryl = DBUser(
-            fullname='Daryl Stark',
-            username='daryl.stark',
-            email='daryl@dstark.nl',
-            role=UserRole.USER,
-            password_hash='asdasdas',
-            password_date=datetime.now())
-        daryl.tags = [
-            DBTag(title='test_daryl_1'),
-            DBTag(title='test_daryl_2')
-        ]
-        a.add(daryl)
-
-        a.commit()
+    # Create tags for the normal user
+    with Context(user=normal_user) as c:
+        c.tags.create([
+            Tag(title='test_daryl_1'),
+            Tag(title='test_daryl_2')])
 
     # Return the connection object
     return db_connection

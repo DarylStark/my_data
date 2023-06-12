@@ -41,6 +41,7 @@ class Getter:
             db_model: the DB Model for the object.
         """
         self._context_data = context_data
+        self._model = model
         self._db_model = db_model
 
     def filters(self) -> list[ColumnElement]:

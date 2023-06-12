@@ -4,19 +4,14 @@ This module contains the Creators for the ResourceManager. It contains the
 base-class and the subclasses.
 """
 from typing import Type
-from typing_extensions import override
 
-from pydantic import BaseModel
+from my_model._model import Model  # type: ignore
+from my_model.user import User, UserRole  # type: ignore
 from sqlmodel import SQLModel
 
-from .db_connection import db_connection
-
 from .context_data import ContextData
+from .db_connection import db_connection
 from .db_models import DBUser
-
-from my_model._model import Model
-from my_model.user import User, UserRole
-
 from .exceptions import PermissionDeniedException, WrongModelException
 
 
@@ -63,9 +58,6 @@ class Creator:
         Args:
             data: the `my-model` instance.
 
-        Returns:
-            SQLModel: the generated DB model with the `user_id` set.
-
         Raises:
             NotImplementedError: raised when this method is used for the base
                 class instead of a subclass.
@@ -74,7 +66,7 @@ class Creator:
             'Method `get-updated-model` is not implemented for this type')
 
     def create(self, models: Model | list[Model]) -> None:
-        """Method to create the data.
+        """Create the data.
 
         Converts the `data` in `my-model` into a DB Models and adds them to the
         database.
@@ -107,8 +99,10 @@ class Creator:
         db_models = [self.get_updated_model(model) for model in models]
 
         with db_connection.get_session() as session:
-            # TODO: add the resource to the DB
-            raise NotImplementedError('Not implemented yet')
+            # Add the resource to the DB
+            for model in db_models:
+                session.add(model)
+            session.commit()
 
 
 class UserSpecificCreator(Creator):
@@ -137,8 +131,14 @@ class UserSpecificCreator(Creator):
         if not self._context_data or not self._context_data.user:
             raise PermissionDeniedException('No user set in the resource.')
 
+        # Create the DB object
+        db_object = self._db_model(**data.dict())
+
+        # Set the user_id
+        db_object.user_id = self._context_data.user.id
+
         # Return the DB object
-        return self._db_model(**data.dict())
+        return db_object
 
 
 class UserCreator(Creator):
