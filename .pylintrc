@@ -9,4 +9,8 @@ extension-pkg-whitelist=pydantic
 # arguments (more then 5). This is not feasible for the ResourceManager right
 # now, since it needs to recieve the objects to Create, Retrieve, Update and
 # delete resources. We disable it for that specific reason.
-disable=too-many-arguments
+#
+# The `too-few-public-methods` error is displayed when a classes have too
+# little public methods.. We disabled this bacause this triggers errors on
+# bases classes that are only there as way to define a standard initiator.
+disable=too-many-arguments,too-few-public-methods
