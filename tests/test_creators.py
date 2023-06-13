@@ -23,9 +23,9 @@ def test_create_users_normal(db: Database, normal_user: User) -> None:
             make sure the database is connected.
         normal_user: the model for the normal user.
     """
-    with Context(user=normal_user) as c:
+    with Context(user=normal_user) as local_context:
         with raises(PermissionDeniedException):
-            c.users.create(User(
+            local_context.users.create(User(
                 fullname='Test User',
                 email='test.user@my-daryl-stark.nl',
                 username='test.user',
@@ -44,8 +44,8 @@ def test_create_users_root(db: Database, root_user: User) -> None:
             make sure the database is connected.
         root_user: the model for the root user.
     """
-    with Context(user=root_user) as c:
-        c.users.create(User(
+    with Context(user=root_user) as local_context:
+        local_context.users.create(User(
             fullname='Test User',
             email='test.user@my-daryl-stark.nl',
             username='test.user',
@@ -53,8 +53,8 @@ def test_create_users_root(db: Database, root_user: User) -> None:
         ))
 
     # Check if the resource is added
-    with Context(user=root_user) as c:
-        users = c.users.get()
+    with Context(user=root_user) as local_context:
+        users = local_context.users.get()
         for user in users:
             if user.username == 'test.user':
                 assert True
@@ -63,14 +63,14 @@ def test_create_users_root(db: Database, root_user: User) -> None:
 
 
 def test_tags(db: Database, normal_user: User) -> None:
-    with Context(user=normal_user) as c:
-        c.tags.create(Tag(
+    with Context(user=normal_user) as local_context:
+        local_context.tags.create(Tag(
             title='test'
         ))
 
     # Check if the resource is added
-    with Context(user=normal_user) as c:
-        tags = c.tags.get()
+    with Context(user=normal_user) as local_context:
+        tags = local_context.tags.get()
         for tag in tags:
             if tag.title == 'test':
                 assert True

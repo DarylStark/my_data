@@ -31,15 +31,15 @@ def db(root_user: User, normal_user: User) -> Database:
     db_connection.create_tables(drop_tables=False)
 
     # Create the users. We use the object of the root user for this
-    with Context(user=root_user) as c:
-        c.users.create([root_user, normal_user])
-        c.tags.create([
+    with Context(user=root_user) as local_context:
+        local_context.users.create([root_user, normal_user])
+        local_context.tags.create([
             Tag(title='root_tag_1'),
             Tag(title='root_tag_2')])
 
     # Create tags for the normal user
-    with Context(user=normal_user) as c:
-        c.tags.create([
+    with Context(user=normal_user) as local_context:
+        local_context.tags.create([
             Tag(title='test_daryl_1'),
             Tag(title='test_daryl_2')])
 
