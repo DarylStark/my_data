@@ -23,8 +23,8 @@ def test_get_users_normal(db: Database, normal_user: User) -> None:
             make sure the database is connected.
         normal_user: the model for the normal user.
     """
-    with Context(user=normal_user) as c:
-        users = c.users.get()
+    with Context(user=normal_user) as local_context:
+        users = local_context.users.get()
         assert (users[0].username == 'daryl.stark')
         assert (len(users) == 1)
 
@@ -40,8 +40,8 @@ def test_get_users_root(db: Database, root_user: User) -> None:
             make sure the database is connected.
         root_user: the model for the root user.
     """
-    with Context(user=root_user) as c:
-        users = c.users.get()
+    with Context(user=root_user) as local_context:
+        users = local_context.users.get()
         assert (users[0].username == 'root')
         assert (users[1].username == 'daryl.stark')
         assert (len(users) == 2)
@@ -58,8 +58,8 @@ def test_tags(db: Database, normal_user: User) -> None:
             make sure the database is connected.
         normal_user: the model for the normal user.
     """
-    with Context(user=normal_user) as c:
-        tags = c.tags.get()
+    with Context(user=normal_user) as local_context:
+        tags = local_context.tags.get()
         assert tags[0].title == 'test_daryl_1'
         assert tags[1].title == 'test_daryl_2'
 
@@ -74,25 +74,27 @@ def test_users_raw_filters(db: Database, root_user: User) -> None:
             make sure the database is connected.
         root_user: the model for the root user.
     """
-    with Context(user=root_user) as c:
+    with Context(user=root_user) as local_context:
         # Test specific match
-        users = c.users.get(raw_filters=[DBUser.username == 'root'])
+        users = local_context.users.get(
+            raw_filters=[DBUser.username == 'root'])
         assert users[0].username == 'root'
         assert len(users) == 1
 
         # Test specific unmatch
-        users = c.users.get(raw_filters=[DBUser.username != 'root'])
+        users = local_context.users.get(
+            raw_filters=[DBUser.username != 'root'])
         assert users[0].username == 'daryl.stark'
         assert len(users) == 1
 
         # Test bigger then
-        users = c.users.get(raw_filters=[DBUser.id > 0])
+        users = local_context.users.get(raw_filters=[DBUser.id > 0])
         assert users[0].username == 'root'
         assert users[1].username == 'daryl.stark'
         assert len(users) == 2
 
         # Test smaller then
-        users = c.users.get(raw_filters=[DBUser.id < 99])
+        users = local_context.users.get(raw_filters=[DBUser.id < 99])
         assert users[0].username == 'root'
         assert users[1].username == 'daryl.stark'
         assert len(users) == 2
@@ -108,19 +110,19 @@ def test_users_named_filters(db: Database, root_user: User) -> None:
             make sure the database is connected.
         root_user: the model for the root user.
     """
-    with Context(user=root_user) as c:
+    with Context(user=root_user) as local_context:
         # Test specific match
-        users = c.users.get(username='daryl.stark')
+        users = local_context.users.get(username='daryl.stark')
         assert users[0].username == 'daryl.stark'
         assert len(users) == 1
 
         # Test if something that is invalid is not found indeed
-        users = c.users.get(username='emilia.clarke')
+        users = local_context.users.get(username='emilia.clarke')
         assert len(users) == 0
 
         # Test if a invalid field results in a exception
         with raises(InvalidFilterFieldException):
-            users = c.users.get(unknown_field='test')
+            users = local_context.users.get(unknown_field='test')
 
 
 def test_tags_raw_filters(db: Database, normal_user: User) -> None:
@@ -134,25 +136,27 @@ def test_tags_raw_filters(db: Database, normal_user: User) -> None:
             make sure the database is connected.
         normal_user: the model for the normal user.
     """
-    with Context(user=normal_user) as c:
+    with Context(user=normal_user) as local_context:
         # Test specific match
-        tags = c.tags.get(raw_filters=[DBTag.title == 'test_daryl_2'])
+        tags = local_context.tags.get(
+            raw_filters=[DBTag.title == 'test_daryl_2'])
         assert tags[0].title == 'test_daryl_2'
         assert len(tags) == 1
 
         # Test specific unmatch
-        tags = c.tags.get(raw_filters=[DBTag.title != 'test_daryl_2'])
+        tags = local_context.tags.get(
+            raw_filters=[DBTag.title != 'test_daryl_2'])
         assert tags[0].title == 'test_daryl_1'
         assert len(tags) == 1
 
         # Test bigger then
-        tags = c.tags.get(raw_filters=[DBTag.id > 0])
+        tags = local_context.tags.get(raw_filters=[DBTag.id > 0])
         assert tags[0].title == 'test_daryl_1'
         assert tags[1].title == 'test_daryl_2'
         assert len(tags) == 2
 
         # Test smaller then
-        tags = c.tags.get(raw_filters=[DBTag.id < 999])
+        tags = local_context.tags.get(raw_filters=[DBTag.id < 999])
         assert tags[0].title == 'test_daryl_1'
         assert tags[1].title == 'test_daryl_2'
         assert len(tags) == 2
@@ -169,16 +173,16 @@ def test_tags_named_filters(db: Database, normal_user: User) -> None:
             make sure the database is connected.
         normal_user: the model for the normal user.
     """
-    with Context(user=normal_user) as c:
+    with Context(user=normal_user) as local_context:
         # Test specific match
-        tags = c.tags.get(title='test_daryl_2')
+        tags = local_context.tags.get(title='test_daryl_2')
         assert tags[0].title == 'test_daryl_2'
         assert len(tags) == 1
 
         # Test if something that is invalid is not found indeed
-        tags = c.tags.get(title='not_a_real_tag')
+        tags = local_context.tags.get(title='not_a_real_tag')
         assert len(tags) == 0
 
         # Test if a invalid field results in a exception
         with raises(InvalidFilterFieldException):
-            tags = c.tags.get(unknown_field='test')
+            tags = local_context.tags.get(unknown_field='test')
