@@ -3,8 +3,6 @@
 This module contains the Getters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
-from ast import Attribute
-
 from my_model._model import Model  # type: ignore
 from my_model.user import UserRole  # type: ignore
 from sqlalchemy.sql.elements import ColumnElement
