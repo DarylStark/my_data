@@ -33,19 +33,32 @@ class Getter(CRUDBase):
         """
         raise NotImplementedError('Filters are not implemented for this type')
 
-    def get(self) -> list[Model]:
+    def get(self,
+            raw_filters: list[ColumnElement] | None = None) -> list[Model]:
         """Get the resources.
 
         Get the resources for the specified DB object within the context of the
         given ContextData object.
+
+        Args:
+            raw_filters: raw SQLModel type filters to filter this resource.
 
         Returns:
             list[Model]: a list with the resources in `my-model` format.
         """
         with db_connection.get_session() as session:
             resources = select(self._db_model)
+
+            # Filter on the default filters for this object.
             for flt in self.filters():
                 resources = resources.where(flt)
+
+            # Set the extra 'raw' filters from the arguments
+            if raw_filters:
+                for flt in raw_filters:
+                    resources = resources.where(flt)
+
+            # Execute the query
             results = session.exec(resources)
 
             # Convert them to the correct model

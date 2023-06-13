@@ -7,6 +7,8 @@ from my_model.user import User
 from database.database import Database
 from my_data.context import Context
 
+from my_data.db_models import DBTag, Tag
+
 
 def test_get_users_normal(db: Database, normal_user: User) -> None:
     """Test to retrieve users as a normal user.
@@ -59,3 +61,20 @@ def test_tags(db: Database, normal_user: User) -> None:
         tags = c.tags.get()
         assert tags[0].title == 'test_daryl_1'
         assert tags[1].title == 'test_daryl_2'
+
+
+def test_tags_filters(db: Database, normal_user: User) -> None:
+    """Test to retrieve tags for a specific user with a filter.
+
+    Should retrieve tags for the user in the context based on specific filters.
+
+    Args:
+        db: the database connection. Not used right now, but still in there to
+            make sure the database is connected.
+        normal_user: the model for the normal user.
+    """
+    with Context(user=normal_user) as c:
+        tags = c.tags.get(raw_filters=[
+            DBTag.title == 'test_daryl_2'
+        ])
+        assert tags[0].title == 'test_daryl_1'
