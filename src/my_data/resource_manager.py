@@ -63,7 +63,8 @@ class ResourceManager:
             db_model=self._db_model)
 
     def get(self,
-            raw_filters: list[ColumnElement] | None = None) -> list[Model]:
+            raw_filters: list[ColumnElement] | None = None,
+            **kwargs: dict) -> list[Model]:
         """Get all resources for the specified object.
 
         Returns a list of resources for the specified model. It does this using
@@ -78,7 +79,7 @@ class ResourceManager:
                 in the `my-models` package.
         """
         # Get all DB objects from the database
-        return self.getter.get(raw_filters=raw_filters)
+        return self.getter.get(raw_filters=raw_filters, **kwargs)
 
     def create(self, models: list[Model] | Model) -> None:
         """Create resources.

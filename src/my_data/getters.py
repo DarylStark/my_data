@@ -3,6 +3,7 @@
 This module contains the Getters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
+from ast import Attribute
 from my_model._model import Model  # type: ignore
 from my_model.user import UserRole  # type: ignore
 from sqlalchemy.sql.elements import ColumnElement
@@ -34,7 +35,8 @@ class Getter(CRUDBase):
         raise NotImplementedError('Filters are not implemented for this type')
 
     def get(self,
-            raw_filters: list[ColumnElement] | None = None) -> list[Model]:
+            raw_filters: list[ColumnElement] | None = None,
+            **kwargs: dict) -> list[Model]:
         """Get the resources.
 
         Get the resources for the specified DB object within the context of the
@@ -57,6 +59,15 @@ class Getter(CRUDBase):
             if raw_filters:
                 for flt in raw_filters:
                     resources = resources.where(flt)
+
+            # Add the fiilters that were given via named arguments
+            for field, value in kwargs.items():
+                if not hasattr(self._db_model, field):
+                    raise AttributeError(
+                        f'The model "{self._db_model}" has no field "{field}"')
+                resources = resources.where(
+                    getattr(self._db_model, field) == value
+                )
 
             # Execute the query
             results = session.exec(resources)

@@ -74,7 +74,5 @@ def test_tags_filters(db: Database, normal_user: User) -> None:
         normal_user: the model for the normal user.
     """
     with Context(user=normal_user) as c:
-        tags = c.tags.get(raw_filters=[
-            DBTag.title == 'test_daryl_2'
-        ])
-        assert tags[0].title == 'test_daryl_1'
+        tags = c.tags.get(id=3)
+        assert tags[0].title == 'test_daryl_2'
