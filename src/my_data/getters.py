@@ -4,6 +4,7 @@ This module contains the Getters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
 from ast import Attribute
+
 from my_model._model import Model  # type: ignore
 from my_model.user import UserRole  # type: ignore
 from sqlalchemy.sql.elements import ColumnElement
@@ -12,6 +13,7 @@ from sqlmodel import select
 from .crud_base import CRUDBase
 from .db_connection import db_connection
 from .db_models import DBUser
+from .exceptions import InvalidFilterFieldException
 
 
 class Getter(CRUDBase):
@@ -63,7 +65,7 @@ class Getter(CRUDBase):
             # Add the fiilters that were given via named arguments
             for field, value in kwargs.items():
                 if not hasattr(self._db_model, field):
-                    raise AttributeError(
+                    raise InvalidFilterFieldException(
                         f'The model "{self._db_model}" has no field "{field}"')
                 resources = resources.where(
                     getattr(self._db_model, field) == value

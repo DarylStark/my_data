@@ -18,3 +18,7 @@ class PermissionDeniedException(MyDataException):
 
 class WrongModelException(MyDataException):
     """Exception when a wrnog model is given."""
+
+
+class InvalidFilterFieldException(MyDataException):
+    """Exception when a Invalid field in a named filter is used."""

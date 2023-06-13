@@ -8,6 +8,7 @@ from pytest import raises
 from database.database import Database
 from my_data.context import Context
 from my_data.db_models import DBTag, DBUser
+from my_data.exceptions import InvalidFilterFieldException
 
 
 def test_get_users_normal(db: Database, normal_user: User) -> None:
@@ -118,7 +119,7 @@ def test_users_named_filters(db: Database, root_user: User) -> None:
         assert len(users) == 0
 
         # Test if a invalid field results in a exception
-        with raises(AttributeError):
+        with raises(InvalidFilterFieldException):
             users = c.users.get(unknown_field='test')
 
 
@@ -179,5 +180,5 @@ def test_tags_named_filters(db: Database, normal_user: User) -> None:
         assert len(tags) == 0
 
         # Test if a invalid field results in a exception
-        with raises(AttributeError):
+        with raises(InvalidFilterFieldException):
             tags = c.tags.get(unknown_field='test')
