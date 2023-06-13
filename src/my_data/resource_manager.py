@@ -73,6 +73,7 @@ class ResourceManager:
 
         Args:
             raw_filters: raw SQLModel type filters to filter this resource.
+            **kwargs: named filers.
 
         Returns:
             list[Model]: a list with the retrieved resources in models defined

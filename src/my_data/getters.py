@@ -44,9 +44,13 @@ class Getter(CRUDBase):
 
         Args:
             raw_filters: raw SQLModel type filters to filter this resource.
+            **kwargs: named filers.
 
         Returns:
             list[Model]: a list with the resources in `my-model` format.
+
+        Raises:
+            InvalidFilterFieldException: when a invalid named filter is used.
         """
         with db_connection.get_session() as session:
             resources = select(self._db_model)
