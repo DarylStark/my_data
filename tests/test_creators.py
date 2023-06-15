@@ -63,6 +63,16 @@ def test_create_users_root(db: Database, root_user: User) -> None:
 
 
 def test_tags(db: Database, normal_user: User) -> None:
+    """Test to update a tag.
+
+    Tries to create a tag for a normal user. This should work perfectly since
+    a user is allowed to create tags for his own useraccount.
+
+    Args:
+        db: the database connection. Not used right now, but still in there to
+            make sure the database is connected.
+        normal_user: the model for the normal user.
+    """
     with Context(user=normal_user) as local_context:
         local_context.tags.create(Tag(
             title='test'
