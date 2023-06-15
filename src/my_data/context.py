@@ -13,6 +13,7 @@ from .db_models import DBTag, DBUser
 from .getters import UserGetter
 from .creators import UserCreator
 from .resource_manager import ResourceManager
+from .updaters import UserUpdater
 
 
 class Context:
@@ -51,7 +52,8 @@ class Context:
                                      db_model=DBUser,
                                      context_data=self.context_data,
                                      getter=UserGetter,
-                                     creator=UserCreator)
+                                     creator=UserCreator,
+                                     updater=UserUpdater)
 
     def __enter__(self) -> 'Context':
         """Start method for a Pythonic context manager.

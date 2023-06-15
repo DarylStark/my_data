@@ -11,6 +11,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from .context_data import ContextData
 from .creators import Creator, UserSpecificCreator
 from .getters import Getter, UserSpecificGetter
+from .updaters import UserSpecificUpdater
 
 
 class ResourceManager:
@@ -24,6 +25,8 @@ class ResourceManager:
 
     Attributes:
         getter: a instance of a Getter that retrives the data.
+        creator: a instance of a Creator that creates the data.
+        updater: a instance of a Updater that updates the data.
 
         _model: the `my-model` model for the resources.
         _db_model: the DB model for the resources.
@@ -36,7 +39,8 @@ class ResourceManager:
                  db_model: Type,
                  context_data: ContextData | None = None,
                  getter: Type = UserSpecificGetter,
-                 creator: Type = UserSpecificCreator) -> None:
+                 creator: Type = UserSpecificCreator,
+                 updater: Type = UserSpecificUpdater) -> None:
         """Manage database resources.
 
         Should be used by a `Context` to manage specific resources.
@@ -48,6 +52,7 @@ class ResourceManager:
                 managed.
             getter: a instance of a Getter that retrives the data.
             creator: a instance of Creator that creates the data.
+            updater: a instance of Updater that updated the data.
         """
         self._model: Type = model
         self._db_model: Type = db_model
@@ -61,6 +66,11 @@ class ResourceManager:
             context_data=self._context_data,
             model=self._model,
             db_model=self._db_model)
+        self.updaters: Updater = updater(
+            context_data=self._context_data,
+            model=self._model,
+            db_model=self._db_model
+        )
 
     def get(self,
             raw_filters: list[ColumnElement] | None = None,
@@ -89,6 +99,16 @@ class ResourceManager:
         create the resource in the correct way.
 
         Args:
-            models: the model or models to add
+            models: the model or models to add.
         """
         self.creator.create(models)
+
+    def update(self, models: list[Model] | Model) -> None:
+        """Update resources.
+
+        Updates one ore more resources. It uses the defined Updater to update
+        the resource in the correct way.
+
+        Args:
+            models: the model or models to update.
+        """
