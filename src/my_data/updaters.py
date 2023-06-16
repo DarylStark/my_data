@@ -5,7 +5,7 @@ base-class and the subclasses.
 """
 
 from my_model._model import Model  # type: ignore
-from my_model.user import UserRole
+from my_model.user import UserRole  # type: ignore
 from sqlmodel import SQLModel
 
 from my_data.db_connection import db_connection
