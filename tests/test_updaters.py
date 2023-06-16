@@ -75,10 +75,11 @@ def test_update_own_user_normal(db: Database, normal_user: User) -> None:
     with Context(user=normal_user) as local_context:
         user = local_context.users.get()
         user[0].username = 'daryl.stark_updated'
-        user = local_context.users.update(user[0])
+        updated_user_list = local_context.users.update(user[0])
 
         # Check the return type
-        assert isinstance(user, User), "Wrong returntype"
+        for user in updated_user_list:
+            assert isinstance(user, User), "Wrong returntype"
 
     # Check if the resource is updated
     with Context(user=normal_user) as local_context:
@@ -101,10 +102,11 @@ def test_update_users_root(db: Database, root_user: User) -> None:
     with Context(user=root_user) as local_context:
         user = local_context.users.get(username='daryl.stark')
         user[0].username = 'daryl.stark_updated'
-        user = local_context.users.update(user[0])
+        updated_user_list = local_context.users.update(user[0])
 
         # Check the return type
-        assert isinstance(user, User), "Wrong returntype"
+        for user in updated_user_list:
+            assert isinstance(user, User), "Wrong returntype"
 
     # Check if the resource is updated
     with Context(user=root_user) as local_context:
@@ -127,10 +129,11 @@ def test_update_tags(db: Database, normal_user: User) -> None:
     with Context(user=normal_user) as local_context:
         tag = local_context.tags.get(title='test_daryl_1')[0]
         tag.title = 'test_daryl_1_edited'
-        tag = local_context.tags.update(tag)
+        updated_tag_list = local_context.tags.update(tag)
 
         # Check the return type
-        assert isinstance(tag, Tag), "Wrong returntype"
+        for tag in updated_tag_list:
+            assert isinstance(tag, User), "Wrong returntype"
 
     # Check if the resource is added
     with Context(user=normal_user) as local_context:
