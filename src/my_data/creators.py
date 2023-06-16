@@ -38,7 +38,7 @@ class Creator(CRUDBase):
         raise NotImplementedError(
             'Method `get-updated-model` is not implemented for this type')
 
-    def create(self, models: Model | list[Model]) -> None:
+    def create(self, models: Model | list[Model]) -> list[Model]:
         """Create the data.
 
         Converts the `data` in `my-model` into a DB Models and adds them to the
@@ -47,6 +47,9 @@ class Creator(CRUDBase):
         Args:
             models: the `my-model` instances. Can be one, or a list of multiple
                 resources.
+
+        Returns:
+            Model: the new model.
 
         Raises:
             WrongModelException: when the given model is not the same as the
@@ -71,11 +74,18 @@ class Creator(CRUDBase):
         # Convert all Models to DBModels.
         db_models = [self.get_updated_model(model) for model in models]
 
-        with db_connection.get_session() as session:
+        with db_connection.get_session(expire_on_commit=False) as session:
             # Add the resource to the DB
             for model in db_models:
                 session.add(model)
             session.commit()
+
+        # Update the original models
+        new_models = [self._model(**db_model.dict())
+                      for db_model in db_models]
+
+        # Return the new models
+        return new_models
 
 
 class UserSpecificCreator(Creator):
@@ -109,6 +119,8 @@ class UserSpecificCreator(Creator):
 
         # Set the user_id
         db_object.user_id = self._context_data.user.id
+
+        db_object.set_hidden('model', data)
 
         # Return the DB object
         return db_object
