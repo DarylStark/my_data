@@ -37,6 +37,28 @@ def test_update_users_normal(db: Database,
             local_context.users.update(user[0])
 
 
+def test_update_tags_wrong_user(db: Database,
+                                normal_user: User,
+                                root_user: User) -> None:
+    """Test to update tags from a different user.
+
+    TODO: Explain
+
+    Args:
+        db: the database connection. Not used right now, but still in there to
+            make sure the database is connected.
+        normal_user: the model for the normal user.
+        root_user: the model for the root user.
+    """
+    with Context(user=root_user) as local_context:
+        tags = local_context.tags.get()
+
+    with Context(user=normal_user) as local_context:
+        with raises(PermissionDeniedException):
+            tags[0].title = 'root_new'
+            local_context.tags.update(tags[0])
+
+
 def test_update_own_user_normal(db: Database, normal_user: User) -> None:
     """Test to update the own useraccount as a normal user.
 
@@ -83,7 +105,7 @@ def test_update_users_root(db: Database, root_user: User) -> None:
         assert users[0].username == 'daryl.stark_updated'
 
 
-def test_tags(db: Database, normal_user: User) -> None:
+def test_update_tags(db: Database, normal_user: User) -> None:
     """Test to update a tag.
 
     Tries to update a tag for a normal user. This should work perfectly since

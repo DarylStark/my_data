@@ -11,7 +11,7 @@ from sqlmodel import SQLModel
 from my_data.db_connection import db_connection
 
 from .crud_base import CRUDBase
-from .exceptions import InvalidModelException
+from .exceptions import InvalidModelException, PermissionDeniedException
 
 
 class Updater(CRUDBase):
@@ -81,7 +81,13 @@ class UserSpecificUpdater(Updater):
     This updater should be used for resources that are bound to specific users,
     like tags and API tokens.
     """
-    # TODO: Make sure the user is allowed to update this item
+
+    def get_db_model(self, data: Model) -> SQLModel:
+        model = super().get_db_model(data)
+        if model.user_id == self._context_data.user.id:
+            return model
+        raise PermissionDeniedException(
+            f'User "{self._context_data.user.username}" is not allowed to update tag ID "{model.id}"')
 
 
 class UserUpdater(Updater):
