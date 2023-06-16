@@ -53,7 +53,7 @@ class Updater(CRUDBase):
         raise InvalidModelException(
             'The model is not retrieved via the `my-data` package.')
 
-    def update(self, models: list[Model] | Model) -> None:
+    def update(self, models: list[Model] | Model) -> list[Model]:
         """Update the model in the database.
 
         Updates the model in the database. This method executes the queries in
@@ -73,6 +73,9 @@ class Updater(CRUDBase):
             for model in db_models:
                 session.add(model)
             session.commit()
+
+        # Return the new models
+        return models
 
 
 class UserSpecificUpdater(Updater):

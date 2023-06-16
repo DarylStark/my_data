@@ -133,7 +133,7 @@ def test_update_tags(db: Database, normal_user: User) -> None:
 
         # Check the return type
         for tag in updated_tag_list:
-            assert isinstance(tag, User), "Wrong returntype"
+            assert isinstance(tag, Tag), "Wrong returntype"
 
     # Check if the resource is added
     with Context(user=normal_user) as local_context:

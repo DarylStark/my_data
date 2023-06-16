@@ -106,7 +106,7 @@ class ResourceManager:
         """
         return self.creator.create(models)
 
-    def update(self, models: list[Model] | Model) -> Model:
+    def update(self, models: list[Model] | Model) -> list[Model]:
         """Update resources.
 
         Updates one ore more resources. It uses the defined Updater to update
