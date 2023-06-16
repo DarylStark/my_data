@@ -62,7 +62,7 @@ def test_create_users_root(db: Database, root_user: User) -> None:
         assert False, "User not found in database"
 
 
-def test_tags(db: Database, normal_user: User) -> None:
+def test_create_tags(db: Database, normal_user: User) -> None:
     """Test to update a tag.
 
     Tries to create a tag for a normal user. This should work perfectly since
