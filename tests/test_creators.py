@@ -45,12 +45,15 @@ def test_create_users_root(db: Database, root_user: User) -> None:
         root_user: the model for the root user.
     """
     with Context(user=root_user) as local_context:
-        local_context.users.create(User(
+        user = local_context.users.create(User(
             fullname='Test User',
             email='test.user@my-daryl-stark.nl',
             username='test.user',
             role=UserRole.USER
         ))
+
+        # Check the return type
+        assert isinstance(user, User), "Wrong returntype"
 
     # Check if the resource is added
     with Context(user=root_user) as local_context:
@@ -74,9 +77,12 @@ def test_create_tags(db: Database, normal_user: User) -> None:
         normal_user: the model for the normal user.
     """
     with Context(user=normal_user) as local_context:
-        local_context.tags.create(Tag(
+        tag = local_context.tags.create(Tag(
             title='test'
         ))
+
+        # Check the return type
+        assert isinstance(tag, Tag), "Wrong returntype"
 
     # Check if the resource is added
     with Context(user=normal_user) as local_context:
