@@ -9,6 +9,8 @@ from database.database import Database
 from my_data.context import Context
 from my_data.db_models import DBTag, DBUser
 from my_data.exceptions import InvalidFilterFieldException
+from my_model.user import User
+from my_model.tag import Tag
 
 
 def test_get_users_normal(db: Database, normal_user: User) -> None:
@@ -28,6 +30,10 @@ def test_get_users_normal(db: Database, normal_user: User) -> None:
         assert (users[0].username == 'daryl.stark')
         assert (len(users) == 1)
 
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
+
 
 def test_get_users_root(db: Database, root_user: User) -> None:
     """Test to retrieve users as a root user.
@@ -46,6 +52,10 @@ def test_get_users_root(db: Database, root_user: User) -> None:
         assert (users[1].username == 'daryl.stark')
         assert (len(users) == 2)
 
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
+
 
 def test_get_tags(db: Database, normal_user: User) -> None:
     """Test to retrieve tags for a specific user.
@@ -62,6 +72,10 @@ def test_get_tags(db: Database, normal_user: User) -> None:
         tags = local_context.tags.get()
         assert tags[0].title == 'test_daryl_1'
         assert tags[1].title == 'test_daryl_2'
+
+        # Check the return types
+        for tag in tags:
+            assert isinstance(tag, Tag), "Wrong returntype"
 
 
 def test_get_users_raw_filters(db: Database, root_user: User) -> None:
@@ -81,11 +95,19 @@ def test_get_users_raw_filters(db: Database, root_user: User) -> None:
         assert users[0].username == 'root'
         assert len(users) == 1
 
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
+
         # Test specific unmatch
         users = local_context.users.get(
             raw_filters=[DBUser.username != 'root'])
         assert users[0].username == 'daryl.stark'
         assert len(users) == 1
+
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
 
         # Test bigger then
         users = local_context.users.get(raw_filters=[DBUser.id > 0])
@@ -93,11 +115,19 @@ def test_get_users_raw_filters(db: Database, root_user: User) -> None:
         assert users[1].username == 'daryl.stark'
         assert len(users) == 2
 
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
+
         # Test smaller then
         users = local_context.users.get(raw_filters=[DBUser.id < 99])
         assert users[0].username == 'root'
         assert users[1].username == 'daryl.stark'
         assert len(users) == 2
+
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
 
 
 def test_get_users_named_filters(db: Database, root_user: User) -> None:
@@ -116,9 +146,17 @@ def test_get_users_named_filters(db: Database, root_user: User) -> None:
         assert users[0].username == 'daryl.stark'
         assert len(users) == 1
 
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
+
         # Test if something that is invalid is not found indeed
         users = local_context.users.get(username='emilia.clarke')
         assert len(users) == 0
+
+        # Check the return types
+        for user in users:
+            assert isinstance(user, User), "Wrong returntype"
 
         # Test if a invalid field results in a exception
         with raises(InvalidFilterFieldException):
@@ -143,11 +181,19 @@ def test_get_tags_raw_filters(db: Database, normal_user: User) -> None:
         assert tags[0].title == 'test_daryl_2'
         assert len(tags) == 1
 
+        # Check the return types
+        for tag in tags:
+            assert isinstance(tag, Tag), "Wrong returntype"
+
         # Test specific unmatch
         tags = local_context.tags.get(
             raw_filters=[DBTag.title != 'test_daryl_2'])
         assert tags[0].title == 'test_daryl_1'
         assert len(tags) == 1
+
+        # Check the return types
+        for tag in tags:
+            assert isinstance(tag, Tag), "Wrong returntype"
 
         # Test bigger then
         tags = local_context.tags.get(raw_filters=[DBTag.id > 0])
@@ -155,11 +201,19 @@ def test_get_tags_raw_filters(db: Database, normal_user: User) -> None:
         assert tags[1].title == 'test_daryl_2'
         assert len(tags) == 2
 
+        # Check the return types
+        for tag in tags:
+            assert isinstance(tag, Tag), "Wrong returntype"
+
         # Test smaller then
         tags = local_context.tags.get(raw_filters=[DBTag.id < 999])
         assert tags[0].title == 'test_daryl_1'
         assert tags[1].title == 'test_daryl_2'
         assert len(tags) == 2
+
+        # Check the return types
+        for tag in tags:
+            assert isinstance(tag, Tag), "Wrong returntype"
 
 
 def test_get_tags_named_filters(db: Database, normal_user: User) -> None:
@@ -179,9 +233,17 @@ def test_get_tags_named_filters(db: Database, normal_user: User) -> None:
         assert tags[0].title == 'test_daryl_2'
         assert len(tags) == 1
 
+        # Check the return types
+        for tag in tags:
+            assert isinstance(tag, Tag), "Wrong returntype"
+
         # Test if something that is invalid is not found indeed
         tags = local_context.tags.get(title='not_a_real_tag')
         assert len(tags) == 0
+
+        # Check the return types
+        for tag in tags:
+            assert isinstance(tag, Tag), "Wrong returntype"
 
         # Test if a invalid field results in a exception
         with raises(InvalidFilterFieldException):

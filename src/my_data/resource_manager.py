@@ -92,7 +92,7 @@ class ResourceManager:
         # Get all DB objects from the database
         return self.getter.get(raw_filters=raw_filters, **kwargs)
 
-    def create(self, models: list[Model] | Model) -> None:
+    def create(self, models: list[Model] | Model) -> list[Model]:
         """Create resources.
 
         Creates one or multiple resources. It uses the defined creator to
@@ -100,10 +100,13 @@ class ResourceManager:
 
         Args:
             models: the model or models to add.
-        """
-        self.creator.create(models)
 
-    def update(self, models: list[Model] | Model) -> None:
+        Returns:
+            Model: the new model.
+        """
+        return self.creator.create(models)
+
+    def update(self, models: list[Model] | Model) -> list[Model]:
         """Update resources.
 
         Updates one ore more resources. It uses the defined Updater to update
@@ -111,5 +114,8 @@ class ResourceManager:
 
         Args:
             models: the model or models to update.
+
+        Returns:
+            Model: the updated model.
         """
-        self.updater.update(models)
+        return self.updater.update(models)
