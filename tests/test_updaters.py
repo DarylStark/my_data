@@ -42,7 +42,9 @@ def test_update_tags_wrong_user(db: Database,
                                 root_user: User) -> None:
     """Test to update tags from a different user.
 
-    TODO: Explain
+    When a user tries to update a tag that is not theirs, the library has to
+    raise a PermissionDeniedException error. We check if that happends in this
+    unit test.
 
     Args:
         db: the database connection. Not used right now, but still in there to

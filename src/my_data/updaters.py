@@ -4,8 +4,8 @@ This module contains the Updaters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
 
-from dataclasses import field
 from my_model._model import Model  # type: ignore
+from my_model.user import UserRole
 from sqlmodel import SQLModel
 
 from my_data.db_connection import db_connection
@@ -83,16 +83,59 @@ class UserSpecificUpdater(Updater):
     """
 
     def get_db_model(self, data: Model) -> SQLModel:
+        """Get the `db_model` from the given model.
+
+        Retrieves the DB model from the given model using the `get_db_model`
+        method in the base class. It then uses the `user_id` field in the model
+        to check if this user is allowed to change this resource. If the user
+        is not allowed to change this resouce, a exception is raieed.
+
+        Args:
+            data: the `my-model` instance.
+
+        Returns:
+            The DB model with the updated fields.
+
+        Raises:
+            PermissionDeniedException: when the user in the context has no
+                permissions to update this resource.
+        """
         model = super().get_db_model(data)
         if model.user_id == self._context_data.user.id:
             return model
         raise PermissionDeniedException(
-            f'User "{self._context_data.user.username}" is not allowed to update tag ID "{model.id}"')
+            f'User "{self._context_data.user.username}" is not allowed to ' +
+            'update reousrce ID "{model.id}"')
 
 
 class UserUpdater(Updater):
     """Updatar for user resources.
 
-    This updater should be used to updater users.
+    This updater should be used to update users.
     """
-    # TODO: Make sure the user is allowed to update this item
+
+    def get_db_model(self, data: Model) -> SQLModel:
+        """Get the `db_model` from the given model.
+
+        Checks if this user is allowed to change the user resource. A ROOT user
+        can change all user resources. Other users can only change their own
+        user resource.
+
+        Args:
+            data: the `my-model` instance.
+
+        Returns:
+            The DB model with the updated fields.
+
+        Raises:
+            PermissionDeniedException: when the user in the context has no
+                permissions to update this resource.
+        """
+        model = super().get_db_model(data)
+        if self._context_data.user.role == UserRole.ROOT or (
+            model.id == self._context_data.user.id
+        ):
+            return model
+        raise PermissionDeniedException(
+            f'User "{self._context_data.user.username}" is not allowed to ' +
+            'update user ID "{model.id}"')
