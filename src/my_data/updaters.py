@@ -61,6 +61,9 @@ class Updater(CRUDBase):
 
         Args:
             models: the models to update.
+
+        Returns:
+            Model: the updated models.
         """
         if not isinstance(models, list):
             models = [models]
