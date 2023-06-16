@@ -77,10 +77,11 @@ class Getter(CRUDBase):
             results = session.exec(resources)
 
             # Convert them to the correct model
-            new_resources: list[Model] = [
-                self._model(**x.dict())
-                for x in results
-            ]
+            new_resources: list[Model] = []
+            for result in results:
+                new_model = self._model(**result.dict())
+                new_model.set_hidden('db_model', result)
+                new_resources.append(new_model)
 
         return new_resources
 

@@ -115,7 +115,7 @@ class UserSpecificCreator(Creator):
 
 
 class UserCreator(Creator):
-    """Creator for user specific resources.
+    """Creator for user resources.
 
     This creator should be used to create users.
     """

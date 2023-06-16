@@ -47,7 +47,7 @@ def test_get_users_root(db: Database, root_user: User) -> None:
         assert (len(users) == 2)
 
 
-def test_tags(db: Database, normal_user: User) -> None:
+def test_get_tags(db: Database, normal_user: User) -> None:
     """Test to retrieve tags for a specific user.
 
     Should retrieve all tags that are created in the test database for the
@@ -64,7 +64,7 @@ def test_tags(db: Database, normal_user: User) -> None:
         assert tags[1].title == 'test_daryl_2'
 
 
-def test_users_raw_filters(db: Database, root_user: User) -> None:
+def test_get_users_raw_filters(db: Database, root_user: User) -> None:
     """Test to retrieve users as root with a raw filter.
 
     Should retrieve users the context based on specific raw filters.
@@ -100,7 +100,7 @@ def test_users_raw_filters(db: Database, root_user: User) -> None:
         assert len(users) == 2
 
 
-def test_users_named_filters(db: Database, root_user: User) -> None:
+def test_get_users_named_filters(db: Database, root_user: User) -> None:
     """Test to retrieve tags for a specific user with named filters.
 
     Should retrieve users for the the context based on specific named filters.
@@ -125,7 +125,7 @@ def test_users_named_filters(db: Database, root_user: User) -> None:
             users = local_context.users.get(unknown_field='test')
 
 
-def test_tags_raw_filters(db: Database, normal_user: User) -> None:
+def test_get_tags_raw_filters(db: Database, normal_user: User) -> None:
     """Test to retrieve tags for a specific user with a raw filter.
 
     Should retrieve tags for the user in the context based on specific raw
@@ -162,7 +162,7 @@ def test_tags_raw_filters(db: Database, normal_user: User) -> None:
         assert len(tags) == 2
 
 
-def test_tags_named_filters(db: Database, normal_user: User) -> None:
+def test_get_tags_named_filters(db: Database, normal_user: User) -> None:
     """Test to retrieve tags for a specific user with named filters.
 
     Should retrieve tags for the user in the context based on specific named
