@@ -4,6 +4,7 @@ This module contains the Updaters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
 
+from dataclasses import field
 from my_model._model import Model  # type: ignore
 from sqlmodel import SQLModel
 
@@ -38,12 +39,19 @@ class Updater(CRUDBase):
         Raises:
             InvalidModelException: when the given model has no hidden DB model.
         """
-        try:
-            return data._db_model
-        except AttributeError as exc:
-            raise InvalidModelException(
-                f'The model is not retrieved via the ' +
-                '`my-data` package.') from exc
+        # Get the connected DB model
+        model: SQLModel = data.get_hidden('db_model')
+        if model:
+            # Update the fields
+            for fieldname, _ in data.__fields__.items():
+                setattr(model, fieldname, getattr(data, fieldname))
+
+            # Return the new model
+            return model
+
+        # No connected DB model
+        raise InvalidModelException(
+            'The model is not retrieved via the `my-data` package.')
 
     def update(self, models: list[Model] | Model) -> None:
         """Update the model in the database.

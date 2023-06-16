@@ -29,12 +29,12 @@ def test_update_users_normal(db: Database,
         root_user: the model for the root user.
     """
     with Context(user=root_user) as local_context:
-        user = local_context.users.get(username='root')[0]
+        user = local_context.users.get(username='root')
 
     with Context(user=normal_user) as local_context:
         with raises(PermissionDeniedException):
-            user.username = 'root_new'
-            local_context.users.update(user)
+            user[0].username = 'root_new'
+            local_context.users.update(user[0])
 
 
 def test_update_own_user_normal(db: Database, normal_user: User) -> None:
@@ -49,9 +49,9 @@ def test_update_own_user_normal(db: Database, normal_user: User) -> None:
         normal_user: the model for the normal user.
     """
     with Context(user=normal_user) as local_context:
-        user = local_context.users.get()[0]
-        user.username = 'daryl.stark_updated'
-        local_context.users.update(user)
+        user = local_context.users.get()
+        user[0].username = 'daryl.stark_updated'
+        local_context.users.update(user[0])
 
     # Check if the resource is updated
     with Context(user=normal_user) as local_context:
@@ -72,9 +72,9 @@ def test_update_users_root(db: Database, root_user: User) -> None:
         root_user: the model for the root user.
     """
     with Context(user=root_user) as local_context:
-        user = local_context.users.get(username='daryl.stark')[0]
-        user.username = 'daryl.stark_updated'
-        local_context.users.update(user)
+        user = local_context.users.get(username='daryl.stark')
+        user[0].username = 'daryl.stark_updated'
+        local_context.users.update(user[0])
 
     # Check if the resource is updated
     with Context(user=root_user) as local_context:
@@ -101,6 +101,6 @@ def test_tags(db: Database, normal_user: User) -> None:
 
     # Check if the resource is added
     with Context(user=normal_user) as local_context:
-        tags = local_context.tags.get(title='test_daryl_1_edited')[0]
+        tags = local_context.tags.get(title='test_daryl_1_edited')
         assert len(tags) == 1
         assert tag.title == 'test_daryl_1_edited'
