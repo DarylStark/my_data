@@ -11,7 +11,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from .context_data import ContextData
 from .creators import Creator, UserSpecificCreator
 from .getters import Getter, UserSpecificGetter
-from .updaters import UserSpecificUpdater
+from .updaters import Updater, UserSpecificUpdater
 
 
 class ResourceManager:
@@ -66,7 +66,7 @@ class ResourceManager:
             context_data=self._context_data,
             model=self._model,
             db_model=self._db_model)
-        self.updaters: Updater = updater(
+        self.updater: Updater = updater(
             context_data=self._context_data,
             model=self._model,
             db_model=self._db_model
@@ -112,3 +112,4 @@ class ResourceManager:
         Args:
             models: the model or models to update.
         """
+        self.updater.update(models)

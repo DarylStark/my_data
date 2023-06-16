@@ -22,3 +22,11 @@ class WrongModelException(MyDataException):
 
 class InvalidFilterFieldException(MyDataException):
     """Exception when a Invalid field in a named filter is used."""
+
+
+class InvalidModelException(MyDataException):
+    """Exception when a model is passed that has no DB Model.
+
+    This Exception gets called when updating or deleting a model that is not
+    retrieved from the database.
+    """
