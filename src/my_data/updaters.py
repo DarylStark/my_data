@@ -115,7 +115,7 @@ class UserSpecificUpdater(Updater):
 
 
 class UserUpdater(Updater):
-    """Updatar for user resources.
+    """Updater for user resources.
 
     This updater should be used to update users.
     """
