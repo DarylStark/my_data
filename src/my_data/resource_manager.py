@@ -12,6 +12,7 @@ from .context_data import ContextData
 from .creators import Creator, UserSpecificCreator
 from .getters import Getter, UserSpecificGetter
 from .updaters import Updater, UserSpecificUpdater
+from .deleters import Deleter, UserSpecificDeleter
 
 
 class ResourceManager:
@@ -27,6 +28,7 @@ class ResourceManager:
         getter: a instance of a Getter that retrives the data.
         creator: a instance of a Creator that creates the data.
         updater: a instance of a Updater that updates the data.
+        deleter: a instance of Deleter that deletes the data.
 
         _model: the `my-model` model for the resources.
         _db_model: the DB model for the resources.
@@ -40,7 +42,8 @@ class ResourceManager:
                  context_data: ContextData | None = None,
                  getter: Type = UserSpecificGetter,
                  creator: Type = UserSpecificCreator,
-                 updater: Type = UserSpecificUpdater) -> None:
+                 updater: Type = UserSpecificUpdater,
+                 deleter: Type = UserSpecificDeleter) -> None:
         """Manage database resources.
 
         Should be used by a `Context` to manage specific resources.
@@ -53,6 +56,7 @@ class ResourceManager:
             getter: a instance of a Getter that retrives the data.
             creator: a instance of Creator that creates the data.
             updater: a instance of Updater that updated the data.
+            deleter: a instance of Deleter that deletes the data.
         """
         self._model: Type = model
         self._db_model: Type = db_model
@@ -69,8 +73,11 @@ class ResourceManager:
         self.updater: Updater = updater(
             context_data=self._context_data,
             model=self._model,
-            db_model=self._db_model
-        )
+            db_model=self._db_model)
+        self.deleter: Deleter = deleter(
+            context_data=self._context_data,
+            model=self._model,
+            db_model=self._db_model)
 
     def get(self,
             raw_filters: list[ColumnElement] | None = None,
@@ -119,3 +126,14 @@ class ResourceManager:
             Model: the updated model.
         """
         return self.updater.update(models)
+
+    def delete(self, models: list[Model] | Model) -> None:
+        """Delete resources.
+
+        Deletes one or more resources. It uses the defined Deleter to delete
+        the resource in the correct way.
+
+        Args:
+            models: the model or models to update.
+        """
+        self.deleter.delete(models)

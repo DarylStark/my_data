@@ -14,6 +14,7 @@ from .getters import UserGetter
 from .creators import UserCreator
 from .resource_manager import ResourceManager
 from .updaters import UserUpdater
+from .deleters import UserDeleter
 
 
 class Context:
@@ -53,7 +54,8 @@ class Context:
                                      context_data=self.context_data,
                                      getter=UserGetter,
                                      creator=UserCreator,
-                                     updater=UserUpdater)
+                                     updater=UserUpdater,
+                                     deleter=UserDeleter)
 
     def __enter__(self) -> 'Context':
         """Start method for a Pythonic context manager.
