@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # My
 --extra-index-url http://dev.dstark.nl/py/my/ --trusted-host dev.dstark.nl
-my-model==1.0.1-dev
+my-model==1.0.1
 # ---------------------------------------------------------------------
 # Database package
 sqlmodel
