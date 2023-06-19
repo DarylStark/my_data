@@ -9,7 +9,6 @@ from my_model.tag import Tag  # type: ignore
 from my_model.user import User  # type: ignore
 
 from .context_data import ContextData
-from .db_models import DBTag, DBUser
 from .getters import UserGetter
 from .creators import UserCreator
 from .resource_manager import ResourceManager
@@ -45,12 +44,10 @@ class Context:
         self.context_data = ContextData(user=user)
 
         # Objects to manage data objects
-        self.tags = ResourceManager(model=Tag,
-                                    db_model=DBTag,
+        self.tags = ResourceManager(db_model=Tag,
                                     context_data=self.context_data)
 
-        self.users = ResourceManager(model=User,
-                                     db_model=DBUser,
+        self.users = ResourceManager(db_model=User,
                                      context_data=self.context_data,
                                      getter=UserGetter,
                                      creator=UserCreator,

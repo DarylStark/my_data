@@ -7,7 +7,6 @@ from pytest import raises
 
 from database.database import Database
 from my_data.context import Context
-from my_data.db_models import DBTag, DBUser
 from my_data.exceptions import InvalidFilterFieldException
 from my_model.user import User
 from my_model.tag import Tag
@@ -91,7 +90,7 @@ def test_get_users_raw_filters(db: Database, root_user: User) -> None:
     with Context(user=root_user) as local_context:
         # Test specific match
         users = local_context.users.get(
-            raw_filters=[DBUser.username == 'root'])
+            raw_filters=[User.username == 'root'])
         assert users[0].username == 'root'
         assert len(users) == 1
 
@@ -101,7 +100,7 @@ def test_get_users_raw_filters(db: Database, root_user: User) -> None:
 
         # Test specific unmatch
         users = local_context.users.get(
-            raw_filters=[DBUser.username != 'root'])
+            raw_filters=[User.username != 'root'])
         assert users[0].username == 'daryl.stark'
         assert len(users) == 1
 
@@ -110,7 +109,7 @@ def test_get_users_raw_filters(db: Database, root_user: User) -> None:
             assert isinstance(user, User), "Wrong returntype"
 
         # Test bigger then
-        users = local_context.users.get(raw_filters=[DBUser.id > 0])
+        users = local_context.users.get(raw_filters=[User.id > 0])
         assert users[0].username == 'root'
         assert users[1].username == 'daryl.stark'
         assert len(users) == 2
@@ -120,7 +119,7 @@ def test_get_users_raw_filters(db: Database, root_user: User) -> None:
             assert isinstance(user, User), "Wrong returntype"
 
         # Test smaller then
-        users = local_context.users.get(raw_filters=[DBUser.id < 99])
+        users = local_context.users.get(raw_filters=[User.id < 99])
         assert users[0].username == 'root'
         assert users[1].username == 'daryl.stark'
         assert len(users) == 2

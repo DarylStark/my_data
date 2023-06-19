@@ -5,7 +5,7 @@ Getters are used to retrieve data using the specified ContextData-objects.
 """
 from typing import Type
 
-from my_model._model import Model  # type: ignore
+from my_model.model import Model  # type: ignore
 from sqlalchemy.sql.elements import ColumnElement
 
 from .context_data import ContextData
@@ -30,14 +30,12 @@ class ResourceManager:
         updater: a instance of a Updater that updates the data.
         deleter: a instance of Deleter that deletes the data.
 
-        _model: the `my-model` model for the resources.
         _db_model: the DB model for the resources.
         _context_data: the context data in which the resources should be
             managed.
     """
 
     def __init__(self,
-                 model: Type,
                  db_model: Type,
                  context_data: ContextData | None = None,
                  getter: Type = UserSpecificGetter,
@@ -58,25 +56,20 @@ class ResourceManager:
             updater: a instance of Updater that updated the data.
             deleter: a instance of Deleter that deletes the data.
         """
-        self._model: Type = model
         self._db_model: Type = db_model
         self._context_data: ContextData | None = context_data
 
         self.getter: Getter = getter(
             context_data=self._context_data,
-            model=self._model,
             db_model=self._db_model)
         self.creator: Creator = creator(
             context_data=self._context_data,
-            model=self._model,
             db_model=self._db_model)
         self.updater: Updater = updater(
             context_data=self._context_data,
-            model=self._model,
             db_model=self._db_model)
         self.deleter: Deleter = deleter(
             context_data=self._context_data,
-            model=self._model,
             db_model=self._db_model)
 
     def get(self,

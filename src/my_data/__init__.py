@@ -11,6 +11,8 @@ application should use the `configure` function in the `configure` module:
         db_type=DatabaseType.SQLITE_MEMORY
     ))
 
+TODO: Rewrite this documentation
+
 After that, you can optionally create the tables. The tables are defined in the
 `db_models` module of this package. To create the tables, use the
 `create_tables` method:
@@ -25,7 +27,7 @@ user. The `Context` object can be used as a context manager:
     from my_model.user import User
     from datetime import datetime
 
-    normal_user = DBUser(
+    normal_user = User(
         fullname='Daryl Stark',
         username='daryl.stark',
         email='user@example.com',
