@@ -5,15 +5,14 @@ a `ContextData` object, to specify a specific context.
 """
 from types import TracebackType
 
-from my_model.tag import Tag  # type: ignore
-from my_model.user import User  # type: ignore
+from my_model.user_scoped_models import Tag, User  # type: ignore
 
 from .context_data import ContextData
-from .getters import UserGetter
 from .creators import UserCreator
+from .deleters import UserDeleter
+from .getters import UserGetter
 from .resource_manager import ResourceManager
 from .updaters import UserUpdater
-from .deleters import UserDeleter
 
 
 class Context:

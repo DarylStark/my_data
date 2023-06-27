@@ -34,3 +34,16 @@ class CRUDBase:
         """
         self._context_data = context_data
         self._db_model = db_model
+
+    def is_authorized(self) -> bool:
+        """Authorize the current context to execute the command.
+
+        This method authorizes a context for the requested command. If this
+        Base is used for a `Getter`, for example, this method will check if the
+        user in the current context can retrieve the requested resources.
+
+        Raises:
+            NotImplementedError: when running this method from the Base class
+                instead a derived subclass.
+        """
+        raise NotImplementedError('This method cannot be called from the Base')

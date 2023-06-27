@@ -5,8 +5,8 @@ Getters are used to retrieve data using the specified ContextData-objects.
 """
 from typing import Type
 
-from my_model.model import Model  # type: ignore
 from sqlalchemy.sql.elements import ColumnElement
+from sqlmodel import SQLModel
 
 from .context_data import ContextData
 from .creators import Creator, UserSpecificCreator
@@ -73,8 +73,7 @@ class ResourceManager:
             db_model=self._db_model)
 
     def get(self,
-            raw_filters: list[ColumnElement] | None = None,
-            **kwargs: dict) -> list[Model]:
+            filter: list[ColumnElement] | None = None) -> list[SQLModel]:
         """Get all resources for the specified object.
 
         Returns a list of resources for the specified model. It does this using
@@ -82,17 +81,16 @@ class ResourceManager:
         ContextData-object.
 
         Args:
-            raw_filters: raw SQLModel type filters to filter this resource.
-            **kwargs: named filers.
+            filters: SQLModel type filters to filter this resource.
 
         Returns:
             list[Model]: a list with the retrieved resources in models defined
                 in the `my-models` package.
         """
         # Get all DB objects from the database
-        return self.getter.get(raw_filters=raw_filters, **kwargs)
+        return self.getter.get(filter=filter)
 
-    def create(self, models: list[Model] | Model) -> list[Model]:
+    def create(self, models: list[SQLModel] | SQLModel) -> list[SQLModel]:
         """Create resources.
 
         Creates one or multiple resources. It uses the defined creator to
@@ -106,7 +104,7 @@ class ResourceManager:
         """
         return self.creator.create(models)
 
-    def update(self, models: list[Model] | Model) -> list[Model]:
+    def update(self, models: list[SQLModel] | SQLModel) -> list[SQLModel]:
         """Update resources.
 
         Updates one ore more resources. It uses the defined Updater to update
@@ -120,7 +118,7 @@ class ResourceManager:
         """
         return self.updater.update(models)
 
-    def delete(self, models: list[Model] | Model) -> None:
+    def delete(self, models: list[SQLModel] | SQLModel) -> None:
         """Delete resources.
 
         Deletes one or more resources. It uses the defined Deleter to delete

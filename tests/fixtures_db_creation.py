@@ -31,17 +31,27 @@ def db(root_user: User, normal_user: User) -> Database:
     db_connection.create_tables(drop_tables=False)
 
     # Create the users. We use the object of the root user for this
-    with Context(user=root_user) as local_context:
-        local_context.users.create([root_user, normal_user])
-        local_context.tags.create([
-            Tag(title='root_tag_1'),
-            Tag(title='root_tag_2')])
+    # with Context(user=root_user) as local_context:
+    #     local_context.users.create([root_user, normal_user])
+    #     local_context.tags.create([
+    #         Tag(title='root_tag_1'),
+    #         Tag(title='root_tag_2')])
 
-    # Create tags for the normal user
-    with Context(user=normal_user) as local_context:
-        local_context.tags.create([
-            Tag(title='test_daryl_1'),
-            Tag(title='test_daryl_2')])
+    # # Create tags for the normal user
+    # with Context(user=normal_user) as local_context:
+    #     local_context.tags.create([
+    #         Tag(title='test_daryl_1'),
+    #         Tag(title='test_daryl_2')])
+
+    t1 = Tag(title='test_daryl_1', color=None, user=normal_user)
+    t2 = Tag(title='test_daryl_2', color=None, user=normal_user)
+
+    with db_connection.get_session(expire_on_commit=False) as s:
+        s.add(root_user)
+        s.add(normal_user)
+        s.add(t1)
+        s.add(t2)
+        s.commit()
 
     # Return the connection object
     return db_connection

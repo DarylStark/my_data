@@ -4,14 +4,9 @@ This module contains the Updaters for the ResourceManager. It contains the
 base-class and the subclasses.
 """
 
-from my_model.model import Model  # type: ignore
-from my_model.user import UserRole  # type: ignore
 from sqlmodel import SQLModel
 
-from my_data.db_connection import db_connection
-
 from .crud_base import CRUDBase
-from .exceptions import InvalidModelException, PermissionDeniedException
 
 
 class Updater(CRUDBase):
@@ -20,7 +15,7 @@ class Updater(CRUDBase):
     TODO: Fill in
     """
 
-    def update(self, models: list[Model] | Model) -> list[Model]:
+    def update(self, models: list[SQLModel] | SQLModel) -> list[SQLModel]:
         """Update the model in the database.
 
         TODO: Fill in

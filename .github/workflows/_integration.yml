@@ -45,9 +45,6 @@ jobs:
         run: pycodestyle --show-pep8 src/
       - name: PyLint (source code)
         run: pylint src/
-        # TODO: check the return code of PyLint. Not all return codes should
-        # stop the execution of the playbook. Exit codes are described on
-        # https://pylint.readthedocs.io/en/latest/user_guide/usage/run.html
       - name: Flake8 (source code)
         run: flake8 src/
       - name: PyDocStyle (source code)

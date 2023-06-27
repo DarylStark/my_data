@@ -3,8 +3,8 @@
 This module contains the `ContextData` class that can be used to specify the
 context-variables in which a `Context` object should operate.
 """
+from my_model.user_scoped_models import User  # type: ignore
 from pydantic.dataclasses import dataclass
-from my_model.user import User  # type: ignore
 
 
 @dataclass
