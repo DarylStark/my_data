@@ -5,7 +5,7 @@ These objects can be used to test with pre-defined values.
 """
 from datetime import datetime
 
-from my_model.user import User, UserRole
+from my_model.user_scoped_models import User, UserRole
 from pytest import fixture
 
 

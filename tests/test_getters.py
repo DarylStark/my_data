@@ -2,14 +2,11 @@
 
 Module that contains tests for the getters of the ResourceManager.
 """
-from my_model.user import User
+from my_model.user_scoped_models import Tag, User
 from pytest import raises
 
 from database.database import Database
 from my_data.context import Context
-from my_data.exceptions import InvalidFilterFieldException
-from my_model.user import User
-from my_model.tag import Tag
 
 
 def test_get_users_normal(db: Database, normal_user: User) -> None:

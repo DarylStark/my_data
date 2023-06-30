@@ -24,7 +24,7 @@ specifies in what context you want to retrieve data. You can, for example,
 specify a user in this context to get only resources that are relevant for this
 user. The `Context` object can be used as a context manager:
 
-    from my_model.user import User
+    from my_model.user_scoped_models import User
     from datetime import datetime
 
     normal_user = User(

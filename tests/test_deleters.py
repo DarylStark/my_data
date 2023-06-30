@@ -2,8 +2,7 @@
 
 Module that contains tests for the deleters of the ResourceManager.
 """
-from my_model.user import User, UserRole
-from my_model.tag import Tag
+from my_model.user_scoped_models import Tag, User, UserRole
 from pytest import raises
 
 from database.database import Database

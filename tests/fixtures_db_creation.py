@@ -3,13 +3,11 @@
 Contains the fixture to connect to a database and create the needed tables for
 the unit tests.
 """
-from my_model.tag import Tag
-from my_model.user import User
+from my_model.user_scoped_models import Tag, User
 from pytest import fixture
 
 from database.database import Database
 from my_data.configure import DatabaseType, MyDataConfig, configure
-from my_data.context import Context
 
 
 @fixture

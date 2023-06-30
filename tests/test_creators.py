@@ -2,14 +2,12 @@
 
 Module that contains tests for the creators of the ResourceManager.
 """
-from my_model.user import User, UserRole
-from my_model.tag import Tag
+from my_model.user_scoped_models import Tag, User, UserRole
+from pytest import raises
 
 from database.database import Database
 from my_data.context import Context
 from my_data.exceptions import PermissionDeniedException
-
-from pytest import raises
 
 
 def test_create_users_normal(db: Database, normal_user: User) -> None:
