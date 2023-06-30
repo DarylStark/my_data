@@ -76,9 +76,9 @@ def test_get_tags(db: Database, normal_user: User) -> None:
 
 
 def test_get_users_filter(db: Database, root_user: User) -> None:
-    """Test to retrieve users as root with a raw filter.
+    """Test to retrieve users as root with a filter.
 
-    Should retrieve users the context based on specific raw filters.
+    Should retrieve users the context based on specific filters.
 
     Args:
         db: the database connection. Not used right now, but still in there to
@@ -128,10 +128,9 @@ def test_get_users_filter(db: Database, root_user: User) -> None:
 
 
 def test_get_tags_filter(db: Database, normal_user: User) -> None:
-    """Test to retrieve tags for a specific user with a raw filter.
+    """Test to retrieve tags for a specific user with a filter.
 
-    Should retrieve tags for the user in the context based on specific raw
-    filters.
+    Should retrieve tags for the user in the context based on specific filters.
 
     Args:
         db: the database connection. Not used right now, but still in there to
