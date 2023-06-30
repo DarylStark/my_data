@@ -88,7 +88,7 @@ class ResourceManager:
                 in the `my-models` package.
         """
         # Get all DB objects from the database
-        return self.getter.get(filter=filter)
+        return self.getter.get(flt=filter)
 
     def create(self, models: list[SQLModel] | SQLModel) -> list[SQLModel]:
         """Create resources.

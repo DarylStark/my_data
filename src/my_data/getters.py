@@ -26,7 +26,7 @@ class Getter(CRUDBase):
         return []
 
     def get(self,
-            filter: list[ColumnElement] | None = None) -> list[SQLModel]:
+            flt: list[ColumnElement] | None = None) -> list[SQLModel]:
         """Get the resources from the database.
 
         Gets the resources from the database and returns them. The client can
@@ -46,13 +46,13 @@ class Getter(CRUDBase):
             sql_query = select(self._db_model)
 
             # ADd the default filters
-            for flt in self.get_default_filters():
-                sql_query = sql_query.where(flt)
+            for filter_item in self.get_default_filters():
+                sql_query = sql_query.where(filter_item)
 
             # Add the filters from the command line
-            if filter:
-                for flt in filter:
-                    sql_query = sql_query.where(flt)
+            if flt:
+                for filter_item in flt:
+                    sql_query = sql_query.where(filter_item)
 
             resources = session.exec(sql_query).all()
 
