@@ -53,6 +53,10 @@ class Retriever(DataManipulator):
 class UserScopedRetriever(Retriever):
     """TODO: documentation."""
 
+    def get_context_filters(self) -> list[ColumnElement]:
+        """TODO: documentation."""
+        return [self._database_model.user_id == self._context_data.user.id]
+
 
 class UserRetriever(Retriever):
     """TODO: documentation."""
