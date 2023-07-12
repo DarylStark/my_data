@@ -109,7 +109,7 @@ class MyData:
             SQLModel.metadata.drop_all(self.database_engine)
         SQLModel.metadata.create_all(self.database_engine)
 
-    def get_context(self, user: User | None = None) -> Context:
+    def get_context(self, user: User) -> Context:
         """TODO: documentation."""
         self.create_engine()
 

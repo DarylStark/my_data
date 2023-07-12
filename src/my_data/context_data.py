@@ -18,4 +18,4 @@ class ContextData:
         user: a user object representing this context.
     """
 
-    user: User | None
+    user: User
