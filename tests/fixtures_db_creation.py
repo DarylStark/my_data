@@ -1,15 +1,7 @@
-"""Module with DB creation fixtures.
-
-TODO: documentation.
+"""TODO: documentation.
 """
 from pytest import fixture
 from my_data.my_data import MyData
-
-from sqlmodel import Session
-
-# Import scheme
-from my_model.global_models import APIScope
-from my_model.user_scoped_models import User, UserRole, Tag
 
 
 @fixture

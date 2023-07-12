@@ -14,3 +14,7 @@ class DatabaseNotConfiguredException(MyDataException):
 
 class DatabaseConnectionException(MyDataException):
     """Error that happends when the database string is not correct."""
+
+
+class BaseClassCallException(MyDataException):
+    """The Base class is used for a method that should be overridden."""
