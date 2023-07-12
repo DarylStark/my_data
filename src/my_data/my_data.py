@@ -10,8 +10,12 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import SQLModel, create_engine
 
+from my_model.user_scoped_models import User
+
 from .exceptions import (DatabaseConnectionException,
                          DatabaseNotConfiguredException)
+from .context import Context
+from .context_data import ContextData
 
 
 class MyData:
@@ -105,3 +109,16 @@ class MyData:
         if drop_tables:
             SQLModel.metadata.drop_all(self.database_engine)
         SQLModel.metadata.create_all(self.database_engine)
+
+    def get_context(self, user: User | None = None) -> Context:
+        """TODO: documentation."""
+        self.create_engine()
+
+        if not self.database_engine:
+            raise DatabaseNotConfiguredException(
+                'Database is not configured yet')
+
+        return Context(
+            database_engine=self.database_engine,
+            context_data=ContextData(user=user)
+        )
