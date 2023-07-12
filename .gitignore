@@ -15,4 +15,7 @@ env*
 
 # Exclude 'rope' configuration and cache
 .vscode/.ropeproject
+
+# Exclude everything in _archive folders
+_archive/
 #------------------------------------------------------------------------------
