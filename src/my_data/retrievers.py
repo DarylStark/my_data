@@ -6,9 +6,9 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from .data_manipulator import DataManipulator
-from .exceptions import BaseClassCallException
+from .exceptions import BaseClassCallException, WrongDataManipulatorException
 
-from my_model.user_scoped_models import UserRole, User
+from my_model.user_scoped_models import UserRole, User, UserScopedModel
 
 T = TypeVar('T')
 
@@ -55,6 +55,9 @@ class UserScopedRetriever(Retriever):
 
     def get_context_filters(self) -> list[ColumnElement]:
         """TODO: documentation."""
+        if not issubclass(self._database_model, UserScopedModel):
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a UserScopedModel')
         return [self._database_model.user_id == self._context_data.user.id]
 
 
@@ -63,6 +66,11 @@ class UserRetriever(Retriever):
 
     def get_context_filters(self) -> list[ColumnElement]:
         """TODO: documentation."""
+        if self._database_model is not User:
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a User')
         if self._context_data.user.role == UserRole.USER:
             return [User.id == self._context_data.user.id]
+
+        # Root users get no filter
         return []

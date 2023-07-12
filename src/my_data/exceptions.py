@@ -17,4 +17,8 @@ class DatabaseConnectionException(MyDataException):
 
 
 class BaseClassCallException(MyDataException):
-    """The Base class is used for a method that should be overridden."""
+    """The Base class is used for a method that should be overriden."""
+
+
+class WrongDataManipulatorException(MyDataException):
+    """Wrong DataManipulator for specified model."""
