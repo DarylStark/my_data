@@ -6,16 +6,15 @@ the complete project.
 
 from typing import Any
 
+from my_model.user_scoped_models import Tag, User, UserRole
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
-from sqlmodel import SQLModel, create_engine
+from sqlmodel import Session, SQLModel, create_engine
 
-from my_model.user_scoped_models import User
-
-from .exceptions import (DatabaseConnectionException,
-                         DatabaseNotConfiguredException)
 from .context import Context
 from .context_data import ContextData
+from .exceptions import (DatabaseConnectionException,
+                         DatabaseNotConfiguredException)
 
 
 class MyData:
@@ -122,3 +121,48 @@ class MyData:
             database_engine=self.database_engine,
             context_data=ContextData(user=user)
         )
+
+    def create_init_data(self) -> None:
+        """Create initializer data.
+
+        Method to create initialization data in the database. Creates data in
+        the database that can be used to initialize a database or to create a
+        test database. Warning: this method will erase the complete database!
+        """
+        self.create_db_tables(drop_tables=True)
+
+        with Session(self.database_engine) as session:
+            session.add(User(
+                id=1,
+                fullname='root',
+                username='root',
+                email='root@example.com',
+                role=UserRole.ROOT,
+                tags=[
+                    Tag(title='root_tag_1'),
+                    Tag(title='root_tag_2'),
+                    Tag(title='root_tag_3')
+                ]))
+            session.add(User(
+                id=2,
+                fullname='Normal user 1',
+                username='normal.user.1',
+                email='normal_user_1@example.com',
+                role=UserRole.USER,
+                tags=[
+                    Tag(title='normal_user_1_tag_1'),
+                    Tag(title='normal_user_1_tag_2'),
+                    Tag(title='normal_user_1_tag_3')
+                ]))
+            session.add(User(
+                id=3,
+                fullname='Normal user 2',
+                username='normal.user.2',
+                email='normal_user_2@example.com',
+                role=UserRole.USER,
+                tags=[
+                    Tag(title='normal_user_2_tag_1'),
+                    Tag(title='normal_user_2_tag_2'),
+                    Tag(title='normal_user_2_tag_3')
+                ]))
+            session.commit()
