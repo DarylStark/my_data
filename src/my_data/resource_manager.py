@@ -64,8 +64,9 @@ class ResourceManager(Generic[T]):
         """
         return self.creator.create(models)
 
-    def retrieve(self,
-                 flt: list[ColumnElement] | None = None) -> list[T]:
+    def retrieve(
+            self,
+            flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
         """Retrieve resources for the specified object.
 
         Returns a list of resources for the specified model. It does this using

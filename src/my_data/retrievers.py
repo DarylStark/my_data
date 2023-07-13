@@ -28,7 +28,9 @@ class Retriever(DataManipulator):
         """
         raise BaseClassCallException('Method not implemented in baseclass')
 
-    def retrieve(self, flt: list[ColumnElement] | None = None) -> list[T]:
+    def retrieve(
+            self,
+            flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
         """TODO: documentation."""
 
         # Retrieve the resources
@@ -38,6 +40,9 @@ class Retriever(DataManipulator):
             # Filter on the context-based filters
             for filter_item in self.get_context_filters():
                 sql_query = sql_query.where(filter_item)
+
+            if isinstance(flt, ColumnElement):
+                flt = [flt]
 
             # Add the filters from the command line
             if flt:
