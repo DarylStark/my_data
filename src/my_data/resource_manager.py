@@ -1,4 +1,8 @@
-"""TODO: documentation. """
+"""Module with the ResourceManager class.
+
+Contains the ResourceManager class that is used by a Context to create a
+ResourceManager for specific resources.
+"""
 from typing import Generic, Type, TypeVar
 
 from sqlalchemy.future import Engine
@@ -14,7 +18,25 @@ T = TypeVar('T')
 
 
 class ResourceManager(Generic[T]):
-    """TODO: documentation. """
+    """Manager for resources in the database.
+
+    The ResourceManager class is used to manage resources in the database in a
+    CRUD way. This means that this class gets a Creator, Retriever, Updater and
+    Deleter class assigned to create, retrieve, update and delete resources.
+
+    Attributes:
+        _database_model: the SQLmodel model used by this ResourceManager.
+        _database_engine: the SQLalchemy engine to use.
+        _context_data: specifies in what context to execute the methods.
+        retriever: a instance of a subclass of Retriever. This retrieves the
+            actual data.
+        creator: a instance of a subclass of Creator. This creates the actual
+            data.
+        updater: a instance of a subclass of Updater. This updates the actual
+            data.
+        deleter: a instance of a subclass of Deleter. This deletes the actual
+            data.
+    """
 
     def __init__(self,
                  database_model: Type[T],
@@ -24,7 +46,15 @@ class ResourceManager(Generic[T]):
                  retriever: Type = UserScopedRetriever,
                  updater: Type = UserScopedUpdater,
                  deleter: Type = UserScopedDeleter) -> None:
-        """TODO: documentation. """
+        """Set attributes for the object.
+
+        The initiator sets the attributes for the object.
+
+        Args:
+            database_model: the SQLmodel model used by this ResourceManager.
+            database_engine: the SQLalchemy engine to use.
+            context_data: specifies in what context to execute the methods.
+        """
         self._database_model: Type = database_model
         self._database_engine: Engine = database_engine
         self._context_data: ContextData | None = context_data

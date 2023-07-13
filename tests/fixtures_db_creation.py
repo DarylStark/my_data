@@ -1,4 +1,6 @@
-"""TODO: documentation.
+"""Module with fixtures to create a test-database.
+
+Fixture to create a test database for PyTest.
 """
 from pytest import fixture
 from my_data import MyData
@@ -6,7 +8,13 @@ from my_data import MyData
 
 @fixture
 def my_data() -> MyData:
-    """TODO: documentation. """
+    """Create a test database.
+
+    Creates a testdatabase and returns the `MyData` object for it.
+
+    Returns:
+        The created `MyData` instance.
+    """
     # Configure the database
     my_data = MyData()
     my_data.configure(

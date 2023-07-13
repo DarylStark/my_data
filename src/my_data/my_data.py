@@ -110,7 +110,18 @@ class MyData:
         SQLModel.metadata.create_all(self.database_engine)
 
     def get_context(self, user: User) -> Context:
-        """TODO: documentation."""
+        """Get a Context object for this database.
+
+        Method to create a Context object and return it. The returned Context
+        can be used in context manager right away, or as a `normal` object.
+
+        Args:
+            user: the user for the context. Is used in the ContextData object
+                that is created for the Context object.
+
+        Returns:
+            The created Context object.
+        """
         self.create_engine()
 
         if not self.database_engine:
