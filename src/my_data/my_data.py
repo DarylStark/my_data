@@ -55,7 +55,7 @@ class MyData:
         self._database_str = db_connection_str
         self._database_args = database_args
 
-    def create_engine(self, force: bool = True) -> None:
+    def create_engine(self, force: bool = False) -> None:
         """Create the database connection.
 
         Creates the database connection with the given configuration. If the

@@ -1,7 +1,7 @@
 """TODO: documentation.
 """
 from pytest import fixture
-from my_data.my_data import MyData
+from my_data import MyData
 
 
 @fixture
@@ -10,12 +10,9 @@ def my_data() -> MyData:
     # Configure the database
     my_data = MyData()
     my_data.configure(
-        # db_connection_str='sqlite:///:memory:',
-        db_connection_str='sqlite:////home/dast/my.sqlite',
+        db_connection_str='sqlite:///:memory:',
         database_args={
-            'echo': True,
-            'pool_pre_ping': True,
-            'pool_recycle': True,
+            'echo': True
         }
     )
 
