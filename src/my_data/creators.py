@@ -19,7 +19,8 @@ class Creator(DataManipulator):
     """Baseclass for Creators.
 
     The baseclass for creators. The sub creators use this class to make sure
-    creators have the same interface."""
+    creators have the same interface.
+    """
 
     def is_authorized(self) -> bool:
         """Authorize the creation of this data.
@@ -95,8 +96,8 @@ class UserScopedCreator(Creator):
         """Create the UserScoped data.
 
         We override this method from the superclass because we have to make
-        sure the `user_id` is set to the correct value first. If this field
-        is already set to a wrong user_id, we raise an exception.
+        sure the `user_id` is set to the correct value first. If this field is
+        already set to a wrong user_id, we raise an exception.
 
         Args:
             models: the models to create.
