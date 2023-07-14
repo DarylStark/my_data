@@ -124,3 +124,33 @@ def test_tags() -> list[Tag]:
         Tag(title='test_creation_tag_2'),
         Tag(title='test_creation_tag_3')
     ]
+
+
+@fixture
+def test_normal_user_to_delete() -> User:
+    """Model for a USER user to delete.
+
+    Fixture for a user that can be used in the `deletion` tests. This model is
+    for a USER user.
+
+    Returns:
+        A model for a USER testuser.
+    """
+    return User(
+        fullname='Deletion Test Normal User',
+        username='deletion_test_user_user_1',
+        email='deletion_test_user_user_1@example.com',
+        role=UserRole.USER
+    )
+
+
+@fixture
+def test_tag_to_delete() -> Tag:
+    """Model for a tag to delete.
+
+    Fixture for a tag that can be used in the `deleteion` tests.
+
+    Returns:
+        A model for a Tag.
+    """
+    return Tag(title='test_deletion_tag_1')
