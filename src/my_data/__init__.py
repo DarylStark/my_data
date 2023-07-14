@@ -12,7 +12,7 @@ engine to connect to the database.
 An example:
 
 ```python
-from my_data import 
+from my_data import
 
 # Configure the database
 my_data = MyData()
@@ -53,6 +53,6 @@ with my_data.get_context(user=root_user) as c:
 ```
 """
 
-from .my_data import MyData
+from .my_data import MyData  # noqa: F401
 
 __version__ = '0.0.1-dev'

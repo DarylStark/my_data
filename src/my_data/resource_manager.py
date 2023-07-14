@@ -54,6 +54,10 @@ class ResourceManager(Generic[T]):
             database_model: the SQLmodel model used by this ResourceManager.
             database_engine: the SQLalchemy engine to use.
             context_data: specifies in what context to execute the methods.
+            creator: the class for the Creator.
+            retriever: the class for the Retriever.
+            updater: the class for the Updater.
+            deleter: the class for the Deleter.
         """
         self._database_model: Type = database_model
         self._database_engine: Engine = database_engine

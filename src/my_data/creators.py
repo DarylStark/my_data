@@ -5,7 +5,8 @@ in the database. The ResourceManager uses these classes.
 """
 from typing import TypeVar
 
-from my_model.user_scoped_models import User, UserRole, UserScopedModel
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
 from sqlmodel import Session
 
 from .data_manipulator import DataManipulator
@@ -48,13 +49,13 @@ class Creator(DataManipulator):
         Returns:
             A list with the created data models.
         """
-
         if not self.is_authorized():
             raise PermissionDeniedException(
                 'Not allowed to create this kind of object within the ' +
                 'set context.')
 
         # Make sure the `models` are always a list
+        # pylint: disable=duplicate-code
         if not isinstance(models, list):
             models = [models]
 
@@ -109,7 +110,6 @@ class UserScopedCreator(Creator):
         Returns:
             A list with the created data models.
         """
-
         # Make sure the `models` are always a list
         if not isinstance(models, list):
             models = [models]

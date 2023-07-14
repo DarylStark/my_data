@@ -6,13 +6,13 @@ data from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from .data_manipulator import DataManipulator
 from .exceptions import BaseClassCallException, WrongDataManipulatorException
-
-from my_model.user_scoped_models import UserRole, User, UserScopedModel
 
 T = TypeVar('T')
 
@@ -25,7 +25,7 @@ class Retriever(DataManipulator):
     """
 
     def get_context_filters(self) -> list[ColumnElement]:
-        """Default filters for the object.
+        """Set default filters for the object.
 
         Method that returns the default filters for this specific getters. This
         should be used when retrieving resources so only the correct resources
@@ -52,7 +52,6 @@ class Retriever(DataManipulator):
             returned. If only one item is found, a list with one element is
             returned.
         """
-
         # Retrieve the resources
         with Session(self._database_engine) as session:
             sql_query = select(self._database_model)

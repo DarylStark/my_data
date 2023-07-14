@@ -6,7 +6,7 @@ the complete project.
 
 from typing import Any
 
-from my_model.user_scoped_models import Tag, User, UserRole
+from my_model.user_scoped_models import Tag, User, UserRole  # type: ignore
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, create_engine
@@ -118,6 +118,10 @@ class MyData:
         Args:
             user: the user for the context. Is used in the ContextData object
                 that is created for the Context object.
+
+        Raises:
+            DatabaseNotConfiguredException: method is called before configuring
+                the database.
 
         Returns:
             The created Context object.

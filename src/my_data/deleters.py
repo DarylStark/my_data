@@ -5,8 +5,10 @@ from the database. The ResourceManager uses these classes.
 """
 from typing import TypeVar
 
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
 from sqlmodel import Session
-from my_model.user_scoped_models import User, UserScopedModel, UserRole
+
 from my_data.exceptions import (PermissionDeniedException,
                                 WrongDataManipulatorException)
 
@@ -49,9 +51,12 @@ class UserScopedDeleter(Deleter):
     def delete(self, models: list[T] | T) -> None:
         """Delete the UserScoped data.
 
-        We override this method from the superclass because we have to make 
+        We override this method from the superclass because we have to make
         sure the `user_id` is set to the correct value first. If this field is
         set to a wrong user_id, we raise an exception.
+
+        Args:
+            models: the models to delete.
 
         Raises:
             WrongDataManipulatorException: when the model in the instance is
@@ -60,6 +65,7 @@ class UserScopedDeleter(Deleter):
                 set in the instance or when the model has a user_id set that is
                 different then the current user_id in the context.
         """
+        # pylint: disable=duplicate-code
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
@@ -79,7 +85,7 @@ class UserScopedDeleter(Deleter):
                 raise PermissionDeniedException(
                     'This user is not allowed to delete this resource')
 
-        return super().delete(models)
+        super().delete(models)
 
 
 class UserDeleter(Deleter):
@@ -89,12 +95,15 @@ class UserDeleter(Deleter):
     """
 
     def delete(self, models: list[T] | T) -> None:
-        """delete the User data.
+        """Delete the User data.
 
         We override this method from the superclass because we have to make
         sure the model is a User model and that the user in the context is
         allowed to delete this user. A root user can delete ALL users, except
-        his own user
+        his own user.
+
+        Args:
+            models: the models to delete.
 
         Raises:
             WrongDataManipulatorException: when the model in the instance is
@@ -103,6 +112,7 @@ class UserDeleter(Deleter):
                 set in the instance, when the model is for the current user or
                 when the user not allowed to remove this User.
         """
+        # pylint: disable=duplicate-code
         if self._database_model is not User:
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a User')
@@ -126,4 +136,4 @@ class UserDeleter(Deleter):
                 raise PermissionDeniedException(
                     'Cannot remove the current user.')
 
-        return super().delete(models)
+        super().delete(models)

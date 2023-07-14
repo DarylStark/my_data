@@ -4,10 +4,11 @@ This module contains the DataManipulator class. This class is used as baseclass
 for other DataManipulator classes.
 """
 
-from typing import Type, TypeVar, Generic
-from .context_data import ContextData
+from typing import Generic, Type, TypeVar
 
 from sqlalchemy.future import Engine
+
+from .context_data import ContextData
 
 T = TypeVar('T')
 

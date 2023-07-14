@@ -6,7 +6,8 @@ in the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model.user_scoped_models import User, UserScopedModel, UserRole
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
 from sqlmodel import Session
 
 from my_data.exceptions import (PermissionDeniedException,
@@ -36,6 +37,7 @@ class Updater(DataManipulator):
             A list with the updated data models.
         """
         # Make sure the `models` are always a list
+        # pylint: disable=duplicate-code
         if not isinstance(models, list):
             models = [models]
 
@@ -56,9 +58,12 @@ class UserScopedUpdater(Updater):
     def update(self, models: list[T] | T) -> list[T]:
         """Update the UserScoped data.
 
-        We override this method from the superclass because we have to make 
+        We override this method from the superclass because we have to make
         sure the `user_id` is set to the correct value first. If this field is
         set to a wrong user_id, we raise an exception.
+
+        Args:
+            models: the models to update.
 
         Raises:
             WrongDataManipulatorException: when the model in the instance is
@@ -70,6 +75,7 @@ class UserScopedUpdater(Updater):
         Returns:
             A list with the created data models.
         """
+        # pylint: disable=duplicate-code
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
@@ -106,6 +112,9 @@ class UserUpdater(Updater):
         allowed to update this user. A root user can update ALL users, but a
         normal user can only update his own user.
 
+        Args:
+            models: the models to update.
+
         Raises:
             WrongDataManipulatorException: when the model in the instance is
                 not a User.
@@ -116,6 +125,7 @@ class UserUpdater(Updater):
         Returns:
             A list with the created data models.
         """
+        # pylint: disable=duplicate-code
         if self._database_model is not User:
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a User')

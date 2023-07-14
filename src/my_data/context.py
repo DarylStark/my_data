@@ -4,7 +4,7 @@ This module contains the Context class.
 """
 from types import TracebackType
 
-from my_model.user_scoped_models import Tag, User
+from my_model.user_scoped_models import Tag, User  # type: ignore
 from sqlalchemy.future import Engine
 
 from my_data.creators import UserCreator, UserScopedCreator
