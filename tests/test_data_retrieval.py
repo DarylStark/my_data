@@ -3,7 +3,7 @@
 This module contains unit tests that retrieve data from the database.
 """
 
-from my_data.my_data import MyData
+from my_data import MyData
 from my_model.user_scoped_models import User, Tag
 from sqlmodel import or_
 
@@ -21,7 +21,6 @@ def test_data_retrieval_all_users_as_root(
     """
     with my_data.get_context(user=root_user) as context:
         users = context.users.retrieve()
-        assert len(users) == 3
         assert users[0].username == 'root'
         assert users[1].username == 'normal.user.1'
         assert users[2].username == 'normal.user.2'

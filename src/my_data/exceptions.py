@@ -22,3 +22,7 @@ class BaseClassCallException(MyDataException):
 
 class WrongDataManipulatorException(MyDataException):
     """Wrong DataManipulator for specified model."""
+
+
+class PermissionDeniedException(MyDataException):
+    """User tries to do something he is not allowed to do."""

@@ -4,12 +4,11 @@ Cotnains fixtures to mimick users. The `get_user_with_username` method is used
 to get a specific user from the test database, as defined in the `MyData`
 instance from the module `fixtures_db_creation`.
 """
+from my_model.user_scoped_models import User, UserRole, Tag
 from pytest import fixture
-from my_data.my_data import MyData
-
-from my_model.user_scoped_models import User
-
 from sqlmodel import Session, select
+
+from my_data.my_data import MyData
 
 
 def get_user_with_username(my_data: MyData, username: str) -> User | None:
@@ -73,3 +72,55 @@ def normal_user_2(my_data: MyData) -> User | None:
         The User object or None if it isn't found.
     """
     return get_user_with_username(my_data, 'normal.user.2')
+
+
+@fixture
+def test_root_user() -> User:
+    """Model for a ROOT user to create.
+
+    Fixture for a user that can be used in the `creation` tests. This model is
+    for a ROOT user.
+
+    Returns:
+        A model for a ROOT testuser.
+    """
+    return User(
+        fullname='creation_test_root_user_1',
+        username='creation_test_root_user_1',
+        email='creation_test_root_user_1@example.com',
+        role=UserRole.ROOT
+    )
+
+
+@fixture
+def test_normal_user() -> User:
+    """Model for a USER user to create.
+
+    Fixture for a user that can be used in the `creation` tests. This model is
+    for a USER user.
+
+    Returns:
+        A model for a USER testuser.
+    """
+    return User(
+        fullname='creation_test_user_user_1',
+        username='creation_test_user_user_1',
+        email='creation_test_user_user_1@example.com',
+        role=UserRole.USER
+    )
+
+
+@fixture
+def test_tags() -> list[Tag]:
+    """Model for a tag to create.
+
+    Fixture for a list of tags that can be used in the `creation` tests.
+
+    Returns:
+        A list with tags to create.
+    """
+    return [
+        Tag(title='test_creation_tag_1'),
+        Tag(title='test_creation_tag_2'),
+        Tag(title='test_creation_tag_3')
+    ]
