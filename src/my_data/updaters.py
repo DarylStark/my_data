@@ -87,7 +87,7 @@ class UserScopedUpdater(Updater):
 
             if model.user_id != self._context_data.user.id:
                 raise PermissionDeniedException(
-                    f'This user is not allowed to edit this resource')
+                    'This user is not allowed to edit this resource')
 
         return super().update(models)
 
@@ -124,6 +124,6 @@ class UserUpdater(Updater):
             if self._context_data.user.role == UserRole.USER:
                 if model.id != self._context_data.user.id:
                     raise PermissionDeniedException(
-                        f'User is not allowed to edit this user.')
+                        'User is not allowed to edit this user.')
 
         return super().update(models)
