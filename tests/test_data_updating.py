@@ -1,7 +1,7 @@
 """Unit tests to update data in the database.
 
 This module contains unit tests that update data in the database. After the
-update, is checks if the data has been updated.
+update, it checks if the data has been updated.
 """
 from my_model.user_scoped_models import User, Tag
 from pytest import raises
@@ -15,7 +15,7 @@ def test_data_updating_own_user_as_root(
         root_user: User) -> None:
     """Test updating the own user as a ROOT user.
 
-    Updates the ownuser as a ROOT user. Should always be succesfull since the
+    Updates the own user as a ROOT user. Should always be succesfull since the
     root user can update all users.
 
     Args:
