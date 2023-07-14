@@ -22,14 +22,14 @@ def test_data_creation_users_as_root(
     Creates a user as a root user.
 
     Args:
-        my_data: a instance to a MyData object.
+        my_data: a instance of a MyData object.
         root_user: the root user for the context.
         test_root_user: a ROOT user to create.
         test_normal_user: a USER user to create.
     """
     with my_data.get_context(user=root_user) as context:
         # Create the users.
-        cu = context.users.create([test_root_user, test_normal_user])
+        context.users.create([test_root_user, test_normal_user])
 
         # Check if they exist
         created_users = context.users.retrieve(
@@ -50,7 +50,7 @@ def test_data_creation_users_as_normal_user_1(
     allowed to create users.
 
     Args:
-        my_data: a instance to a MyData object.
+        my_data: a instance of a MyData object.
         normal_user_1: the first normal user.
         test_normal_user: a USER user to create.
     """
@@ -69,7 +69,7 @@ def test_data_creation_users_as_normal_user_2(
     allowed to create users.
 
     Args:
-        my_data: a instance to a MyData object.
+        my_data: a instance of a MyData object.
         normal_user_2: the first normal user.
         test_normal_user: a USER user to create.
     """
@@ -87,7 +87,7 @@ def test_data_creation_tags_as_root(
     Creates a tag as a root user.
 
     Args:
-        my_data: a instance to a MyData object.
+        my_data: a instance of a MyData object.
         root_user: the root user for the context.
         test_tags: a list with tags to add.
     """
@@ -113,7 +113,7 @@ def test_data_creation_tag_as_normal_user_1(
     Creates a tag as a normal user.
 
     Args:
-        my_data: a instance to a MyData object.
+        my_data: a instance of a MyData object.
         normal_user_1: the first normal user.
         test_tags: a list with tags to add.
     """
@@ -139,7 +139,7 @@ def test_data_creation_tag_as_normal_user_2(
     Creates a tag as a normal user.
 
     Args:
-        my_data: a instance to a MyData object.
+        my_data: a instance of a MyData object.
         normal_user_2: the first normal user.
         test_tags: a list with tags to add.
     """
@@ -166,7 +166,7 @@ def test_data_creation_tag_as_normal_user_1_wrong_user_id(
     PermissionDeniedException exception.
 
     Args:
-        my_data: a instance to a MyData object.
+        my_data: a instance of a MyData object.
         normal_user_2: the first normal user.
         test_tags: a list with tags to add.
     """
