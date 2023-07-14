@@ -29,7 +29,7 @@ def test_data_creation_users_as_root(
     """
     with my_data.get_context(user=root_user) as context:
         # Create the users.
-        context.users.create([test_root_user, test_normal_user])
+        cu = context.users.create([test_root_user, test_normal_user])
 
         # Check if they exist
         created_users = context.users.retrieve(
@@ -81,7 +81,7 @@ def test_data_creation_users_as_normal_user_2(
 def test_data_creation_tags_as_root(
         my_data: MyData,
         root_user: User,
-        test_tags) -> None:
+        test_tags: list[Tag]) -> None:
     """Test Tag creation as a ROOT user.
 
     Creates a tag as a root user.
@@ -101,13 +101,13 @@ def test_data_creation_tags_as_root(
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
         assert created_tags[1].title == 'test_creation_tag_2'
-        assert created_tags[1].title == 'test_creation_tag_3'
+        assert created_tags[2].title == 'test_creation_tag_3'
 
 
 def test_data_creation_tag_as_normal_user_1(
         my_data: MyData,
         normal_user_1: User,
-        test_tags) -> None:
+        test_tags: list[Tag]) -> None:
     """Test User creation as a USER user.
 
     Creates a tag as a normal user.
@@ -127,13 +127,13 @@ def test_data_creation_tag_as_normal_user_1(
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
         assert created_tags[1].title == 'test_creation_tag_2'
-        assert created_tags[1].title == 'test_creation_tag_3'
+        assert created_tags[2].title == 'test_creation_tag_3'
 
 
 def test_data_creation_tag_as_normal_user_2(
         my_data: MyData,
         normal_user_2: User,
-        test_tags) -> None:
+        test_tags: list[Tag]) -> None:
     """Test User creation as a USER user.
 
     Creates a tag as a normal user.
@@ -143,7 +143,7 @@ def test_data_creation_tag_as_normal_user_2(
         normal_user_2: the first normal user.
         test_tags: a list with tags to add.
     """
-    with my_data.get_context(user=normal_user_1) as context:
+    with my_data.get_context(user=normal_user_2) as context:
         context.tags.create(test_tags)
 
         # Check if they exist
@@ -153,4 +153,26 @@ def test_data_creation_tag_as_normal_user_2(
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
         assert created_tags[1].title == 'test_creation_tag_2'
-        assert created_tags[1].title == 'test_creation_tag_3'
+        assert created_tags[2].title == 'test_creation_tag_3'
+
+
+def test_data_creation_tag_as_normal_user_1_wrong_user_id(
+        my_data: MyData,
+        normal_user_2: User,
+        test_tags: list[Tag]) -> None:
+    """Test User creation as a USER user.
+
+    Creates a tag as a normal user with a wrong User ID. Should raise an
+    PermissionDeniedException exception.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the first normal user.
+        test_tags: a list with tags to add.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        with raises(PermissionDeniedException):
+            # Set the wrong user IDs
+            for tag in test_tags:
+                tag.user_id = 1
+            context.tags.create(test_tags)

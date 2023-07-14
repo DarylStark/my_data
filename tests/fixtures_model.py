@@ -85,7 +85,7 @@ def test_root_user() -> User:
         A model for a ROOT testuser.
     """
     return User(
-        fullname='creation_test_root_user_1',
+        fullname='Creation Test Root User',
         username='creation_test_root_user_1',
         email='creation_test_root_user_1@example.com',
         role=UserRole.ROOT
@@ -103,7 +103,7 @@ def test_normal_user() -> User:
         A model for a USER testuser.
     """
     return User(
-        fullname='creation_test_user_user_1',
+        fullname='Creation Test Normal User',
         username='creation_test_user_user_1',
         email='creation_test_user_user_1@example.com',
         role=UserRole.USER
