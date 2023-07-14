@@ -65,7 +65,7 @@ def test_data_updating_other_user_as_root(
         user = context.users.retrieve(User.username == 'normal.user.1')[0]
 
         # Check the password
-        assert user.verify_credentials('root', 'test')
+        assert user.verify_credentials('normal.user.1', 'test')
 
 
 def test_data_updating_own_user_as_normal_user_1(
@@ -96,11 +96,12 @@ def test_data_updating_own_user_as_normal_user_1(
             User.username == normal_user_1.username)[0]
 
         # Check the password
-        assert user.verify_credentials('root', 'test')
+        assert user.verify_credentials(normal_user_1.username, 'test')
 
 
 def test_data_updating_other_user_as_normal_user_1(
         my_data: MyData,
+        root_user: User,
         normal_user_1: User) -> None:
     """Test updating a other user as a USER user.
 
@@ -109,12 +110,16 @@ def test_data_updating_other_user_as_normal_user_1(
 
     Args:
         my_data: a instance of a MyData object.
+        root_user: the root user for the context.
         normal_user_1: the first normal user.
     """
-    with my_data.get_context(user=normal_user_1) as context:
-        # Get the root user
-        user = context.users.retrieve(User.username == 'rppt')[0]
 
+    with my_data.get_context(user=root_user) as context:
+        # Get the root user. We have to do this in a context with the root user
+        # as the user, otherwide we won't get the user account.
+        user = context.users.retrieve(User.username == 'root')[0]
+
+    with my_data.get_context(user=normal_user_1) as context:
         # Update the password
         user.set_password('test')
 
