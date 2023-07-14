@@ -104,14 +104,14 @@ def test_data_deleting_tags_as_root(
 
         # Get the tag
         tags = context.tags.retrieve(
-            User.username == 'test_deletion_tag_1')
+            Tag.title == 'test_deletion_tag_1')
 
         # Delete the user
         context.tags.delete(tags)
 
         # Check if the user is deleted
         tags = context.tags.retrieve(
-            User.username == 'test_deletion_tag_1')
+            Tag.title == 'test_deletion_tag_1')
         assert len(tags) == 0
 
 
@@ -134,12 +134,12 @@ def test_data_deleting_tags_as_normal_user(
 
         # Get the tag
         tags = context.tags.retrieve(
-            User.username == 'test_deletion_tag_1')
+            Tag.title == 'test_deletion_tag_1')
 
         # Delete the user
         context.tags.delete(tags)
 
         # Check if the user is deleted
         tags = context.tags.retrieve(
-            User.username == 'test_deletion_tag_1')
+            Tag.title == 'test_deletion_tag_1')
         assert len(tags) == 0
