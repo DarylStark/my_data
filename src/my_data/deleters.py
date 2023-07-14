@@ -1,20 +1,129 @@
-"""TODO: documentation."""
+"""Module with Deleters.
 
-from typing import Type
+This module contains the deleter classes. These classes are used to delete data
+from the database. The ResourceManager uses these classes.
+"""
+from typing import TypeVar
+
+from sqlmodel import Session
+from my_model.user_scoped_models import User, UserScopedModel, UserRole
+from my_data.exceptions import (PermissionDeniedException,
+                                WrongDataManipulatorException)
 
 from .data_manipulator import DataManipulator
 
+T = TypeVar('T')
+
 
 class Deleter(DataManipulator):
-    """TODO: documentation."""
+    """Baseclass for Deleters.
 
-    def delete(self, models: list | Type) -> list:
-        pass
+    The baseclass for deleters. The sub deleters use this class to make sure
+    deleters have the same interface.
+    """
+
+    def delete(self, models: list[T] | T) -> None:
+        """Delete data.
+
+        The method to delete data from the database.
+
+        Args:
+            models: the models to delete.
+        """
+        if not isinstance(models, list):
+            models = [models]
+
+        # Delete the resources
+        with Session(self._database_engine) as session:
+            for model in models:
+                session.delete(model)
+            session.commit()
 
 
 class UserScopedDeleter(Deleter):
-    """TODO: documentation."""
+    """Deleter for UserScoped models.
+
+    This deleter should be used for UserScoped models, like Tags and APITokens.
+    """
+
+    def delete(self, models: list[T] | T) -> None:
+        """Delete the UserScoped data.
+
+        We override this method from the superclass because we have to make 
+        sure the `user_id` is set to the correct value first. If this field is
+        set to a wrong user_id, we raise an exception.
+
+        Raises:
+            WrongDataManipulatorException: when the model in the instance is
+                not a UserScopedModel.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance or when the model has a user_id set that is
+                different then the current user_id in the context.
+        """
+        if not issubclass(self._database_model, UserScopedModel):
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a UserScopedModel')
+
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        # Check for all models are a UserScoped model and if the `user_id`
+        # field is set to the user_id of the user in the context.
+        for model in models:
+            if not isinstance(model, self._database_model):
+                raise PermissionDeniedException(
+                    f'Expected "{self._database_model}", got "{type(model)}".')
+
+            if model.user_id != self._context_data.user.id:
+                raise PermissionDeniedException(
+                    'This user is not allowed to delete this resource')
+
+        return super().delete(models)
 
 
 class UserDeleter(Deleter):
-    """TODO: documentation."""
+    """Deleter for User models.
+
+    This deleter should be used to delete Users.
+    """
+
+    def delete(self, models: list[T] | T) -> None:
+        """delete the User data.
+
+        We override this method from the superclass because we have to make
+        sure the model is a User model and that the user in the context is
+        allowed to delete this user. A root user can delete ALL users, except
+        his own user
+
+        Raises:
+            WrongDataManipulatorException: when the model in the instance is
+                not a User.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance, when the model is for the current user or
+                when the user not allowed to remove this User.
+        """
+        if self._database_model is not User:
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a User')
+
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        if self._context_data.user.role == UserRole.USER:
+            raise PermissionDeniedException(
+                'A normal user cannot remove users')
+
+        # Check for all models are a User model and if the `id` field is the
+        # same as the current user if this user is a USER user.
+        for model in models:
+            if not isinstance(model, self._database_model):
+                raise PermissionDeniedException(
+                    f'Expected "{self._database_model}", got "{type(model)}".')
+
+            if self._context_data.user.id == model.id:
+                raise PermissionDeniedException(
+                    'Cannot remove the current user.')
+
+        return super().delete(models)
