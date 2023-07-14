@@ -1,105 +1,90 @@
-"""Module for ResourceManagers.
+"""Module with the ResourceManager class.
 
-This module contains the ResourceManager class and classes for Getters. The
-Getters are used to retrieve data using the specified ContextData-objects.
+Contains the ResourceManager class that is used by a Context to create a
+ResourceManager for specific resources.
 """
-from typing import Type
+from typing import Generic, Type, TypeVar
 
-from my_model._model import Model  # type: ignore
+from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 
 from .context_data import ContextData
-from .creators import Creator, UserSpecificCreator
-from .getters import Getter, UserSpecificGetter
-from .updaters import Updater, UserSpecificUpdater
-from .deleters import Deleter, UserSpecificDeleter
+from .creators import Creator, UserScopedCreator
+from .deleters import Deleter, UserScopedDeleter
+from .retrievers import Retriever, UserScopedRetriever
+from .updaters import Updater, UserScopedUpdater
+
+T = TypeVar('T')
 
 
-class ResourceManager:
-    """Manages resources in the database.
+class ResourceManager(Generic[T]):
+    """Manager for resources in the database.
 
-    A resource manager manages resources in the database. It does this by
-    setting the needed my-model models and the DB models defined in this
-    package (in the `db_models` module). It contains a instance of a
-    Getter class that is configurable. This way, the data that is retrieved can
-    be filtered in the correct way.
+    The ResourceManager class is used to manage resources in the database in a
+    CRUD way. This means that this class gets a Creator, Retriever, Updater and
+    Deleter class assigned to create, retrieve, update and delete resources.
 
     Attributes:
-        getter: a instance of a Getter that retrives the data.
-        creator: a instance of a Creator that creates the data.
-        updater: a instance of a Updater that updates the data.
-        deleter: a instance of Deleter that deletes the data.
-
-        _model: the `my-model` model for the resources.
-        _db_model: the DB model for the resources.
-        _context_data: the context data in which the resources should be
-            managed.
+        _database_model: the SQLmodel model used by this ResourceManager.
+        _database_engine: the SQLalchemy engine to use.
+        _context_data: specifies in what context to execute the methods.
+        retriever: a instance of a subclass of Retriever. This retrieves the
+            actual data.
+        creator: a instance of a subclass of Creator. This creates the actual
+            data.
+        updater: a instance of a subclass of Updater. This updates the actual
+            data.
+        deleter: a instance of a subclass of Deleter. This deletes the actual
+            data.
     """
 
     def __init__(self,
-                 model: Type,
-                 db_model: Type,
+                 database_model: Type[T],
+                 database_engine: Engine,
                  context_data: ContextData | None = None,
-                 getter: Type = UserSpecificGetter,
-                 creator: Type = UserSpecificCreator,
-                 updater: Type = UserSpecificUpdater,
-                 deleter: Type = UserSpecificDeleter) -> None:
-        """Manage database resources.
+                 creator: Type = UserScopedCreator,
+                 retriever: Type = UserScopedRetriever,
+                 updater: Type = UserScopedUpdater,
+                 deleter: Type = UserScopedDeleter) -> None:
+        """Set attributes for the object.
 
-        Should be used by a `Context` to manage specific resources.
+        The initiator sets the attributes for the object.
 
         Args:
-            model: the `my-model` model for the resources.
-            db_model: the DB model for the resources.
-            context_data: the context data in which the resources should be
-                managed.
-            getter: a instance of a Getter that retrives the data.
-            creator: a instance of Creator that creates the data.
-            updater: a instance of Updater that updated the data.
-            deleter: a instance of Deleter that deletes the data.
+            database_model: the SQLmodel model used by this ResourceManager.
+            database_engine: the SQLalchemy engine to use.
+            context_data: specifies in what context to execute the methods.
+            creator: the class for the Creator.
+            retriever: the class for the Retriever.
+            updater: the class for the Updater.
+            deleter: the class for the Deleter.
         """
-        self._model: Type = model
-        self._db_model: Type = db_model
+        self._database_model: Type = database_model
+        self._database_engine: Engine = database_engine
         self._context_data: ContextData | None = context_data
 
-        self.getter: Getter = getter(
-            context_data=self._context_data,
-            model=self._model,
-            db_model=self._db_model)
+        self.retriever: Retriever = retriever(
+            database_model=database_model,
+            database_engine=database_engine,
+            context_data=context_data
+        )
         self.creator: Creator = creator(
-            context_data=self._context_data,
-            model=self._model,
-            db_model=self._db_model)
+            database_model=database_model,
+            database_engine=database_engine,
+            context_data=context_data
+        )
         self.updater: Updater = updater(
-            context_data=self._context_data,
-            model=self._model,
-            db_model=self._db_model)
+            database_model=database_model,
+            database_engine=database_engine,
+            context_data=context_data
+        )
         self.deleter: Deleter = deleter(
-            context_data=self._context_data,
-            model=self._model,
-            db_model=self._db_model)
+            database_model=database_model,
+            database_engine=database_engine,
+            context_data=context_data
+        )
 
-    def get(self,
-            raw_filters: list[ColumnElement] | None = None,
-            **kwargs: dict) -> list[Model]:
-        """Get all resources for the specified object.
-
-        Returns a list of resources for the specified model. It does this using
-        the defined getter to make sure it partains to the specified
-        ContextData-object.
-
-        Args:
-            raw_filters: raw SQLModel type filters to filter this resource.
-            **kwargs: named filers.
-
-        Returns:
-            list[Model]: a list with the retrieved resources in models defined
-                in the `my-models` package.
-        """
-        # Get all DB objects from the database
-        return self.getter.get(raw_filters=raw_filters, **kwargs)
-
-    def create(self, models: list[Model] | Model) -> list[Model]:
+    def create(self, models: list[T] | T) -> list[T]:
         """Create resources.
 
         Creates one or multiple resources. It uses the defined creator to
@@ -113,7 +98,26 @@ class ResourceManager:
         """
         return self.creator.create(models)
 
-    def update(self, models: list[Model] | Model) -> list[Model]:
+    def retrieve(
+            self,
+            flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
+        """Retrieve resources for the specified object.
+
+        Returns a list of resources for the specified model. It does this using
+        the defined retriever to make sure it partains to the specified
+        ContextData-object.
+
+        Args:
+            flt: SQLModel type filters to filter this resource.
+
+        Returns:
+            list[Model]: a list with the retrieved resources in models defined
+                in the `my-models` package.
+        """
+        # Get all DB objects from the database
+        return self.retriever.retrieve(flt=flt)
+
+    def update(self, models: list[T] | T) -> list[T]:
         """Update resources.
 
         Updates one ore more resources. It uses the defined Updater to update
@@ -127,7 +131,7 @@ class ResourceManager:
         """
         return self.updater.update(models)
 
-    def delete(self, models: list[Model] | Model) -> None:
+    def delete(self, models: list[T] | T) -> None:
         """Delete resources.
 
         Deletes one or more resources. It uses the defined Deleter to delete

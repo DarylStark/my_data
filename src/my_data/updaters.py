@@ -1,147 +1,149 @@
-"""The updaters for the ResourceMAaager.
+"""Module with Updaters.
 
-This module contains the Updaters for the ResourceManager. It contains the
-base-class and the subclasses.
+This module contains the updator classes. These classes are used to update data
+in the database. The ResourceManager uses these classes.
 """
 
-from my_model._model import Model  # type: ignore
-from my_model.user import UserRole  # type: ignore
-from sqlmodel import SQLModel
+from typing import TypeVar
 
-from my_data.db_connection import db_connection
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
+from sqlmodel import Session
 
-from .crud_base import CRUDBase
-from .exceptions import InvalidModelException, PermissionDeniedException
+from my_data.exceptions import (PermissionDeniedException,
+                                WrongDataManipulatorException)
+
+from .data_manipulator import DataManipulator
+
+T = TypeVar('T')
 
 
-class Updater(CRUDBase):
-    """Base Updater class.
+class Updater(DataManipulator):
+    """Baseclass for Updaters.
 
-    The base Updater class should be used as the base class for specific
-    Updater-classes. The base class defines the interface for all
-    Updater-classes.
+    The baseclass for updaters. The sub updaters use this class to make sure
+    updaters have the same interface.
     """
 
-    def get_db_model(self, data: Model) -> SQLModel:
-        """Get the `db_model` from the given model.
+    def update(self, models: list[T] | T) -> list[T]:
+        """Update data.
 
-        Returns the (hidden) DB model in the given model. This DB model gets
-        hidden in there when retrieving the data. We need the DB model to
-        update the database. This method also updates the DB model with the
-        values from the given model.
-
-        Args:
-            data: the `my-model` instance.
-
-        Returns:
-            The DB model with the updated fields.
-
-        Raises:
-            InvalidModelException: when the given model has no hidden DB model.
-        """
-        # Get the connected DB model
-        model: SQLModel = data.get_hidden('db_model')
-        if model:
-            # Update the fields
-            for fieldname, _ in data.__fields__.items():
-                setattr(model, fieldname, getattr(data, fieldname))
-
-            # Return the new model
-            return model
-
-        # No connected DB model
-        raise InvalidModelException(
-            'The model is not retrieved via the `my-data` package.')
-
-    def update(self, models: list[Model] | Model) -> list[Model]:
-        """Update the model in the database.
-
-        Updates the model in the database. This method executes the queries in
-        the database to update the row.
+        The method to update data in the database.
 
         Args:
             models: the models to update.
 
         Returns:
-            Model: the updated models.
+            A list with the updated data models.
         """
+        # Make sure the `models` are always a list
+        # pylint: disable=duplicate-code
         if not isinstance(models, list):
             models = [models]
 
-        # Convert them to the DB models
-        db_models = [self.get_db_model(model) for model in models]
-
-        # Update them in the database
-        with db_connection.get_session() as session:
-            for model in db_models:
+        # Update the resources
+        with Session(self._database_engine, expire_on_commit=False) as session:
+            for model in models:
                 session.add(model)
             session.commit()
-
-        # Return the new models
         return models
 
 
-class UserSpecificUpdater(Updater):
-    """Updater for user specific resources.
+class UserScopedUpdater(Updater):
+    """Updater for UserScoped models.
 
-    This updater should be used for resources that are bound to specific users,
-    like tags and API tokens.
+    This updater should be used for UserScoped models, like Tags and APItokens.
     """
 
-    def get_db_model(self, data: Model) -> SQLModel:
-        """Get the `db_model` from the given model.
+    def update(self, models: list[T] | T) -> list[T]:
+        """Update the UserScoped data.
 
-        Retrieves the DB model from the given model using the `get_db_model`
-        method in the base class. It then uses the `user_id` field in the model
-        to check if this user is allowed to change this resource. If the user
-        is not allowed to change this resouce, a exception is raieed.
+        We override this method from the superclass because we have to make
+        sure the `user_id` is set to the correct value first. If this field is
+        set to a wrong user_id, we raise an exception.
 
         Args:
-            data: the `my-model` instance.
-
-        Returns:
-            The DB model with the updated fields.
+            models: the models to update.
 
         Raises:
-            PermissionDeniedException: when the user in the context has no
-                permissions to update this resource.
+            WrongDataManipulatorException: when the model in the instance is
+                not a UserScopedModel.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance or when the model has a user_id set that is
+                different then the current user_id in the context.
+
+        Returns:
+            A list with the created data models.
         """
-        model = super().get_db_model(data)
-        if model.user_id == self._context_data.user.id:
-            return model
-        raise PermissionDeniedException(
-            f'User "{self._context_data.user.username}" is not allowed to ' +
-            'update reousrce ID "{model.id}"')
+        # pylint: disable=duplicate-code
+        if not issubclass(self._database_model, UserScopedModel):
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a UserScopedModel')
+
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        # Check for all models are a UserScoped model and if the `user_id`
+        # field is set to the user_id of the user in the context.
+        for model in models:
+            if not isinstance(model, self._database_model):
+                raise PermissionDeniedException(
+                    f'Expected "{self._database_model}", got "{type(model)}".')
+
+            if model.user_id != self._context_data.user.id:
+                raise PermissionDeniedException(
+                    'This user is not allowed to edit this resource')
+
+        return super().update(models)
 
 
 class UserUpdater(Updater):
-    """Updater for user resources.
+    """Updater for Users.
 
-    This updater should be used to update users.
+    This updaters should be used to update Users.
     """
 
-    def get_db_model(self, data: Model) -> SQLModel:
-        """Get the `db_model` from the given model.
+    def update(self, models: list[T] | T) -> list[T]:
+        """Update the User data.
 
-        Checks if this user is allowed to change the user resource. A ROOT user
-        can change all user resources. Other users can only change their own
-        user resource.
+        We override this method from the superclass because we have to make
+        sure the model is a User model and that the user in the context is
+        allowed to update this user. A root user can update ALL users, but a
+        normal user can only update his own user.
 
         Args:
-            data: the `my-model` instance.
-
-        Returns:
-            The DB model with the updated fields.
+            models: the models to update.
 
         Raises:
-            PermissionDeniedException: when the user in the context has no
-                permissions to update this resource.
+            WrongDataManipulatorException: when the model in the instance is
+                not a User.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance or when the model has a id set that is
+                different then the current user id in the context.
+
+        Returns:
+            A list with the created data models.
         """
-        model = super().get_db_model(data)
-        if self._context_data.user.role == UserRole.ROOT or (
-            model.id == self._context_data.user.id
-        ):
-            return model
-        raise PermissionDeniedException(
-            f'User "{self._context_data.user.username}" is not allowed to ' +
-            'update user ID "{model.id}"')
+        # pylint: disable=duplicate-code
+        if self._database_model is not User:
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a User')
+
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        # Check for all models are a User model and if the `id` field is the
+        # same as the current user if this user is a USER user.
+        for model in models:
+            if not isinstance(model, self._database_model):
+                raise PermissionDeniedException(
+                    f'Expected "{self._database_model}", got "{type(model)}".')
+
+            if self._context_data.user.role == UserRole.USER:
+                if model.id != self._context_data.user.id:
+                    raise PermissionDeniedException(
+                        'User is not allowed to edit this user.')
+
+        return super().update(models)

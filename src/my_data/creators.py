@@ -1,159 +1,154 @@
-"""The creators for the ResourceManager.
+"""Module with Creators.
 
-This module contains the Creators for the ResourceManager. It contains the
-base-class and the subclasses.
+This module contains the creator classes. These classes are used to create data
+in the database. The ResourceManager uses these classes.
 """
-from my_model._model import Model  # type: ignore
-from my_model.user import User, UserRole  # type: ignore
-from sqlmodel import SQLModel
+from typing import TypeVar
 
-from .crud_base import CRUDBase
-from .db_connection import db_connection
-from .db_models import DBUser
-from .exceptions import PermissionDeniedException, WrongModelException
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
+from sqlmodel import Session
+
+from .data_manipulator import DataManipulator
+from .exceptions import (BaseClassCallException, PermissionDeniedException,
+                         WrongDataManipulatorException)
+
+T = TypeVar('T')
 
 
-class Creator(CRUDBase):
-    """Base Creator class.
+class Creator(DataManipulator):
+    """Baseclass for Creators.
 
-    The base Creator class should be used as the base class for specific
-    Creator-classes. The base class defines the interface for all
-    Creator-classes.
+    The baseclass for creators. The sub creators use this class to make sure
+    creators have the same interface.
     """
 
-    def get_updated_model(self, data: Model) -> SQLModel:
-        """Convert the `my-model` model to a DB model and set needed values.
+    def is_authorized(self) -> bool:
+        """Authorize the creation of this data.
 
-        Returns a DB model of the given `my-model` Model with the correct
-        value set. It can, for instance, set the `user_id` for resources that
-        are specific to users.
-
-        Args:
-            data: the `my-model` instance.
+        Method that checks if the current context is allowd to create this type
+        of model.
 
         Raises:
-            NotImplementedError: raised when this method is used for the base
-                class instead of a subclass.
+            BaseClassCallException: BaseClass method is used.
         """
-        raise NotImplementedError(
-            'Method `get-updated-model` is not implemented for this type')
+        raise BaseClassCallException('Method not implemented in baseclass')
 
-    def create(self, models: Model | list[Model]) -> list[Model]:
-        """Create the data.
+    def create(self, models: list[T] | T) -> list[T]:
+        """Create data.
 
-        Converts the `data` in `my-model` into a DB Models and adds them to the
-        database.
+        The method to create data in the database.
 
         Args:
-            models: the `my-model` instances. Can be one, or a list of multiple
-                resources.
+            models: the models to create.
+
+        Raises:
+            PermissionDeniedException: when the user is not authorized to
+                create this resource.
 
         Returns:
-            Model: the new model.
-
-        Raises:
-            WrongModelException: when the given model is not the same as the
-                set model in the object.
+            A list with the created data models.
         """
-        # Make sure the data is a list. We need this later in the list
-        # comprehension.
+        if not self.is_authorized():
+            raise PermissionDeniedException(
+                'Not allowed to create this kind of object within the ' +
+                'set context.')
+
+        # Make sure the `models` are always a list
+        # pylint: disable=duplicate-code
         if not isinstance(models, list):
             models = [models]
 
-        # Check if they are all of the correct type. We could this with a smart
-        # list comprehension to create a list of boolean values from
-        # `isinstance` and then use `all()` to check if they are all of the
-        # correct type, but that would be inefficient with bigger lists.
-        # Instead, we loop over them and stop as soon as we find one that isn't
-        # the correct model.
-        for model in models:
-            if not isinstance(model, self._model):
-                raise WrongModelException(
-                    f'Expected model "{self._model}", not "{type(model)}"')
-
-        # Convert all Models to DBModels.
-        db_models = [self.get_updated_model(model) for model in models]
-
-        with db_connection.get_session(expire_on_commit=False) as session:
-            # Add the resource to the DB
-            for model in db_models:
+        # Add the resources
+        with Session(self._database_engine, expire_on_commit=False) as session:
+            for model in models:
                 session.add(model)
             session.commit()
-
-        # Update the original models
-        new_models = [self._model(**db_model.dict())
-                      for db_model in db_models]
-
-        # Return the new models
-        return new_models
+        return models
 
 
-class UserSpecificCreator(Creator):
-    """Creator for user specific resources.
+class UserScopedCreator(Creator):
+    """Creator for UserScoped models.
 
-    This creator should be used for resources that are bound to specific users,
-    like tags and API tokens.
+    This creator should be used for UserScoped models, like Tags and APItokens.
     """
 
-    def get_updated_model(self, data: Model) -> SQLModel:
-        """Convert the `my-model` model to a DB model and set the user id.
+    def is_authorized(self) -> bool:
+        """Check if this user can create tags.
 
-        Returns a DB model of the given `my-model` mddel with the correct
-        `user_id` set. If the user-object in the context is not set, we raise
-        a exception.
-
-        Args:
-            data: the `my-model` instance.
-
-        Returns:
-            SQLModel: the generated DB model with the `user_id` set.
+        This method checks if the given databasemodel is, in fact, a UserScoped
+        model. If it isn't, it raises a WrongDataManipulatorException. If it
+        is, is returns True, indicating that this user can create this type of
+        resource.
 
         Raises:
-            PermissionDeniedException: when no user is set in the context data.
+            WrongDataManipulatorException: when the database_model for this
+                instance is not correct.
+
+        Returns:
+            True when the user can create these types of objects.
         """
-        if not self._context_data or not self._context_data.user:
-            raise PermissionDeniedException('No user set in the resource.')
+        if not issubclass(self._database_model, UserScopedModel):
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a UserScopedModel')
+        return True
 
-        # Create the DB object
-        db_object = self._db_model(**data.dict())
+    def create(self, models: list[T] | T) -> list[T]:
+        """Create the UserScoped data.
 
-        # Set the user_id
-        db_object.user_id = self._context_data.user.id
+        We override this method from the superclass because we have to make
+        sure the `user_id` is set to the correct value first. If this field is
+        already set to a wrong user_id, we raise an exception.
 
-        db_object.set_hidden('model', data)
+        Args:
+            models: the models to create.
 
-        # Return the DB object
-        return db_object
+        Raises:
+            PermissionDeniedException: when the model has a user_id set that is
+            different then the current user_id in the context.
+
+        Returns:
+            A list with the created data models.
+        """
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        # Add the `user_id` attribute or raise an error when it is already set
+        # to a wrong value
+        for model in models:
+            user_id = getattr(model, 'user_id', None)
+            if user_id is not None and user_id != self._context_data.user.id:
+                raise PermissionDeniedException(
+                    'This user is not allowed to create this resource')
+            setattr(model, 'user_id', self._context_data.user.id)
+
+        return super().create(models)
 
 
 class UserCreator(Creator):
-    """Creator for user resources.
+    """Creator for Users.
 
-    This creator should be used to create users.
+    This creator should be used to create Users.
     """
 
-    def get_updated_model(self, data: User) -> DBUser:
-        """Convert the User model to a DBUser.
+    def is_authorized(self) -> bool:
+        """Check if this user can create users.
 
-        Returns a DBModel instance created from the given User instance. If the
-        user-object in the context is not set, we raise an exception. If the
-        user-object is set but not a root user, we also raise a exception. Only
-        root users are allowed to create users.
-
-        Args:
-            data: the `User` instance.
-
-        Returns:
-            DBUser: the generated DBUser.
+        Checks where the given datamodel is, in fact a User. If it isn't, it
+        raises a WrongDataManipulatorException. If it is, it checks the user in
+        the context; if there is a user set, it should be a ROOT user. If there
+        is no user set, the request is authorized.
 
         Raises:
-            PermissionDeniedException: when no user is set in the context data,
-                or when a normal user tries to create a user.
-        """
-        if not self._context_data or not self._context_data.user:
-            raise PermissionDeniedException('No user set in the resource.')
-        if self._context_data.user.role != UserRole.ROOT:
-            raise PermissionDeniedException('No permissions to create users.')
+            WrongDataManipulatorException: when the database_model for this
+                instance is not correct.
 
-        # Return the DB object
-        return DBUser(**data.dict())
+        Returns:
+            True is this user can create Users and False if this user can't.
+        """
+        if self._database_model is not User:
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a UserScopedModel')
+        return (self._context_data.user is None or
+                self._context_data.user.role == UserRole.ROOT)

@@ -1,69 +1,78 @@
-"""Module with the `Context` class.
+"""Module for the Context class.
 
-This module contains the `Context` class which can be used, in combination with
-a `ContextData` object, to specify a specific context.
+This module contains the Context class.
 """
 from types import TracebackType
 
-from my_model.tag import Tag  # type: ignore
-from my_model.user import User  # type: ignore
+from my_model.user_scoped_models import Tag, User  # type: ignore
+from sqlalchemy.future import Engine
+
+from my_data.creators import UserCreator, UserScopedCreator
+from my_data.deleters import UserDeleter, UserScopedDeleter
+from my_data.resource_manager import ResourceManager
+from my_data.retrievers import UserRetriever, UserScopedRetriever
+from my_data.updaters import UserScopedUpdater, UserUpdater
 
 from .context_data import ContextData
-from .db_models import DBTag, DBUser
-from .getters import UserGetter
-from .creators import UserCreator
-from .resource_manager import ResourceManager
-from .updaters import UserUpdater
-from .deleters import UserDeleter
 
 
 class Context:
-    """Class to manage resources within a `Context`.
+    """Context to work in.
 
-    This class can be used in combination with a `ContextData` class to create
-    a context in which resources are managed. Resources are managed with
-    `ResourceManager` objects; for each resource, one `ResourceManager` object
-    if created.
+    The Context class is used to create objects to interact with the database
+    in a context-based way. A Context uses a ContextData object, which contains
+    the data for the context (like a User to work with). The Context makes sure
+    that every manipulation of the database is done with the permissions of the
+    Context.
 
     Attributes:
-        context_data: the context data for this `Context`
-        tags: a resource manager for tags
-        users: a resource manager for users
+        database_engine: the SQLalchemy engine to use.
+        _context_data: specifies in what context to use Context.
     """
 
     def __init__(self,
-                 user: User | None = None) -> None:
-        """Create a Context.
+                 database_engine: Engine,
+                 context_data: ContextData) -> None:
+        """Set the default values and create the needed DataManipulators.
 
-        To create a context, specify the contextdata options als parameters for
-        this object.
+        The initializer set the values and creates the needed DataManipulator
+        objects. These objects are the objects that are used to manipulate the
+        data in the database, like users and tags.
 
         Args:
-            user: the user object in which this context exists.
+            database_engine: a database engine to work with.
+            context_data: the context data for this context.
         """
-        # Object with the context data in it
-        self.context_data = ContextData(user=user)
+        self.database_engine = database_engine
+        self._context_data = context_data
 
-        # Objects to manage data objects
-        self.tags = ResourceManager(model=Tag,
-                                    db_model=DBTag,
-                                    context_data=self.context_data)
-
-        self.users = ResourceManager(model=User,
-                                     db_model=DBUser,
-                                     context_data=self.context_data,
-                                     getter=UserGetter,
-                                     creator=UserCreator,
-                                     updater=UserUpdater,
-                                     deleter=UserDeleter)
+        # Exposure of Resource Managers to manage specific resources in the
+        # data model.
+        self.users = ResourceManager(
+            database_model=User,
+            database_engine=database_engine,
+            context_data=self._context_data,
+            creator=UserCreator,
+            retriever=UserRetriever,
+            updater=UserUpdater,
+            deleter=UserDeleter)
+        self.tags = ResourceManager(
+            database_model=Tag,
+            database_engine=database_engine,
+            context_data=self._context_data,
+            creator=UserScopedCreator,
+            retriever=UserScopedRetriever,
+            updater=UserScopedUpdater,
+            deleter=UserScopedDeleter)
 
     def __enter__(self) -> 'Context':
-        """Start method for a Pythonic context manager.
+        """Start a Python context manager.
 
-        Starts the context manager.
+        The start of a Context Manager. Should be used with the Python `with`
+        statement.
 
         Returns:
-            Context: returns the instance of itself
+            This own class.
         """
         return self
 
@@ -71,19 +80,17 @@ class Context:
                  exception_type: BaseException | None,
                  exception_value: BaseException | None,
                  traceback: TracebackType | None) -> bool:
-        """End method of the Pythonic context manager.
+        """Exit of a Python context manager.
 
-        Runs when the context manager is done. If this returns True, the
-        context manager is considered to be successful. If it returns False,
-        the context manager is considered to be unsuccessful.
+        The end of the context manager. Checks if there are any unhandled
+        execeptions and returns True if there aren't.
 
         Args:
-            exception_type: the type of exception that occured
-            exception_value: the value of the exception that occured
-            traceback: the traceback for the exception that occured
+            exception_type: the type of exception that happened.
+            exception_value: the value for the exception.
+            traceback: a traceback for the exception.
 
         Returns:
-            bool: True when everything was fine, False when there was a
-                unhandled exception.
+            False if there are unhandled exceptions, True if there are none.
         """
         return exception_type is None

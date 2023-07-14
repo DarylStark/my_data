@@ -1,59 +1,33 @@
-"""The deleters for the ResourceManager.
+"""Module with Deleters.
 
-This module contains the Deleters for the ResourceManager. It contains the
-base-class and the subclasses.
+This module contains the deleter classes. These classes are used to delete data
+from the database. The ResourceManager uses these classes.
 """
+from typing import TypeVar
 
-from my_model._model import Model  # type: ignore
-from my_model.user import UserRole  # type: ignore
-from sqlmodel import SQLModel
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
+from sqlmodel import Session
 
-from my_data.db_connection import db_connection
-from my_data.exceptions import PermissionDeniedException
+from my_data.exceptions import (PermissionDeniedException,
+                                WrongDataManipulatorException)
 
-from .crud_base import CRUDBase
-from .exceptions import InvalidModelException
+from .data_manipulator import DataManipulator
+
+T = TypeVar('T')
 
 
-class Deleter(CRUDBase):
-    """Base Deleter class.
+class Deleter(DataManipulator):
+    """Baseclass for Deleters.
 
-    The base Deleter class should be used as the base class for specific
-    Deleter-classes. The base class defines the interface for all
-    Deleter-classes.
+    The baseclass for deleters. The sub deleters use this class to make sure
+    deleters have the same interface.
     """
 
-    def get_db_model(self, data: Model) -> SQLModel:
-        """Get the `db_model` from the given model.
+    def delete(self, models: list[T] | T) -> None:
+        """Delete data.
 
-        Returns the (hidden) DB model in the given model. This DB model gets
-        hidden in there when retrieving the data. We need the DB model to
-        delete from the database.
-
-        Args:
-            data: the `my-model` instance.
-
-        Returns:
-            The DB model with the updated fields.
-
-        Raises:
-            InvalidModelException: when the given model has no hidden DB model.
-        """
-        # Get the connected DB model
-        model: SQLModel = data.get_hidden('db_model')
-        if model:
-            # Return the new model
-            return model
-
-        # No connected DB model
-        raise InvalidModelException(
-            'The model is not retrieved via the `my-data` package.')
-
-    def delete(self, models: list[Model] | Model) -> None:
-        """Delete the model from the database.
-
-        Deletes the model from the database. This method executes the queries
-        in the database to delete the row.
+        The method to delete data from the database.
 
         Args:
             models: the models to delete.
@@ -61,45 +35,105 @@ class Deleter(CRUDBase):
         if not isinstance(models, list):
             models = [models]
 
-        # Convert them to the DB models
-        db_models = [self.get_db_model(model) for model in models]
-
-        # Update them in the database
-        with db_connection.get_session() as session:
-            for model in db_models:
+        # Delete the resources
+        with Session(self._database_engine) as session:
+            for model in models:
                 session.delete(model)
             session.commit()
 
 
-class UserSpecificDeleter(Deleter):
-    pass
+class UserScopedDeleter(Deleter):
+    """Deleter for UserScoped models.
+
+    This deleter should be used for UserScoped models, like Tags and APITokens.
+    """
+
+    def delete(self, models: list[T] | T) -> None:
+        """Delete the UserScoped data.
+
+        We override this method from the superclass because we have to make
+        sure the `user_id` is set to the correct value first. If this field is
+        set to a wrong user_id, we raise an exception.
+
+        Args:
+            models: the models to delete.
+
+        Raises:
+            WrongDataManipulatorException: when the model in the instance is
+                not a UserScopedModel.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance or when the model has a user_id set that is
+                different then the current user_id in the context.
+        """
+        # pylint: disable=duplicate-code
+        if not issubclass(self._database_model, UserScopedModel):
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a UserScopedModel')
+
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        # Check for all models are a UserScoped model and if the `user_id`
+        # field is set to the user_id of the user in the context.
+        for model in models:
+            if not isinstance(model, self._database_model):
+                raise PermissionDeniedException(
+                    f'Expected "{self._database_model}", got "{type(model)}".')
+
+            if model.user_id != self._context_data.user.id:
+                raise PermissionDeniedException(
+                    'This user is not allowed to delete this resource')
+
+        super().delete(models)
 
 
 class UserDeleter(Deleter):
-    """Deleter for user resources.
+    """Deleter for User models.
 
-    This deleter should be used to delete users.
+    This deleter should be used to delete Users.
     """
 
-    def get_db_model(self, data: Model) -> SQLModel:
-        """Get the `db_model` from the given model.
+    def delete(self, models: list[T] | T) -> None:
+        """Delete the User data.
 
-        Checks if this user is allowed to delete the user resource. A ROOT user
-        can delete all user resources. Other users can delete no users.
+        We override this method from the superclass because we have to make
+        sure the model is a User model and that the user in the context is
+        allowed to delete this user. A root user can delete ALL users, except
+        his own user.
 
         Args:
-            data: the `my-model` instance.
-
-        Returns:
-            The DB model for the given model.
+            models: the models to delete.
 
         Raises:
-            PermissionDeniedException: when the user in the context has no
-                permissions to update this resource.
+            WrongDataManipulatorException: when the model in the instance is
+                not a User.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance, when the model is for the current user or
+                when the user not allowed to remove this User.
         """
-        model = super().get_db_model(data)
-        if self._context_data.user.role == UserRole.ROOT:
-            return model
-        raise PermissionDeniedException(
-            f'User "{self._context_data.user.username}" is not allowed to ' +
-            'update user ID "{model.id}"')
+        # pylint: disable=duplicate-code
+        if self._database_model is not User:
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a User')
+
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        if self._context_data.user.role == UserRole.USER:
+            raise PermissionDeniedException(
+                'A normal user cannot remove users')
+
+        # Check for all models are a User model and if the `id` field is the
+        # same as the current user if this user is a USER user.
+        for model in models:
+            if not isinstance(model, self._database_model):
+                raise PermissionDeniedException(
+                    f'Expected "{self._database_model}", got "{type(model)}".')
+
+            if self._context_data.user.id == model.id:
+                raise PermissionDeniedException(
+                    'Cannot remove the current user.')
+
+        super().delete(models)

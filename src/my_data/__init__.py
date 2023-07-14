@@ -1,40 +1,58 @@
 """My Data Package.
 
 This package contains the code to create, retrieve, update and delete data from
-a database containing the objects for the `my_model` package. To use this
-package, the application has to connect to a database first. To do this, the
-application should use the `configure` function in the `configure` module:
+a database containing the objects for the `my_model` package.
 
-    from my_data.configure import configure, MyDataConfig
+To use this package, you have to use the MyData class, which is located in the
+`my_data` module. After creating a instance of this class, you have to
+configure it with the correct database string and additional arguments. These
+arguments are all used by SQLmodel (and SQLalchemy) to create the correct
+engine to connect to the database.
 
-    db_connection = configure(MyDataConfig(
-        db_type=DatabaseType.SQLITE_MEMORY
-    ))
+An example:
 
-After that, you can optionally create the tables. The tables are defined in the
-`db_models` module of this package. To create the tables, use the
-`create_tables` method:
+```python
+from my_data import
 
-    db_connection.create_tables(drop_tables=False)
+# Configure the database
+my_data = MyData()
+my_data.configure(
+    # db_connection_str='sqlite:///:memory:',
+    db_connection_str='sqlite:////home/dast/my.sqlite',
+    database_args={
+        'echo': True,
+        'pool_pre_ping': True,
+        'pool_recycle': True,
+    }
+)
 
-Then, you can use the database object by using a `Context` object. This object
-specifies in what context you want to retrieve data. You can, for example,
-specify a user in this context to get only resources that are relevant for this
-user. The `Context` object can be used as a context manager:
+# Create the engine and the test data
+my_data.create_engine()
+```
 
-    from my_model.user import User
-    from datetime import datetime
+You can now use the package. If you need to create the tables, you can use the
+`create_db_tables` method:
 
-    normal_user = DBUser(
-        fullname='Daryl Stark',
-        username='daryl.stark',
-        email='user@example.com',
-        role=UserRole.USER,
-        password_hash='xxx',
-        password_date=datetime.now())
+```python
+my_data.create_db_tables()
+```
 
-    with Context(user=normal_user) as user_context:
-        tags = user_context.tags.get()
+If you want to create initial data, for testing or when initializing the
+database, you can use the `create_init_data` tables. _Warning:_ this will
+remove all tables in the database first, so use with care!
+
+```python
+my_data.create_init_data()
+```
+
+After that, a Context can be used to manipulate data in the database:
+
+```python
+with my_data.get_context(user=root_user) as c:
+    all_users = c.user.retrieve()
+```
 """
+
+from .my_data import MyData  # noqa: F401
 
 __version__ = '0.0.1-dev'

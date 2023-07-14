@@ -1,47 +1,32 @@
-"""Module with DB creation fixtures.
+"""Module with fixtures to create a test-database.
 
-Contains the fixture to connect to a database and create the needed tables for
-the unit tests.
+Fixture to create a test database for PyTest.
 """
-from my_model.tag import Tag
-from my_model.user import User
 from pytest import fixture
-
-from database.database import Database
-from my_data.configure import DatabaseType, MyDataConfig, configure
-from my_data.context import Context
+from my_data import MyData
 
 
 @fixture
-def db(root_user: User, normal_user: User) -> Database:
-    """Fixture to connect to the DB.
+def my_data() -> MyData:
+    """Create a test database.
 
-    Creates the database connection and creates the tables. For the unit tests
-    we use a SQLite database.
+    Creates a testdatabase and returns the `MyData` object for it.
 
     Returns:
-        Database: the database connection
+        The created `MyData` instance.
     """
-    # Create a connection to the in-memory database
-    db_connection = configure(MyDataConfig(
-        db_type=DatabaseType.SQLITE_MEMORY
-    ))
+    # Configure the database
+    my_data = MyData()
+    my_data.configure(
+        db_connection_str='sqlite:///:memory:',
+        database_args={
+            'echo': True
+        }
+    )
 
-    # Create the tables
-    db_connection.create_tables(drop_tables=False)
+    # Create the engine and the test data
+    my_data.create_engine()
+    my_data.create_init_data()
 
-    # Create the users. We use the object of the root user for this
-    with Context(user=root_user) as local_context:
-        local_context.users.create([root_user, normal_user])
-        local_context.tags.create([
-            Tag(title='root_tag_1'),
-            Tag(title='root_tag_2')])
-
-    # Create tags for the normal user
-    with Context(user=normal_user) as local_context:
-        local_context.tags.create([
-            Tag(title='test_daryl_1'),
-            Tag(title='test_daryl_2')])
-
-    # Return the connection object
-    return db_connection
+    # Return the created object
+    return my_data
