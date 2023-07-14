@@ -99,12 +99,22 @@ class UserUpdater(Updater):
     """
 
     def update(self, models: list[T] | T) -> list[T]:
-        """Update the User data/
+        """Update the User data.
 
         We override this method from the superclass because we have to make
         sure the model is a User model and that the user in the context is
         allowed to update this user. A root user can update ALL users, but a
         normal user can only update his own user.
+
+        Raises:
+            WrongDataManipulatorException: when the model in the instance is
+                not a User.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance or when the model has a id set that is
+                different then the current user id in the context.
+
+        Returns:
+            A list with the created data models.
         """
         if self._database_model is not User:
             raise WrongDataManipulatorException(
