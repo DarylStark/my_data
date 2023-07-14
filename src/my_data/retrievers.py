@@ -78,8 +78,8 @@ class Retriever(DataManipulator):
 class UserScopedRetriever(Retriever):
     """Retriever for UserScoped models.
 
-    This retriever should be used for UserScoped models, like Tags, APITokens
-    and Users itself.
+    This retriever should be used for UserScoped models, like Tags and
+    APITokens.
     """
 
     def get_context_filters(self) -> list[ColumnElement]:
@@ -108,7 +108,7 @@ class UserScopedRetriever(Retriever):
 class UserRetriever(Retriever):
     """Retriever for Users.
 
-    This retrieved should be used for USer models.
+    This retrieved should be used for User models.
     """
 
     def get_context_filters(self) -> list[ColumnElement]:
