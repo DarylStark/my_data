@@ -97,7 +97,7 @@ class DataManipulator(Generic[T]):
                 raise PermissionDeniedException(
                     f'Expected "{self._database_model}", got "{type(model)}".')
 
-            if model.user_id != self._context_data.user.id:
+            if getattr(model, 'user_id', None) != self._context_data.user.id:
                 raise PermissionDeniedException(
                     'This user is not allowed to alter this resource')
 
