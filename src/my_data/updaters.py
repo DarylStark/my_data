@@ -6,9 +6,7 @@ in the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model.user_scoped_models import (User, UserRole,  # type: ignore
-                                         UserScopedModel)
-from sqlmodel import Session
+from my_model.user_scoped_models import User, UserRole  # type: ignore
 
 from my_data.exceptions import (PermissionDeniedException,
                                 WrongDataManipulatorException)
@@ -36,17 +34,7 @@ class Updater(DataManipulator):
         Returns:
             A list with the updated data models.
         """
-        # Make sure the `models` are always a list
-        # pylint: disable=duplicate-code
-        if not isinstance(models, list):
-            models = [models]
-
-        # Update the resources
-        with Session(self._database_engine, expire_on_commit=False) as session:
-            for model in models:
-                session.add(model)
-            session.commit()
-        return models
+        return self._add_models_to_session(models)
 
 
 class UserScopedUpdater(Updater):
@@ -65,36 +53,10 @@ class UserScopedUpdater(Updater):
         Args:
             models: the models to update.
 
-        Raises:
-            WrongDataManipulatorException: when the model in the instance is
-                not a UserScopedModel.
-            PermissionDeniedException: when the model is not the same model as
-                set in the instance or when the model has a user_id set that is
-                different then the current user_id in the context.
-
         Returns:
             A list with the created data models.
         """
-        # pylint: disable=duplicate-code
-        if not issubclass(self._database_model, UserScopedModel):
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a UserScopedModel')
-
-        # Make sure the `models` are always a list
-        if not isinstance(models, list):
-            models = [models]
-
-        # Check for all models are a UserScoped model and if the `user_id`
-        # field is set to the user_id of the user in the context.
-        for model in models:
-            if not isinstance(model, self._database_model):
-                raise PermissionDeniedException(
-                    f'Expected "{self._database_model}", got "{type(model)}".')
-
-            if model.user_id != self._context_data.user.id:
-                raise PermissionDeniedException(
-                    'This user is not allowed to edit this resource')
-
+        models = self._validate_user_scoped_models(models)
         return super().update(models)
 
 
@@ -125,19 +87,17 @@ class UserUpdater(Updater):
         Returns:
             A list with the created data models.
         """
-        # pylint: disable=duplicate-code
         if self._database_model is not User:
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a User')
 
         # Make sure the `models` are always a list
-        if not isinstance(models, list):
-            models = [models]
+        models = self._convert_model_to_list(models)
 
         # Check for all models are a User model and if the `id` field is the
         # same as the current user if this user is a USER user.
         for model in models:
-            if not isinstance(model, self._database_model):
+            if not isinstance(model, User):
                 raise PermissionDeniedException(
                     f'Expected "{self._database_model}", got "{type(model)}".')
 

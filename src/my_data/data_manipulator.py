@@ -6,9 +6,13 @@ for other DataManipulator classes.
 
 from typing import Generic, Type, TypeVar
 
+from my_model.user_scoped_models import UserScopedModel  # type: ignore
 from sqlalchemy.future import Engine
+from sqlmodel import Session
 
 from .context_data import ContextData
+from .exceptions import (PermissionDeniedException,
+                         WrongDataManipulatorException)
 
 T = TypeVar('T')
 
@@ -42,3 +46,82 @@ class DataManipulator(Generic[T]):
         self._database_model = database_model
         self._database_engine = database_engine
         self._context_data = context_data
+
+    def _convert_model_to_list(self, models: list[T] | T) -> list[T]:
+        """Convert a model to a list of models.
+
+        Method to convert a model to a list of models, unless it already is a
+        list.
+
+        Args:
+            models: the model(s).
+
+        Returns:
+            A list with models.
+        """
+        if not isinstance(models, list):
+            return [models]
+        return models
+
+    def _validate_user_scoped_models(self, models: list[T] | T) -> list[T]:
+        """Validate model type and user ID in user scoped models.
+
+        Method to validate if a User Scoped model is a subclass of the
+        baseclass UserScopedModel and if the `user_id` field in the data is set
+        to the user in the context.
+
+        Args:
+            models: the models to check.
+
+        Raises:
+            WrongDataManipulatorException: when the model in the instance is
+                not a UserScopedModel.
+            PermissionDeniedException: when the model is not the same model as
+                set in the instance or when the model has a user_id set that is
+                different then the current user_id in the context.
+
+        Returns:
+            A list with the resources.
+        """
+        # Check if it is a subtype of UserScopedModel
+        if not issubclass(self._database_model, UserScopedModel):
+            raise WrongDataManipulatorException(
+                f'The model "{self._database_model}" is not a UserScopedModel')
+
+        # Make sure the `models` are always a list
+        models = self._convert_model_to_list(models)
+
+        # Verify the model type and if the `user_id` field is set.
+        for model in models:
+            if not isinstance(model, self._database_model):
+                raise PermissionDeniedException(
+                    f'Expected "{self._database_model}", got "{type(model)}".')
+
+            if getattr(model, 'user_id', None) != self._context_data.user.id:
+                raise PermissionDeniedException(
+                    'This user is not allowed to alter this resource')
+
+        return models
+
+    def _add_models_to_session(self, models: list[T] | T) -> list[T]:
+        """Add models to a session and commit the session.
+
+        Method to add models a SQLalchemy session and commit the session. This
+        can be used for adding or updating resources.
+
+        Args:
+            models: the models to add.
+
+        Returns:
+            The list of models.
+        """
+        # Make sure the `models` are always a list
+        if not isinstance(models, list):
+            models = [models]
+
+        # Update the resources
+        with Session(self._database_engine, expire_on_commit=False) as session:
+            for model in models:
+                session.add(model)
+            session.commit()
+        return models
