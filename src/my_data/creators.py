@@ -7,7 +7,6 @@ from typing import TypeVar
 
 from my_model.user_scoped_models import (User, UserRole,  # type: ignore
                                          UserScopedModel)
-from sqlmodel import Session
 
 from .data_manipulator import DataManipulator
 from .exceptions import (BaseClassCallException, PermissionDeniedException,
@@ -53,18 +52,7 @@ class Creator(DataManipulator):
             raise PermissionDeniedException(
                 'Not allowed to create this kind of object within the ' +
                 'set context.')
-
-        # Make sure the `models` are always a list
-        # pylint: disable=duplicate-code
-        if not isinstance(models, list):
-            models = [models]
-
-        # Add the resources
-        with Session(self._database_engine, expire_on_commit=False) as session:
-            for model in models:
-                session.add(model)
-            session.commit()
-        return models
+        return self._add_models_to_session(models)
 
 
 class UserScopedCreator(Creator):
@@ -111,8 +99,7 @@ class UserScopedCreator(Creator):
             A list with the created data models.
         """
         # Make sure the `models` are always a list
-        if not isinstance(models, list):
-            models = [models]
+        models = self._convert_model_to_list(models)
 
         # Add the `user_id` attribute or raise an error when it is already set
         # to a wrong value

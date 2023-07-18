@@ -5,8 +5,7 @@ from the database. The ResourceManager uses these classes.
 """
 from typing import TypeVar
 
-from my_model.user_scoped_models import (User, UserRole,  # type: ignore
-                                         UserScopedModel)
+from my_model.user_scoped_models import (User, UserRole)  # type: ignore
 from sqlmodel import Session
 
 from my_data.exceptions import (PermissionDeniedException,
@@ -57,34 +56,8 @@ class UserScopedDeleter(Deleter):
 
         Args:
             models: the models to delete.
-
-        Raises:
-            WrongDataManipulatorException: when the model in the instance is
-                not a UserScopedModel.
-            PermissionDeniedException: when the model is not the same model as
-                set in the instance or when the model has a user_id set that is
-                different then the current user_id in the context.
         """
-        # pylint: disable=duplicate-code
-        if not issubclass(self._database_model, UserScopedModel):
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a UserScopedModel')
-
-        # Make sure the `models` are always a list
-        if not isinstance(models, list):
-            models = [models]
-
-        # Check for all models are a UserScoped model and if the `user_id`
-        # field is set to the user_id of the user in the context.
-        for model in models:
-            if not isinstance(model, self._database_model):
-                raise PermissionDeniedException(
-                    f'Expected "{self._database_model}", got "{type(model)}".')
-
-            if model.user_id != self._context_data.user.id:
-                raise PermissionDeniedException(
-                    'This user is not allowed to delete this resource')
-
+        models = self._validate_user_scoped_models(models)
         super().delete(models)
 
 
@@ -112,7 +85,6 @@ class UserDeleter(Deleter):
                 set in the instance, when the model is for the current user or
                 when the user not allowed to remove this User.
         """
-        # pylint: disable=duplicate-code
         if self._database_model is not User:
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a User')
