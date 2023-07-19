@@ -4,7 +4,7 @@ This module contains the Context class.
 """
 from types import TracebackType
 
-from my_model.user_scoped_models import Tag, User  # type: ignore
+from my_model.user_scoped_models import Tag, User, APIClient  # type: ignore
 from sqlalchemy.future import Engine
 
 from my_data.creators import UserCreator, UserScopedCreator
@@ -58,6 +58,14 @@ class Context:
             deleter=UserDeleter)
         self.tags = ResourceManager(
             database_model=Tag,
+            database_engine=database_engine,
+            context_data=self._context_data,
+            creator=UserScopedCreator,
+            retriever=UserScopedRetriever,
+            updater=UserScopedUpdater,
+            deleter=UserScopedDeleter)
+        self.api_clients = ResourceManager(
+            database_model=APIClient,
             database_engine=database_engine,
             context_data=self._context_data,
             creator=UserScopedCreator,
