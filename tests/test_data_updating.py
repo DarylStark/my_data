@@ -245,7 +245,7 @@ def test_data_updating_api_client_as_normal_user_1(
         context.api_clients.update(api_client)
 
         # Get the client again and check the title
-        api_client = context.tags.retrieve(
+        api_client = context.api_clients.retrieve(
             APIClient.app_name == 'normal_user_1_api_client_1_new')[0]
         assert api_client.app_name == 'normal_user_1_api_client_1_new'
 

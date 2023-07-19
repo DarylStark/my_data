@@ -189,14 +189,14 @@ def test_data_creation_api_clients_as_root(
     Args:
         my_data: a instance of a MyData object.
         root_user: the root user for the context.
-        test_tags: a list with tags to add.
+        test_api_clients: a list with API clients to add.
     """
     with my_data.get_context(user=root_user) as context:
         context.api_clients.create(test_api_clients)
 
         # Check if they exist
-        created_api_clients = context.tags.retrieve(
-            Tag.title.like('test_creation_api_client_%'))
+        created_api_clients = context.api_clients.retrieve(
+            APIClient.app_name.like('test_creation_api_client_%'))
 
         assert len(created_api_clients) == 3
         assert created_api_clients[0].app_name == 'test_creation_api_client_1'
@@ -215,14 +215,14 @@ def test_data_creation_api_clients_as_normal_user_1(
     Args:
         my_data: a instance of a MyData object.
         normal_user_1: the first normal user.
-        test_tags: a list with tags to add.
+        test_api_clients: a list with API clients to add.
     """
     with my_data.get_context(user=normal_user_1) as context:
         context.api_clients.create(test_api_clients)
 
         # Check if they exist
-        created_api_clients = context.tags.retrieve(
-            Tag.title.like('test_creation_api_client_%'))
+        created_api_clients = context.api_clients.retrieve(
+            APIClient.app_name.like('test_creation_api_client_%'))
 
         assert len(created_api_clients) == 3
         assert created_api_clients[0].app_name == 'test_creation_api_client_1'
@@ -241,14 +241,14 @@ def test_data_creation_api_clients_as_normal_user_2(
     Args:
         my_data: a instance of a MyData object.
         normal_user_2: the first normal user.
-        test_tags: a list with tags to add.
+        test_api_clients: a list with API clients to add.
     """
     with my_data.get_context(user=normal_user_2) as context:
         context.api_clients.create(test_api_clients)
 
         # Check if they exist
-        created_api_clients = context.tags.retrieve(
-            Tag.title.like('test_creation_api_client_%'))
+        created_api_clients = context.api_clients.retrieve(
+            APIClient.app_name.like('test_creation_api_client_%'))
 
         assert len(created_api_clients) == 3
         assert created_api_clients[0].app_name == 'test_creation_api_client_1'
@@ -268,7 +268,7 @@ def test_data_creation_api_clients_as_normal_user_1_wrong_user_id(
     Args:
         my_data: a instance of a MyData object.
         normal_user_2: the first normal user.
-        test_tags: a list with tags to add.
+        test_api_clients: a list with API clients to add.
     """
     with my_data.get_context(user=normal_user_2) as context:
         with raises(PermissionDeniedException):
