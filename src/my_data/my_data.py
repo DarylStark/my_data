@@ -4,7 +4,6 @@ This module contains the class `MyData`, which is the most important class for
 the complete project.
 """
 
-from turtle import title
 from typing import Any
 
 from my_model.user_scoped_models import (APIClient, Tag, User,  # type: ignore
