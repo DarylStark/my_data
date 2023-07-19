@@ -151,3 +151,75 @@ def test_data_retrieval_filtered_tags_as_normal_user_1(
         tags = context.tags.retrieve(Tag.title == 'normal_user_1_tag_2')
         assert len(tags) == 1
         assert tags[0].title == 'normal_user_1_tag_2'
+
+
+def test_data_retrieval_all_api_clients_as_root(
+        my_data: MyData, root_user: User) -> None:
+    """Test API Client retrieval as a ROOT user.
+
+    Retrieves API clients from the database as a root user. Should retrieve
+    only API clients for his own account.
+
+    Args:
+        my_data: a instance to a MyData object.
+        root_user: the root user for the context.
+    """
+    with my_data.get_context(user=root_user) as context:
+        api_clients = context.api_clients.retrieve()
+        assert len(api_clients) == 3
+        assert api_clients[0].app_name == 'root_api_client_1'
+        assert api_clients[0].app_publisher == 'root_api_client_1_publisher'
+        assert api_clients[1].app_name == 'root_api_client_2'
+        assert api_clients[1].app_publisher == 'root_api_client_2_publisher'
+        assert api_clients[2].app_name == 'root_api_client_3'
+        assert api_clients[2].app_publisher == 'root_api_client_3_publisher'
+
+
+def test_data_retrieval_all_api_clients_as_normal_user_1(
+        my_data: MyData, normal_user_1: User) -> None:
+    """Test API Client retrieval as a USER user.
+
+    Retrieves API Clients from the database as a normal user. Should retrieve
+    only API Client for his own account.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_1: the first normal user.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        api_clients = context.api_clients.retrieve()
+        assert len(api_clients) == 3
+        assert api_clients[0].app_name == 'normal_user_1_api_client_1'
+        assert (api_clients[0].app_publisher ==
+                'normal_user_1_api_client_1_publisher')
+        assert api_clients[1].app_name == 'normal_user_1_api_client_2'
+        assert (api_clients[1].app_publisher ==
+                'normal_user_1_api_client_2_publisher')
+        assert api_clients[2].app_name == 'normal_user_1_api_client_3'
+        assert (api_clients[2].app_publisher ==
+                'normal_user_1_api_client_3_publisher')
+
+
+def test_data_retrieval_all_api_clients_as_normal_user_2(
+        my_data: MyData, normal_user_2: User) -> None:
+    """Test API client retrieval as a USER user.
+
+    Retrieves API Clients from the database as a normal user. Should retrieve
+    only API Client for his own account.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the second normal user.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        api_clients = context.api_clients.retrieve()
+        assert len(api_clients) == 3
+        assert api_clients[0].app_name == 'normal_user_2_api_client_1'
+        assert (api_clients[0].app_publisher ==
+                'normal_user_2_api_client_1_publisher')
+        assert api_clients[1].app_name == 'normal_user_2_api_client_2'
+        assert (api_clients[1].app_publisher ==
+                'normal_user_2_api_client_2_publisher')
+        assert api_clients[2].app_name == 'normal_user_1_api_client_3'
+        assert (api_clients[2].app_publisher ==
+                'normal_user_2_api_client_3_publisher')

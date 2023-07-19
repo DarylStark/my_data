@@ -3,7 +3,7 @@
 This module contains unit tests that delete data from the database. After the
 deletion, it checks if the data has been deleted.
 """
-from my_model.user_scoped_models import User, Tag
+from my_model.user_scoped_models import User, Tag, APIClient
 from pytest import raises
 from my_data.exceptions import PermissionDeniedException
 
@@ -143,3 +143,63 @@ def test_data_deleting_tags_as_normal_user(
         tags = context.tags.retrieve(
             Tag.title == 'test_deletion_tag_1')
         assert len(tags) == 0
+
+
+def test_data_deleting_api_clients_as_root(
+        my_data: MyData,
+        root_user: User,
+        test_api_client_to_delete: APIClient) -> None:
+    """Test deleting API clients as the root user.
+
+    Deletes API clients as the root user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+        test_api_client_to_delete: a test API client to create and delete.
+    """
+    with my_data.get_context(user=root_user) as context:
+        # Create a API client
+        context.api_clients.create(test_api_client_to_delete)
+
+        # Get the API client
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+
+        # Delete the API client
+        context.api_clients.delete(api_clients)
+
+        # Check if the API client is deleted
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+        assert len(api_clients) == 0
+
+
+def test_data_deleting_api_clients_as_normal_user(
+        my_data: MyData,
+        normal_user_1: User,
+        test_api_client_to_delete: APIClient) -> None:
+    """Test deleting API clients as the root user.
+
+    Deletes API clients as a normal user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+        test_tag_to_delete: a test API client to create and delete.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Create a API client
+        context.api_clients.create(test_api_client_to_delete)
+
+        # Get the API client
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+
+        # Delete the API client
+        context.api_clients.delete(api_clients)
+
+        # Check if the API client is deleted
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+        assert len(api_clients) == 0

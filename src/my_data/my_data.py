@@ -4,9 +4,11 @@ This module contains the class `MyData`, which is the most important class for
 the complete project.
 """
 
+from turtle import title
 from typing import Any
 
-from my_model.user_scoped_models import Tag, User, UserRole  # type: ignore
+from my_model.user_scoped_models import (APIClient, Tag, User,  # type: ignore
+                                         UserRole)
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, create_engine
@@ -157,6 +159,17 @@ class MyData:
                     Tag(title='root_tag_1'),
                     Tag(title='root_tag_2'),
                     Tag(title='root_tag_3')
+                ],
+                api_clients=[
+                    APIClient(
+                        app_name='root_api_client_1',
+                        app_publisher='root_api_client_1_publisher'),
+                    APIClient(
+                        app_name='root_api_client_2',
+                        app_publisher='root_api_client_2_publisher'),
+                    APIClient(
+                        app_name='root_api_client_3',
+                        app_publisher='root_api_client_3_publisher')
                 ]))
             session.add(User(
                 id=2,
@@ -168,6 +181,17 @@ class MyData:
                     Tag(title='normal_user_1_tag_1'),
                     Tag(title='normal_user_1_tag_2'),
                     Tag(title='normal_user_1_tag_3')
+                ],
+                api_clients=[
+                    APIClient(
+                        app_name='normal_user_1_api_client_1',
+                        app_publisher='normal_user_1_api_client_1_publisher'),
+                    APIClient(
+                        app_name='normal_user_1_api_client_2',
+                        app_publisher='normal_user_1_api_client_2_publisher'),
+                    APIClient(
+                        app_name='normal_user_1_api_client_3',
+                        app_publisher='normal_user_1_api_client_3_publisher')
                 ]))
             session.add(User(
                 id=3,
@@ -179,5 +203,16 @@ class MyData:
                     Tag(title='normal_user_2_tag_1'),
                     Tag(title='normal_user_2_tag_2'),
                     Tag(title='normal_user_2_tag_3')
+                ],
+                api_clients=[
+                    APIClient(
+                        app_name='normal_user_2_api_client_1',
+                        app_publisher='normal_user_2_api_client_1_publisher'),
+                    APIClient(
+                        app_name='normal_user_2_api_client_2',
+                        app_publisher='normal_user_2_api_client_2_publisher'),
+                    APIClient(
+                        app_name='normal_user_1_api_client_3',
+                        app_publisher='normal_user_2_api_client_3_publisher')
                 ]))
             session.commit()

@@ -3,7 +3,7 @@
 This module contains unit tests that update data in the database. After the
 update, it checks if the data has been updated.
 """
-from my_model.user_scoped_models import User, Tag
+from my_model.user_scoped_models import User, Tag, APIClient
 from pytest import raises
 
 from my_data.exceptions import PermissionDeniedException
@@ -162,6 +162,14 @@ def test_data_updating_tag_as_root(
 def test_data_updating_tag_as_normal_user_1(
         my_data: MyData,
         normal_user_1: User) -> None:
+    """Test updating a user as a USER user.
+
+    Updates a tag as a USER user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the normal user for the context.
+    """
     with my_data.get_context(user=normal_user_1) as context:
         # Get the first tag for this user
         tag = context.tags.retrieve()[0]
@@ -180,3 +188,67 @@ def test_data_updating_tag_as_normal_user_1(
         # Reset the title again
         tag.title = old_title
         context.tags.update(tag)
+
+
+def test_data_updating_api_client_as_root(
+        my_data: MyData,
+        root_user: User) -> None:
+    """Test updating a API Client as a ROOT user.
+
+    Updates a API Client as a ROOT user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+    """
+    with my_data.get_context(user=root_user) as context:
+        # Get the first client for this user
+        api_client = context.api_clients.retrieve()[0]
+        old_name = api_client.app_name
+
+        # Update the name
+        api_client.app_name = 'root_api_client_1_new'
+
+        # Save it to the database
+        context.api_clients.update(api_client)
+
+        # Get the client again and check the title
+        api_client = context.api_clients.retrieve(
+            APIClient.app_name == 'root_api_client_1_new')[0]
+        assert api_client.app_name == 'root_api_client_1_new'
+
+        # Reset the name again
+        api_client.app_name = old_name
+        context.api_clients.update(api_client)
+
+
+def test_data_updating_api_client_as_normal_user_1(
+        my_data: MyData,
+        normal_user_1: User) -> None:
+    """Test updating a API Client as a USER user.
+
+    Updates a API Client as a USER user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the normal user for the context.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Get the first client for this user
+        api_client = context.api_clients.retrieve()[0]
+        old_name = api_client.app_name
+
+        # Update the name
+        api_client.app_name = 'normal_user_1_api_client_1_new'
+
+        # Save it to the database
+        context.api_clients.update(api_client)
+
+        # Get the client again and check the title
+        api_client = context.tags.retrieve(
+            APIClient.app_name == 'normal_user_1_api_client_1_new')[0]
+        assert api_client.app_name == 'normal_user_1_api_client_1_new'
+
+        # Reset the name again
+        api_client.app_name = old_name
+        context.api_clients.update(api_client)

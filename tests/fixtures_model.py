@@ -4,7 +4,7 @@ Cotnains fixtures to mimick users. The `get_user_with_username` method is used
 to get a specific user from the test database, as defined in the `MyData`
 instance from the module `fixtures_db_creation`.
 """
-from my_model.user_scoped_models import User, UserRole, Tag
+from my_model.user_scoped_models import User, UserRole, Tag, APIClient
 from pytest import fixture
 from sqlmodel import Session, select
 
@@ -148,9 +148,41 @@ def test_normal_user_to_delete() -> User:
 def test_tag_to_delete() -> Tag:
     """Model for a tag to delete.
 
-    Fixture for a tag that can be used in the `deleteion` tests.
+    Fixture for a tag that can be used in the `delteion` tests.
 
     Returns:
         A model for a Tag.
     """
     return Tag(title='test_deletion_tag_1')
+
+
+@fixture
+def test_api_clients() -> list[APIClient]:
+    """Model for a API client to create.
+
+    Fixture for a list of API clients that can be used in the `creation` tests.
+
+    Returns:
+        A list with API Clients to create.
+    """
+    return [
+        APIClient(app_name='test_creation_api_client_1',
+                  app_publisher='api_client_publisher'),
+        APIClient(app_name='test_creation_api_client_2',
+                  app_publisher='api_client_publisher'),
+        APIClient(app_name='test_creation_api_client_3',
+                  app_publisher='api_client_publisher')
+    ]
+
+
+@fixture
+def test_api_client_to_delete() -> APIClient:
+    """Model for a API client to delete.
+
+    Fixture for a API clientthat can be used in the `deletion` tests.
+
+    Returns:
+        A model for a API Client.
+    """
+    return APIClient(app_name='test_deletion_api_client_1',
+                     app_publisher='Testpublisher')
