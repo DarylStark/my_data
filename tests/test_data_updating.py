@@ -3,7 +3,7 @@
 This module contains unit tests that update data in the database. After the
 update, it checks if the data has been updated.
 """
-from my_model.user_scoped_models import User, Tag, APIClient
+from my_model.user_scoped_models import User, Tag, APIClient, APIToken
 from pytest import raises
 
 from my_data.exceptions import PermissionDeniedException
@@ -252,3 +252,67 @@ def test_data_updating_api_client_as_normal_user_1(
         # Reset the name again
         api_client.app_name = old_name
         context.api_clients.update(api_client)
+
+
+def test_data_updating_api_token_as_root(
+        my_data: MyData,
+        root_user: User) -> None:
+    """Test updating a API Token as a ROOT user.
+
+    Updates a API Token as a ROOT user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+    """
+    with my_data.get_context(user=root_user) as context:
+        # Get the first token for this user
+        api_token = context.api_tokens.retrieve()[0]
+        old_title = api_token.title
+
+        # Update the title
+        api_token.title = 'root_api_token_1_new'
+
+        # Save it to the database
+        context.api_tokens.update(api_token)
+
+        # Get the token again and check the title
+        api_token = context.api_tokens.retrieve(
+            APIToken.title == 'root_api_token_1_new')[0]
+        assert api_token.title == 'root_api_token_1_new'
+
+        # Reset the name again
+        api_token.title = old_title
+        context.api_tokens.update(api_token)
+
+
+def test_data_updating_api_token_as_normal_user_1(
+        my_data: MyData,
+        normal_user_1: User) -> None:
+    """Test updating a API token as a USER user.
+
+    Updates a API token as a USER user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the normal user for the context.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Get the first token for this user
+        api_token = context.api_tokens.retrieve()[0]
+        old_title = api_token.title
+
+        # Update the title
+        api_token.title = 'normal_user_1_api_token_1_new'
+
+        # Save it to the database
+        context.api_tokens.update(api_token)
+
+        # Get the token again and check the title
+        api_token = context.api_tokens.retrieve(
+            APIToken.title == 'normal_user_1_api_token_1_new')[0]
+        assert api_token.app_name == 'normal_user_1_api_token_1_new'
+
+        # Reset the name again
+        api_token.title = old_title
+        context.api_tokens.update(api_token)

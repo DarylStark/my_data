@@ -4,7 +4,8 @@ Cotnains fixtures to mimick users. The `get_user_with_username` method is used
 to get a specific user from the test database, as defined in the `MyData`
 instance from the module `fixtures_db_creation`.
 """
-from my_model.user_scoped_models import User, UserRole, Tag, APIClient
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+                                         UserRole)
 from pytest import fixture
 from sqlmodel import Session, select
 
@@ -186,3 +187,31 @@ def test_api_client_to_delete() -> APIClient:
     """
     return APIClient(app_name='test_deletion_api_client_1',
                      app_publisher='Testpublisher')
+
+
+@fixture
+def test_api_tokens() -> list[APIToken]:
+    """Model for a API tokens to create.
+
+    Fixture for a list of API tokens that can be used in the `creation` tests.
+
+    Returns:
+        A list with API tokens to create.
+    """
+    return [
+        APIToken(title='test_creation_api_token_1'),
+        APIToken(title='test_creation_api_token_2'),
+        APIToken(title='test_creation_api_token_3')
+    ]
+
+
+@fixture
+def test_api_token_to_delete() -> APIToken:
+    """Model for a API token to delete.
+
+    Fixture for a API token that can be used in the `deletion` tests.
+
+    Returns:
+        A model for a API token.
+    """
+    return APIToken(title='test_deletion_api_token_1')

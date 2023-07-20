@@ -7,7 +7,7 @@ the complete project.
 from typing import Any
 
 from my_model.user_scoped_models import (APIClient, Tag, User,  # type: ignore
-                                         UserRole)
+                                         UserRole, APIToken)
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, create_engine
@@ -169,6 +169,11 @@ class MyData:
                     APIClient(
                         app_name='root_api_client_3',
                         app_publisher='root_api_client_3_publisher')
+                ],
+                api_tokens=[
+                    APIToken(title='root_api_token_1'),
+                    APIToken(title='root_api_token_2'),
+                    APIToken(title='root_api_token_3')
                 ]))
             session.add(User(
                 id=2,
@@ -191,6 +196,11 @@ class MyData:
                     APIClient(
                         app_name='normal_user_1_api_client_3',
                         app_publisher='normal_user_1_api_client_3_publisher')
+                ],
+                api_tokens=[
+                    APIToken(title='normal_user_1_api_token_1'),
+                    APIToken(title='normal_user_1_api_token_2'),
+                    APIToken(title='normal_user_1_api_token_3')
                 ]))
             session.add(User(
                 id=3,
@@ -213,5 +223,10 @@ class MyData:
                     APIClient(
                         app_name='normal_user_1_api_client_3',
                         app_publisher='normal_user_2_api_client_3_publisher')
+                ],
+                api_tokens=[
+                    APIToken(title='normal_user_2_api_token_1'),
+                    APIToken(title='normal_user_2_api_token_2'),
+                    APIToken(title='normal_user_2_api_token_3')
                 ]))
             session.commit()

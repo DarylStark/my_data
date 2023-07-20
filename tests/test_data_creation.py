@@ -4,7 +4,7 @@ This module contains unit tests that create data in the database. After the
 creation, it checks if the data has been created.
 """
 
-from my_model.user_scoped_models import Tag, User, APIClient
+from my_model.user_scoped_models import Tag, User, APIClient, APIToken
 from pytest import raises
 from sqlmodel import or_
 
@@ -276,3 +276,103 @@ def test_data_creation_api_clients_as_normal_user_1_wrong_user_id(
             for api_client in test_api_clients:
                 api_client.user_id = 1
             context.api_clients.create(test_api_clients)
+
+
+def test_data_creation_api_tokens_as_root(
+        my_data: MyData,
+        root_user: User,
+        test_api_tokens: list[APIToken]) -> None:
+    """Test API Token creation as a ROOT user.
+
+    Creates a API Token as a root user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+        test_api_tokens: a list with API tokens to add.
+    """
+    with my_data.get_context(user=root_user) as context:
+        context.api_tokens.create(test_api_tokens)
+
+        # Check if they exist
+        created_api_tokens = context.api_tokens.retrieve(
+            APIToken.title.like('test_creation_api_token_%'))
+
+        assert len(created_api_tokens) == 3
+        assert created_api_tokens[0].title == 'test_creation_api_token_1'
+        assert created_api_tokens[1].title == 'test_creation_api_token_2'
+        assert created_api_tokens[2].title == 'test_creation_api_token_3'
+
+
+def test_data_creation_api_tokens_as_normal_user_1(
+        my_data: MyData,
+        normal_user_1: User,
+        test_api_tokens: list[APIToken]) -> None:
+    """Test API token creation as a USER user.
+
+    Creates a API token as a normal user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+        test_api_tokens: a list with API tokens to add.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        context.api_tokens.create(test_api_tokens)
+
+        # Check if they exist
+        created_api_tokens = context.api_tokens.retrieve(
+            APIToken.title.like('test_creation_api_token_%'))
+
+        assert len(created_api_tokens) == 3
+        assert created_api_tokens[0].title == 'test_creation_api_token_1'
+        assert created_api_tokens[1].title == 'test_creation_api_token_2'
+        assert created_api_tokens[2].title == 'test_creation_api_token_3'
+
+
+def test_data_creation_api_tokens_as_normal_user_2(
+        my_data: MyData,
+        normal_user_2: User,
+        test_api_tokens: list[APIToken]) -> None:
+    """Test API token creation as a USER user.
+
+    Creates a API token as a normal user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_2: the first normal user.
+        test_api_tokens: a list with API tokens to add.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        context.api_tokens.create(test_api_tokens)
+
+        # Check if they exist
+        created_api_tokens = context.api_tokens.retrieve(
+            APIToken.title.like('test_creation_api_token_%'))
+
+        assert len(created_api_tokens) == 3
+        assert created_api_tokens[0].app_name == 'test_creation_api_token_1'
+        assert created_api_tokens[1].app_name == 'test_creation_api_token_2'
+        assert created_api_tokens[2].app_name == 'test_creation_api_token_3'
+
+
+def test_data_creation_api_tokens_as_normal_user_1_wrong_user_id(
+        my_data: MyData,
+        normal_user_2: User,
+        test_api_tokens: list[APIToken]) -> None:
+    """Test API token creation as a USER user.
+
+    Creates a API token as a normal user with a wrong User ID. Should raise an
+    PermissionDeniedException exception.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_2: the first normal user.
+        test_api_tokens: a list with API token to add.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        with raises(PermissionDeniedException):
+            # Set the wrong user IDs
+            for api_token in test_api_tokens:
+                api_token.user_id = 1
+            context.api_tokens.create(test_api_tokens)
