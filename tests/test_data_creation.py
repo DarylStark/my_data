@@ -351,9 +351,9 @@ def test_data_creation_api_tokens_as_normal_user_2(
             APIToken.title.like('test_creation_api_token_%'))
 
         assert len(created_api_tokens) == 3
-        assert created_api_tokens[0].app_name == 'test_creation_api_token_1'
-        assert created_api_tokens[1].app_name == 'test_creation_api_token_2'
-        assert created_api_tokens[2].app_name == 'test_creation_api_token_3'
+        assert created_api_tokens[0].title == 'test_creation_api_token_1'
+        assert created_api_tokens[1].title == 'test_creation_api_token_2'
+        assert created_api_tokens[2].title == 'test_creation_api_token_3'
 
 
 def test_data_creation_api_tokens_as_normal_user_1_wrong_user_id(

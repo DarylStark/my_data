@@ -258,9 +258,9 @@ def test_data_retrieval_all_api_tokens_as_normal_user_1(
     with my_data.get_context(user=normal_user_1) as context:
         api_tokens = context.api_tokens.retrieve()
         assert len(api_tokens) == 3
-        assert api_tokens[0].app_name == 'normal_user_1_api_token_1'
-        assert api_tokens[1].app_name == 'normal_user_1_api_token_2'
-        assert api_tokens[2].app_name == 'normal_user_1_api_token_3'
+        assert api_tokens[0].title == 'normal_user_1_api_token_1'
+        assert api_tokens[1].title == 'normal_user_1_api_token_2'
+        assert api_tokens[2].title == 'normal_user_1_api_token_3'
 
 
 def test_data_retrieval_all_api_tokens_as_normal_user_2(
@@ -277,6 +277,6 @@ def test_data_retrieval_all_api_tokens_as_normal_user_2(
     with my_data.get_context(user=normal_user_2) as context:
         api_tokens = context.api_tokens.retrieve()
         assert len(api_tokens) == 3
-        assert api_tokens[0].app_name == 'normal_user_2_api_token_1'
-        assert api_tokens[1].app_name == 'normal_user_2_api_token_2'
-        assert api_tokens[2].app_name == 'normal_user_2_api_token_3'
+        assert api_tokens[0].title == 'normal_user_2_api_token_1'
+        assert api_tokens[1].title == 'normal_user_2_api_token_2'
+        assert api_tokens[2].title == 'normal_user_2_api_token_3'

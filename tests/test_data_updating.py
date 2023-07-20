@@ -311,7 +311,7 @@ def test_data_updating_api_token_as_normal_user_1(
         # Get the token again and check the title
         api_token = context.api_tokens.retrieve(
             APIToken.title == 'normal_user_1_api_token_1_new')[0]
-        assert api_token.app_name == 'normal_user_1_api_token_1_new'
+        assert api_token.title == 'normal_user_1_api_token_1_new'
 
         # Reset the name again
         api_token.title = old_title
