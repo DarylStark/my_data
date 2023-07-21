@@ -248,7 +248,7 @@ class MyData:
                     APIToken(title='normal_user_2_api_token_3')
                 ],
                 webuisettings=[
-                    WebUISetting(setting='normal_user_1_test_setting_1',
+                    WebUISetting(setting='normal_user_2_test_setting_1',
                                  value='test_value_1'),
                     WebUISetting(setting='normal_user_2_test_setting_2',
                                  value='test_value_2'),
