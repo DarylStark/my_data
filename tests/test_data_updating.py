@@ -3,7 +3,8 @@
 This module contains unit tests that update data in the database. After the
 update, it checks if the data has been updated.
 """
-from my_model.user_scoped_models import User, Tag, APIClient, APIToken
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+                                         WebUISetting)
 from pytest import raises
 
 from my_data.exceptions import PermissionDeniedException
@@ -316,3 +317,67 @@ def test_data_updating_api_token_as_normal_user_1(
         # Reset the name again
         api_token.title = old_title
         context.api_tokens.update(api_token)
+
+
+def test_data_updating_web_ui_setting_as_root(
+        my_data: MyData,
+        root_user: User) -> None:
+    """Test updating a Web UI setting as a ROOT user.
+
+    Updates a Web UI setting  as a ROOT user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+    """
+    with my_data.get_context(user=root_user) as context:
+        # Get the Web UI setting for this user
+        web_ui_setting = context.web_ui_settings.retrieve()[0]
+        old_value = web_ui_setting.value
+
+        # Update the value
+        web_ui_setting.value = 'test_value_new'
+
+        # Save it to the database
+        context.web_ui_settings.update(web_ui_setting)
+
+        # Get the setting again and check the value
+        web_ui_setting = context.web_ui_settings.retrieve(
+            WebUISetting.value == 'test_value_new')[0]
+        assert web_ui_setting.value == 'test_value_new'
+
+        # Reset the name again
+        web_ui_setting.value = old_value
+        context.web_ui_settings.update(web_ui_setting)
+
+
+def test_data_updating_web_ui_setting_as_normal_user_1(
+        my_data: MyData,
+        normal_user_1: User) -> None:
+    """Test updating a Web UI setting  as a USER user.
+
+    Updates a Web UI setting  as a USER user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the normal user for the context.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Get the Web UI setting for this user
+        web_ui_setting = context.web_ui_settings.retrieve()[0]
+        old_value = web_ui_setting.value
+
+        # Update the value
+        web_ui_setting.value = 'test_value_new'
+
+        # Save it to the database
+        context.web_ui_settings.update(web_ui_setting)
+
+        # Get the setting again and check the value
+        web_ui_setting = context.web_ui_settings.retrieve(
+            WebUISetting.value == 'test_value_new')[0]
+        assert web_ui_setting.value == 'test_value_new'
+
+        # Reset the name again
+        web_ui_setting.value = old_value
+        context.web_ui_settings.update(web_ui_setting)

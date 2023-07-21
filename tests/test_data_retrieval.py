@@ -3,9 +3,10 @@
 This module contains unit tests that retrieve data from the database.
 """
 
-from my_data import MyData
-from my_model.user_scoped_models import User, Tag
+from my_model.user_scoped_models import Tag, User
 from sqlmodel import or_
+
+from my_data import MyData
 
 
 def test_data_retrieval_all_users_as_root(
@@ -280,3 +281,60 @@ def test_data_retrieval_all_api_tokens_as_normal_user_2(
         assert api_tokens[0].title == 'normal_user_2_api_token_1'
         assert api_tokens[1].title == 'normal_user_2_api_token_2'
         assert api_tokens[2].title == 'normal_user_2_api_token_3'
+
+
+def test_data_retrieval_all_web_ui_settings_as_root(
+        my_data: MyData, root_user: User) -> None:
+    """Test Web UI setting retrieval as a ROOT user.
+
+    Retrieves Web UI settings from the database as a root user. Should retrieve
+    only Web UI settings for his own account.
+
+    Args:
+        my_data: a instance to a MyData object.
+        root_user: the root user for the context.
+    """
+    with my_data.get_context(user=root_user) as context:
+        web_ui_settings = context.web_ui_settings.retrieve()
+        assert len(web_ui_settings) == 3
+        assert web_ui_settings[0].setting == 'root_test_setting_1'
+        assert web_ui_settings[1].setting == 'root_test_setting_2'
+        assert web_ui_settings[2].setting == 'root_test_setting_3'
+
+
+def test_data_retrieval_all_web_ui_settings_as_normal_user_1(
+        my_data: MyData, normal_user_1: User) -> None:
+    """Test Web UI setting retrieval as a USER user.
+
+    Retrieves Web UI settings from the database as a normal user. Should
+    retrieve only Web UI settings for his own account.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_1: the first normal user.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        web_ui_settings = context.web_ui_settings.retrieve()
+        assert len(web_ui_settings) == 3
+        assert web_ui_settings[0].setting == 'normal_user_1_test_setting_1'
+        assert web_ui_settings[1].setting == 'normal_user_1_test_setting_2'
+        assert web_ui_settings[2].setting == 'normal_user_1_test_setting_3'
+
+
+def test_data_retrieval_all_web_ui_settings_as_normal_user_2(
+        my_data: MyData, normal_user_2: User) -> None:
+    """Test Web UI setting retrieval as a USER user.
+
+    Retrieves Web UI settings from the database as a normal user. Should
+    retrieve only Web UI settings for his own account.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the second normal user.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        web_ui_settings = context.web_ui_settings.retrieve()
+        assert len(web_ui_settings) == 3
+        assert web_ui_settings[0].setting == 'normal_user_2_test_setting_1'
+        assert web_ui_settings[1].setting == 'normal_user_2_test_setting_2'
+        assert web_ui_settings[2].setting == 'normal_user_2_test_setting_3'

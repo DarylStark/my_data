@@ -6,8 +6,8 @@ the complete project.
 
 from typing import Any
 
-from my_model.user_scoped_models import (APIClient, Tag, User,  # type: ignore
-                                         UserRole, APIToken)
+from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
+                                         Tag, User, UserRole, WebUISetting)
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, create_engine
@@ -174,7 +174,16 @@ class MyData:
                     APIToken(title='root_api_token_1'),
                     APIToken(title='root_api_token_2'),
                     APIToken(title='root_api_token_3')
-                ]))
+                ],
+                webuisettings=[
+                    WebUISetting(setting='root_test_setting_1',
+                                 value='test_value_1'),
+                    WebUISetting(setting='root_test_setting_2',
+                                 value='test_value_2'),
+                    WebUISetting(setting='root_test_setting_3',
+                                 value='test_value_3')
+                ]
+            ))
             session.add(User(
                 id=2,
                 fullname='Normal user 1',
@@ -201,7 +210,16 @@ class MyData:
                     APIToken(title='normal_user_1_api_token_1'),
                     APIToken(title='normal_user_1_api_token_2'),
                     APIToken(title='normal_user_1_api_token_3')
-                ]))
+                ],
+                webuisettings=[
+                    WebUISetting(setting='normal_user_1_test_setting_1',
+                                 value='test_value_1'),
+                    WebUISetting(setting='normal_user_1_test_setting_2',
+                                 value='test_value_2'),
+                    WebUISetting(setting='normal_user_1_test_setting_3',
+                                 value='test_value_3')
+                ]
+            ))
             session.add(User(
                 id=3,
                 fullname='Normal user 2',
@@ -228,5 +246,14 @@ class MyData:
                     APIToken(title='normal_user_2_api_token_1'),
                     APIToken(title='normal_user_2_api_token_2'),
                     APIToken(title='normal_user_2_api_token_3')
-                ]))
+                ],
+                webuisettings=[
+                    WebUISetting(setting='normal_user_1_test_setting_1',
+                                 value='test_value_1'),
+                    WebUISetting(setting='normal_user_2_test_setting_2',
+                                 value='test_value_2'),
+                    WebUISetting(setting='normal_user_2_test_setting_3',
+                                 value='test_value_3')
+                ]
+            ))
             session.commit()

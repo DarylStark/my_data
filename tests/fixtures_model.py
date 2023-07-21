@@ -5,7 +5,7 @@ to get a specific user from the test database, as defined in the `MyData`
 instance from the module `fixtures_db_creation`.
 """
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         UserRole)
+                                         UserRole, WebUISetting)
 from pytest import fixture
 from sqlmodel import Session, select
 
@@ -215,3 +215,36 @@ def test_api_token_to_delete() -> APIToken:
         A model for a API token.
     """
     return APIToken(title='test_deletion_api_token_1')
+
+
+@fixture
+def test_web_ui_settings() -> list[WebUISetting]:
+    """Model for a Web UI Setting to create.
+
+    Fixture for a list of Web UI settings that can be used in the `creation`
+    tests.
+
+    Returns:
+        A list with Web UI Settings to create.
+    """
+    return [
+        WebUISetting(setting='test_creation_web_ui_setting_1',
+                     value='test_creation_web_ui_value_1'),
+        WebUISetting(setting='test_creation_web_ui_setting_2',
+                     value='test_creation_web_ui_value_2'),
+        WebUISetting(setting='test_creation_web_ui_setting_3',
+                     value='test_creation_web_ui_value_3')
+    ]
+
+
+@fixture
+def test_web_ui_setting_to_delete() -> WebUISetting:
+    """Model for a Web UI setting to delete.
+
+    Fixture for a Web UI setting that can be used in the `deletion` tests.
+
+    Returns:
+        A model for a Web UI setting.
+    """
+    return WebUISetting(setting='test_deletion_web_ui_setting_1',
+                        value='test_deletion_web_ui_value_1')
