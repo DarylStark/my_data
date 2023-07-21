@@ -3,10 +3,11 @@
 This module contains unit tests that delete data from the database. After the
 deletion, it checks if the data has been deleted.
 """
-from my_model.user_scoped_models import User, Tag
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+                                         WebUISetting)
 from pytest import raises
-from my_data.exceptions import PermissionDeniedException
 
+from my_data.exceptions import PermissionDeniedException
 from my_data.my_data import MyData
 
 
@@ -143,3 +144,185 @@ def test_data_deleting_tags_as_normal_user(
         tags = context.tags.retrieve(
             Tag.title == 'test_deletion_tag_1')
         assert len(tags) == 0
+
+
+def test_data_deleting_api_clients_as_root(
+        my_data: MyData,
+        root_user: User,
+        test_api_client_to_delete: APIClient) -> None:
+    """Test deleting API clients as the root user.
+
+    Deletes API clients as the root user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+        test_api_client_to_delete: a test API client to create and delete.
+    """
+    with my_data.get_context(user=root_user) as context:
+        # Create a API client
+        context.api_clients.create(test_api_client_to_delete)
+
+        # Get the API client
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+
+        # Delete the API client
+        context.api_clients.delete(api_clients)
+
+        # Check if the API client is deleted
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+        assert len(api_clients) == 0
+
+
+def test_data_deleting_api_clients_as_normal_user(
+        my_data: MyData,
+        normal_user_1: User,
+        test_api_client_to_delete: APIClient) -> None:
+    """Test deleting API clients as the root user.
+
+    Deletes API clients as a normal user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+        test_tag_to_delete: a test API client to create and delete.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Create a API client
+        context.api_clients.create(test_api_client_to_delete)
+
+        # Get the API client
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+
+        # Delete the API client
+        context.api_clients.delete(api_clients)
+
+        # Check if the API client is deleted
+        api_clients = context.api_clients.retrieve(
+            APIClient.app_name == 'test_deletion_api_client_1')
+        assert len(api_clients) == 0
+
+
+def test_data_deleting_api_tokens_as_root(
+        my_data: MyData,
+        root_user: User,
+        test_api_token_to_delete: APIToken) -> None:
+    """Test deleting API clients as the root user.
+
+    Deletes API clients as the root user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+        test_api_token_to_delete: a test API token to create and delete.
+    """
+    with my_data.get_context(user=root_user) as context:
+        # Create a API token
+        context.api_tokens.create(test_api_token_to_delete)
+
+        # Get the API token
+        api_tokens = context.api_tokens.retrieve(
+            APIToken.title == 'test_deletion_api_token_1')
+
+        # Delete the API token
+        context.api_tokens.delete(api_tokens)
+
+        # Check if the API token is deleted
+        api_tokens = context.api_tokens.retrieve(
+            APIToken.title == 'test_deletion_api_token_1')
+        assert len(api_tokens) == 0
+
+
+def test_data_deleting_api_tokens_as_normal_user(
+        my_data: MyData,
+        normal_user_1: User,
+        test_api_token_to_delete: APIToken) -> None:
+    """Test deleting API tokens as the root user.
+
+    Deletes API tokens as a normal user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+        test_api_token_to_delete: a test API token to create and delete.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Create a API token
+        context.api_tokens.create(test_api_token_to_delete)
+
+        # Get the API token
+        api_tokens = context.api_tokens.retrieve(
+            APIToken.title == 'test_deletion_api_token_1')
+
+        # Delete the API token
+        context.api_tokens.delete(api_tokens)
+
+        # Check if the API token is deleted
+        api_tokens = context.api_tokens.retrieve(
+            APIToken.title == 'test_deletion_api_token_1')
+        assert len(api_tokens) == 0
+
+
+def test_data_deleting_web_ui_settings_as_root(
+        my_data: MyData,
+        root_user: User,
+        test_web_ui_setting_to_delete: WebUISetting) -> None:
+    """Test deleting Web UI settings as the root user.
+
+    Deletes Web UI settings as the root user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: the root user for the context.
+        test_web_ui_setting_to_delete: a test Web UI settings to create and
+            delete.
+    """
+    with my_data.get_context(user=root_user) as context:
+        # Create a Web UI setting
+        context.web_ui_settings.create(test_web_ui_setting_to_delete)
+
+        # Get the Web UI setting
+        web_ui_settings = context.web_ui_settings.retrieve(
+            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
+
+        # Delete the Web UI Setting
+        context.web_ui_settings.delete(web_ui_settings)
+
+        # Check if the API token is deleted
+        web_ui_settings = context.web_ui_settings.retrieve(
+            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
+        assert len(web_ui_settings) == 0
+
+
+def test_data_deleting_web_ui_settings_as_normal_user(
+        my_data: MyData,
+        normal_user_1: User,
+        test_web_ui_setting_to_delete: WebUISetting) -> None:
+    """Test deleting Web UI settings as a normal user.
+
+    Deletes Web UI settings as a normal user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+        test_web_ui_setting_to_delete: a test Web UI settings to create and
+            delete.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Create a Web UI setting
+        context.web_ui_settings.create(test_web_ui_setting_to_delete)
+
+        # Get the Web UI setting
+        web_ui_settings = context.web_ui_settings.retrieve(
+            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
+
+        # Delete the Web UI Setting
+        context.web_ui_settings.delete(web_ui_settings)
+
+        # Check if the API token is deleted
+        web_ui_settings = context.web_ui_settings.retrieve(
+            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
+        assert len(web_ui_settings) == 0
