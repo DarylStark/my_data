@@ -4,7 +4,7 @@ This module contains unit tests that delete data from the database. After the
 deletion, it checks if the data has been deleted.
 """
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         WebUISetting)
+                                         UserSetting)
 from pytest import raises
 
 from my_data.exceptions import PermissionDeniedException
@@ -266,63 +266,63 @@ def test_data_deleting_api_tokens_as_normal_user(
         assert len(api_tokens) == 0
 
 
-def test_data_deleting_web_ui_settings_as_root(
+def test_data_deleting_user_settings_as_root(
         my_data: MyData,
         root_user: User,
-        test_web_ui_setting_to_delete: WebUISetting) -> None:
-    """Test deleting Web UI settings as the root user.
+        test_user_setting_to_delete: UserSetting) -> None:
+    """Test deleting User Settings as the root user.
 
-    Deletes Web UI settings as the root user.
+    Deletes User Settings as the root user.
 
     Args:
         my_data: a instance of a MyData object.
         root_user: the root user for the context.
-        test_web_ui_setting_to_delete: a test Web UI settings to create and
+        test_user_setting_to_delete: a test User Settings to create and
             delete.
     """
     with my_data.get_context(user=root_user) as context:
-        # Create a Web UI setting
-        context.web_ui_settings.create(test_web_ui_setting_to_delete)
+        # Create a User Setting
+        context.user_settings.create(test_user_setting_to_delete)
 
-        # Get the Web UI setting
-        web_ui_settings = context.web_ui_settings.retrieve(
-            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
+        # Get the User Setting
+        user_settings = context.user_settings.retrieve(
+            UserSetting.setting == 'test_deletion_user_setting_1')
 
-        # Delete the Web UI Setting
-        context.web_ui_settings.delete(web_ui_settings)
+        # Delete the User Setting
+        context.user_settings.delete(user_settings)
 
         # Check if the API token is deleted
-        web_ui_settings = context.web_ui_settings.retrieve(
-            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
-        assert len(web_ui_settings) == 0
+        user_settings = context.user_settings.retrieve(
+            UserSetting.setting == 'test_deletion_user_setting_1')
+        assert len(user_settings) == 0
 
 
-def test_data_deleting_web_ui_settings_as_normal_user(
+def test_data_deleting_user_settings_as_normal_user(
         my_data: MyData,
         normal_user_1: User,
-        test_web_ui_setting_to_delete: WebUISetting) -> None:
-    """Test deleting Web UI settings as a normal user.
+        test_user_setting_to_delete: UserSetting) -> None:
+    """Test deleting User Settings as a normal user.
 
-    Deletes Web UI settings as a normal user.
+    Deletes User Settings as a normal user.
 
     Args:
         my_data: a instance of a MyData object.
         normal_user_1: the first normal user.
-        test_web_ui_setting_to_delete: a test Web UI settings to create and
+        test_user_setting_to_delete: a test User Settings to create and
             delete.
     """
     with my_data.get_context(user=normal_user_1) as context:
-        # Create a Web UI setting
-        context.web_ui_settings.create(test_web_ui_setting_to_delete)
+        # Create a User Setting
+        context.user_settings.create(test_user_setting_to_delete)
 
-        # Get the Web UI setting
-        web_ui_settings = context.web_ui_settings.retrieve(
-            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
+        # Get the User Setting
+        user_settings = context.user_settings.retrieve(
+            UserSetting.setting == 'test_deletion_user_setting_1')
 
-        # Delete the Web UI Setting
-        context.web_ui_settings.delete(web_ui_settings)
+        # Delete the User Setting
+        context.user_settings.delete(user_settings)
 
         # Check if the API token is deleted
-        web_ui_settings = context.web_ui_settings.retrieve(
-            WebUISetting.setting == 'test_deletion_web_ui_setting_1')
-        assert len(web_ui_settings) == 0
+        user_settings = context.user_settings.retrieve(
+            UserSetting.setting == 'test_deletion_user_setting_1')
+        assert len(user_settings) == 0
