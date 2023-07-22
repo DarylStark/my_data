@@ -5,7 +5,7 @@ This module contains the Context class.
 from types import TracebackType
 
 from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
-                                         Tag, User, WebUISetting)
+                                         Tag, User, UserSetting)
 from sqlalchemy.future import Engine
 
 from my_data.creators import UserCreator, UserScopedCreator
@@ -81,8 +81,8 @@ class Context:
             retriever=UserScopedRetriever,
             updater=UserScopedUpdater,
             deleter=UserScopedDeleter)
-        self.web_ui_settings = ResourceManager(
-            database_model=WebUISetting,
+        self.user_settings = ResourceManager(
+            database_model=UserSetting,
             database_engine=database_engine,
             context_data=self._context_data,
             creator=UserScopedCreator,

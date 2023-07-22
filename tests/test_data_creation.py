@@ -5,7 +5,7 @@ creation, it checks if the data has been created.
 """
 
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         WebUISetting)
+                                         UserSetting)
 from pytest import raises
 from sqlmodel import or_
 
@@ -379,110 +379,110 @@ def test_data_creation_api_tokens_as_normal_user_1_wrong_user_id(
             context.api_tokens.create(test_api_tokens)
 
 
-def test_data_creation_web_ui_settings_as_root(
+def test_data_creation_user_settings_as_root(
         my_data: MyData,
         root_user: User,
-        test_web_ui_settings: list[WebUISetting]) -> None:
-    """Test Web UI setting creation as a ROOT user.
+        test_user_settings: list[UserSetting]) -> None:
+    """Test User Setting creation as a ROOT user.
 
-    Creates a Web UI setting as a root user.
+    Creates a User Setting as a root user.
 
     Args:
         my_data: a instance of a MyData object.
         root_user: the root user for the context.
-        test_web_ui_settings: a list with API tokens to add.
+        test_user_settings: a list with API tokens to add.
     """
     with my_data.get_context(user=root_user) as context:
-        context.web_ui_settings.create(test_web_ui_settings)
+        context.user_settings.create(test_user_settings)
 
         # Check if they exist
-        created_web_ui_settings = context.web_ui_settings.retrieve(
-            WebUISetting.setting.like('test_creation_web_ui_setting_%'))
+        created_user_settings = context.user_settings.retrieve(
+            UserSetting.setting.like('test_creation_user_setting_%'))
 
-        assert len(created_web_ui_settings) == 3
-        assert (created_web_ui_settings[0].setting ==
-                'test_creation_web_ui_setting_1')
-        assert (created_web_ui_settings[1].setting ==
-                'test_creation_web_ui_setting_2')
-        assert (created_web_ui_settings[2].setting ==
-                'test_creation_web_ui_setting_3')
+        assert len(created_user_settings) == 3
+        assert (created_user_settings[0].setting ==
+                'test_creation_user_setting_1')
+        assert (created_user_settings[1].setting ==
+                'test_creation_user_setting_2')
+        assert (created_user_settings[2].setting ==
+                'test_creation_user_setting_3')
 
 
-def test_data_creation_web_ui_settings_as_normal_user_1(
+def test_data_creation_user_settings_as_normal_user_1(
         my_data: MyData,
         normal_user_1: User,
-        test_web_ui_settings: list[APIToken]) -> None:
-    """Test Web UI setting creation as a USER user.
+        test_user_settings: list[APIToken]) -> None:
+    """Test User Setting creation as a USER user.
 
-    Creates a Web UI setting as a normal user.
+    Creates a User Setting as a normal user.
 
     Args:
         my_data: a instance of a MyData object.
         normal_user_1: the first normal user.
-        test_web_ui_settings: a list with Web UI settings to add.
+        test_user_settings: a list with User Settings to add.
     """
     with my_data.get_context(user=normal_user_1) as context:
-        context.web_ui_settings.create(test_web_ui_settings)
+        context.user_settings.create(test_user_settings)
 
         # Check if they exist
-        created_web_ui_settings = context.web_ui_settings.retrieve(
-            WebUISetting.setting.like('test_creation_web_ui_setting_%'))
+        created_user_settings = context.user_settings.retrieve(
+            UserSetting.setting.like('test_creation_user_setting_%'))
 
-        assert len(created_web_ui_settings) == 3
-        assert (created_web_ui_settings[0].setting ==
-                'test_creation_web_ui_setting_1')
-        assert (created_web_ui_settings[1].setting ==
-                'test_creation_web_ui_setting_2')
-        assert (created_web_ui_settings[2].setting ==
-                'test_creation_web_ui_setting_3')
+        assert len(created_user_settings) == 3
+        assert (created_user_settings[0].setting ==
+                'test_creation_user_setting_1')
+        assert (created_user_settings[1].setting ==
+                'test_creation_user_setting_2')
+        assert (created_user_settings[2].setting ==
+                'test_creation_user_setting_3')
 
 
-def test_data_creation_web_ui_settings_as_normal_user_2(
+def test_data_creation_user_settings_as_normal_user_2(
         my_data: MyData,
         normal_user_2: User,
-        test_web_ui_settings: list[APIToken]) -> None:
-    """Test Web UI setting creation as a USER user.
+        test_user_settings: list[APIToken]) -> None:
+    """Test User Setting creation as a USER user.
 
-    Creates a Web UI setting as a normal user.
+    Creates a User Setting as a normal user.
 
     Args:
         my_data: a instance of a MyData object.
         normal_user_2: the first normal user.
-        test_web_ui_settings: a list with Web UI settings to add.
+        test_user_settings: a list with User Settings to add.
     """
     with my_data.get_context(user=normal_user_2) as context:
-        context.web_ui_settings.create(test_web_ui_settings)
+        context.user_settings.create(test_user_settings)
 
         # Check if they exist
-        created_web_ui_settings = context.web_ui_settings.retrieve(
-            WebUISetting.setting.like('test_creation_web_ui_setting_%'))
+        created_user_settings = context.user_settings.retrieve(
+            UserSetting.setting.like('test_creation_user_setting_%'))
 
-        assert len(created_web_ui_settings) == 3
-        assert (created_web_ui_settings[0].setting ==
-                'test_creation_web_ui_setting_1')
-        assert (created_web_ui_settings[1].setting ==
-                'test_creation_web_ui_setting_2')
-        assert (created_web_ui_settings[2].setting ==
-                'test_creation_web_ui_setting_3')
+        assert len(created_user_settings) == 3
+        assert (created_user_settings[0].setting ==
+                'test_creation_user_setting_1')
+        assert (created_user_settings[1].setting ==
+                'test_creation_user_setting_2')
+        assert (created_user_settings[2].setting ==
+                'test_creation_user_setting_3')
 
 
-def test_data_creation_web_ui_settings_as_normal_user_1_wrong_user_id(
+def test_data_creation_user_settings_as_normal_user_1_wrong_user_id(
         my_data: MyData,
         normal_user_2: User,
-        test_web_ui_settings: list[APIToken]) -> None:
-    """Test Web UI setting creation as a USER user.
+        test_user_settings: list[APIToken]) -> None:
+    """Test User Setting creation as a USER user.
 
-    Creates a Web UI setting as a normal user with a wrong User ID. Should
+    Creates a User Setting as a normal user with a wrong User ID. Should
     raise an PermissionDeniedException exception.
 
     Args:
         my_data: a instance of a MyData object.
         normal_user_2: the first normal user.
-        test_web_ui_settings: a list with Web UI settings to add.
+        test_user_settings: a list with User Settings to add.
     """
     with my_data.get_context(user=normal_user_2) as context:
         with raises(PermissionDeniedException):
             # Set the wrong user IDs
-            for web_ui_setting in test_web_ui_settings:
-                web_ui_setting.user_id = 1
-            context.web_ui_settings.create(test_web_ui_settings)
+            for user_setting in test_user_settings:
+                user_setting.user_id = 1
+            context.user_settings.create(test_user_settings)
