@@ -19,4 +19,5 @@ bumpver
 # Documentation
 sphinx
 sphinx-rtd-theme
+sphinxcontrib-mermaid
 # ---------------------------------------------------------------------
