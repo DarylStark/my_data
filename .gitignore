@@ -15,4 +15,12 @@ env*
 
 # Exclude 'rope' configuration and cache
 .vscode/.ropeproject
+
+# Exclude build files
+build/
+dist/
+*.egg-info
+
+# Files for mypy
+.mypy_cache
 #------------------------------------------------------------------------------

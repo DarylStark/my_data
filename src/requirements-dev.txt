@@ -16,3 +16,8 @@ autopep8
 # Versioning
 bumpver
 # ---------------------------------------------------------------------
+# Documentation
+sphinx
+sphinx-rtd-theme
+sphinxcontrib-mermaid
+# ---------------------------------------------------------------------
