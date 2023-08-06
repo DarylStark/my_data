@@ -69,6 +69,64 @@ def test_data_updating_other_user_as_root(
         assert user.verify_credentials('normal.user.1', 'test')
 
 
+def test_data_updating_normal_user_as_service_account(
+        my_data: MyData,
+        service_user: User) -> None:
+    """Test updating a user as a SERVICE user.
+
+    Updates a normal user as a SERVICE user. Should always be succesfull since
+    the SERVICE user can update all users.
+
+    Args:
+        my_data: a instance of a MyData object.
+        service_user: the service user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
+        # Get the root user
+        user = context.users.retrieve(User.username == 'normal.user.1')[0]
+
+        # Update the password
+        user.set_password('test')
+
+        # Save it to the database
+        context.users.update(user)
+
+        # Get the user again
+        user = context.users.retrieve(User.username == 'normal.user.1')[0]
+
+        # Check the password
+        assert user.verify_credentials('normal.user.1', 'test')
+
+
+def test_data_updating_root_user_as_service_account(
+        my_data: MyData,
+        service_user: User) -> None:
+    """Test updating a ROOT as a SERVICE user.
+
+    Updates a root user as a SERVICE user. Should always be succesfull since
+    the SERVICE user can update all users.
+
+    Args:
+        my_data: a instance of a MyData object.
+        service_user: the service user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
+        # Get the root user
+        user = context.users.retrieve(User.username == 'root')[0]
+
+        # Update the password
+        user.set_password('test')
+
+        # Save it to the database
+        context.users.update(user)
+
+        # Get the user again
+        user = context.users.retrieve(User.username == 'root')[0]
+
+        # Check the password
+        assert user.verify_credentials('root', 'test')
+
+
 def test_data_updating_own_user_as_normal_user_1(
         my_data: MyData,
         normal_user_1: User) -> None:
