@@ -4,9 +4,11 @@ This module contains unit tests that retrieve data from the database.
 """
 
 from my_model.user_scoped_models import Tag, User
+from pytest import raises
 from sqlmodel import or_
 
 from my_data import MyData
+from my_data.exceptions import PermissionDeniedException
 
 
 def test_data_retrieval_all_users_as_root(
@@ -25,6 +27,26 @@ def test_data_retrieval_all_users_as_root(
         assert users[0].username == 'root'
         assert users[1].username == 'normal.user.1'
         assert users[2].username == 'normal.user.2'
+        assert users[3].username == 'service.user'
+
+
+def test_data_retrieval_all_users_as_service_user(
+        my_data: MyData, service_user: User) -> None:
+    """Test User retrieval as a SERVICE user.
+
+    Retrieves Users from the database as a service user. Should retrieve all
+    users.
+
+    Args:
+        my_data: a instance to a MyData object.
+        service_user: the service user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
+        users = context.users.retrieve()
+        assert users[0].username == 'root'
+        assert users[1].username == 'normal.user.1'
+        assert users[2].username == 'normal.user.2'
+        assert users[3].username == 'service.user'
 
 
 def test_data_retrieval_filtered_users_as_root(
@@ -36,9 +58,28 @@ def test_data_retrieval_filtered_users_as_root(
 
     Args:
         my_data: a instance to a MyData object.
-        root_user: the root user for the context.
+        root_user: the service user for the context.
     """
     with my_data.get_context(user=root_user) as context:
+        users = context.users.retrieve(
+            or_(User.username == 'normal.user.2', User.username == 'root'))
+        assert len(users) == 2
+        assert users[0].username == 'root'
+        assert users[1].username == 'normal.user.2'
+
+
+def test_data_retrieval_filtered_users_as_service_user(
+        my_data: MyData, service_user: User) -> None:
+    """Test User retrieval as a SERVICE user with a filter.
+
+    Retrieves Users from the database as a service user with a filter. Should
+    retrieve two users.
+
+    Args:
+        my_data: a instance to a MyData object.
+        service_user: the service user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
         users = context.users.retrieve(
             or_(User.username == 'normal.user.2', User.username == 'root'))
         assert len(users) == 2
@@ -137,6 +178,24 @@ def test_data_retrieval_all_tags_as_normal_user_2(
         assert tags[2].title == 'normal_user_2_tag_3'
 
 
+def test_data_retrieval_tags_as_service_user(
+        my_data: MyData,
+        service_user: User) -> None:
+    """Test Tag retrieveal as a SERVICE user.
+
+    Retrieves tags as a SERVICE user. Should always fail cause the service
+    user cannot retrieve user specific models.
+
+    Args:
+        my_data: a instance of a MyData object.
+        service_user: the root user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
+        with raises(PermissionDeniedException):
+            # Get a tag
+            resource = context.tags.retrieve()
+
+
 def test_data_retrieval_filtered_tags_as_normal_user_1(
         my_data: MyData, normal_user_1: User) -> None:
     """Test Tag retrieval as a USER user with a filter.
@@ -226,6 +285,24 @@ def test_data_retrieval_all_api_clients_as_normal_user_2(
                 'normal_user_2_api_client_3_publisher')
 
 
+def test_data_retrieval_all_api_clients_as_service_user(
+        my_data: MyData,
+        service_user: User) -> None:
+    """Test API client retrieveal as a SERVICE user.
+
+    Retrieves API clients as a SERVICE user. Should always fail cause the
+    service user cannot retrieve user specific models.
+
+    Args:
+        my_data: a instance of a MyData object.
+        service_user: the root user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
+        with raises(PermissionDeniedException):
+            # Get API clients
+            resource = context.api_clients.retrieve()
+
+
 def test_data_retrieval_all_api_tokens_as_root(
         my_data: MyData, root_user: User) -> None:
     """Test API Token retrieval as a ROOT user.
@@ -283,6 +360,24 @@ def test_data_retrieval_all_api_tokens_as_normal_user_2(
         assert api_tokens[2].title == 'normal_user_2_api_token_3'
 
 
+def test_data_retrieval_all_api_tokens_as_service_user(
+        my_data: MyData,
+        service_user: User) -> None:
+    """Test API token retrieveal as a SERVICE user.
+
+    Retrieves API tokens as a SERVICE user. Should always fail cause the
+    service user cannot retrieve user specific models.
+
+    Args:
+        my_data: a instance of a MyData object.
+        service_user: the root user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
+        with raises(PermissionDeniedException):
+            # Get API tokens
+            resource = context.api_tokens.retrieve()
+
+
 def test_data_retrieval_all_user_settings_as_root(
         my_data: MyData, root_user: User) -> None:
     """Test User Setting retrieval as a ROOT user.
@@ -338,3 +433,21 @@ def test_data_retrieval_all_user_settings_as_normal_user_2(
         assert user_settings[0].setting == 'normal_user_2_test_setting_1'
         assert user_settings[1].setting == 'normal_user_2_test_setting_2'
         assert user_settings[2].setting == 'normal_user_2_test_setting_3'
+
+
+def test_data_retrieval_all_user_settings_as_service_user(
+        my_data: MyData,
+        service_user: User) -> None:
+    """Test User Settingretrieveal as a SERVICE user.
+
+    Retrieves User Settings as a SERVICE user. Should always fail cause the
+    service user cannot retrieve user specific models.
+
+    Args:
+        my_data: a instance of a MyData object.
+        service_user: the root user for the context.
+    """
+    with my_data.get_context(user=service_user) as context:
+        with raises(PermissionDeniedException):
+            # Get User Settings
+            resource = context.user_settings.retrieve()

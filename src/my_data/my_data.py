@@ -256,4 +256,11 @@ class MyData:
                                 value='test_value_3')
                 ]
             ))
+            session.add(User(
+                id=4,
+                fullname='Service User - for tests',
+                username='service.user',
+                email='service.user@example.com',
+                role=UserRole.SERVICE,
+            ))
             session.commit()
