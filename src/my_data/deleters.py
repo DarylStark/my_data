@@ -58,7 +58,7 @@ class UserScopedDeleter(Deleter):
             models: the models to delete.
 
         Raises:
-            PermissionsDeniedException: when a SERVICE user tries to work with
+            PermissionDeniedException: when a SERVICE user tries to work with
                 User Scpoped resources.
         """
         if self._context_data.user.role == UserRole.SERVICE:

@@ -54,7 +54,7 @@ class UserScopedUpdater(Updater):
             models: the models to update.
 
         Raises:
-            PermissionsDeniedException: when a SERVICE user tries to work with
+            PermissionDeniedException: when a SERVICE user tries to work with
                 User Scpoped resources.
 
         Returns:

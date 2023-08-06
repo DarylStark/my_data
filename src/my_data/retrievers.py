@@ -12,7 +12,8 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from .data_manipulator import DataManipulator
-from .exceptions import BaseClassCallException, PermissionDeniedException, WrongDataManipulatorException
+from .exceptions import (BaseClassCallException, PermissionDeniedException,
+                         WrongDataManipulatorException)
 
 T = TypeVar('T')
 
@@ -92,7 +93,7 @@ class UserScopedRetriever(Retriever):
         exception.
 
         Raises:
-            PermissionsDeniedException: when a SERVICE user tries to work with
+            PermissionDeniedException: when a SERVICE user tries to work with
                 User Scpoped resources.
             WrongDataManipulatorException: when the model for the class is not
                 a UserScoped model.
