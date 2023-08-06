@@ -79,7 +79,7 @@ class UserScopedCreator(Creator):
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
-        return True
+        return self._context_data.user.role in (UserRole.ROOT, UserRole.USER)
 
     def create(self, models: list[T] | T) -> list[T]:
         """Create the UserScoped data.

@@ -12,7 +12,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from .data_manipulator import DataManipulator
-from .exceptions import BaseClassCallException, WrongDataManipulatorException
+from .exceptions import BaseClassCallException, PermissionDeniedException, WrongDataManipulatorException
 
 T = TypeVar('T')
 
@@ -92,12 +92,17 @@ class UserScopedRetriever(Retriever):
         exception.
 
         Raises:
+            PermissionsDeniedException: when a SERVICE user tries to work with
+                User Scpoped resources.
             WrongDataManipulatorException: when the model for the class is not
                 a UserScoped model.
 
         Returns:
             A list with the SQLalchmey filters.
         """
+        if self._context_data.user.role == UserRole.SERVICE:
+            raise PermissionDeniedException(
+                'Service users are not allowed to use user scoped resources')
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
@@ -123,6 +128,8 @@ class UserRetriever(Retriever):
         Raises:
             WrongDataManipulatorException: when the model for the class is not
                 a User model.
+            PermissionError: Raised when a unknown User Role is trying to
+                update User objects.
 
         Returns:
             A list with the SQLalchmey filters.
@@ -130,8 +137,12 @@ class UserRetriever(Retriever):
         if self._database_model is not User:
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a User')
+
         if self._context_data.user.role == UserRole.USER:
             return [User.id == self._context_data.user.id]
 
-        # Root users get no filter
-        return []
+        if self._context_data.user.role in (UserRole.ROOT, UserRole.SERVICE):
+            return []
+
+        raise PermissionError(
+            'Not allowed to retrieve users within this context')

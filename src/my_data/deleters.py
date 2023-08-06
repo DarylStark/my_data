@@ -56,7 +56,15 @@ class UserScopedDeleter(Deleter):
 
         Args:
             models: the models to delete.
+
+        Raises:
+            PermissionsDeniedException: when a SERVICE user tries to work with
+                User Scpoped resources.
         """
+        if self._context_data.user.role == UserRole.SERVICE:
+            raise PermissionDeniedException(
+                'Service users are not allowed to use user scoped resources')
+
         models = self._validate_user_scoped_models(models)
         super().delete(models)
 
