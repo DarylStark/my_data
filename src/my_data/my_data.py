@@ -138,6 +138,30 @@ class MyData:
             context_data=ContextData(user=user)
         )
 
+    def get_context_for_service_user(
+            self, username: str, password: str) -> Context:
+        """Get a Context object for the database as a service user.
+
+        Method to create a Context object for a service user. The context can
+        be used to do the things a service user needs to do, like retrieving
+        user objects or API token objects.
+
+        Args:
+            username: the username for the service user.
+            password: the password for the service user.
+
+        Returns:
+            The created Context object.
+        """
+        self.create_engine()
+
+        if not self.database_engine:
+            raise DatabaseNotConfiguredException(
+                'Database is not configured yet')
+
+        with Session(self.database_engine) as session:
+            pass
+
     def create_init_data(self) -> None:
         """Create initializer data.
 
@@ -148,119 +172,126 @@ class MyData:
         self.create_db_tables(drop_tables=True)
 
         with Session(self.database_engine) as session:
-            session.add(User(
-                id=1,
-                fullname='root',
-                username='root',
-                email='root@example.com',
-                role=UserRole.ROOT,
-                tags=[
-                    Tag(title='root_tag_1'),
-                    Tag(title='root_tag_2'),
-                    Tag(title='root_tag_3')
-                ],
-                api_clients=[
-                    APIClient(
-                        app_name='root_api_client_1',
-                        app_publisher='root_api_client_1_publisher'),
-                    APIClient(
-                        app_name='root_api_client_2',
-                        app_publisher='root_api_client_2_publisher'),
-                    APIClient(
-                        app_name='root_api_client_3',
-                        app_publisher='root_api_client_3_publisher')
-                ],
-                api_tokens=[
-                    APIToken(title='root_api_token_1'),
-                    APIToken(title='root_api_token_2'),
-                    APIToken(title='root_api_token_3')
-                ],
-                user_settings=[
-                    UserSetting(setting='root_test_setting_1',
-                                value='test_value_1'),
-                    UserSetting(setting='root_test_setting_2',
-                                value='test_value_2'),
-                    UserSetting(setting='root_test_setting_3',
-                                value='test_value_3')
-                ]
-            ))
-            session.add(User(
-                id=2,
-                fullname='Normal user 1',
-                username='normal.user.1',
-                email='normal_user_1@example.com',
-                role=UserRole.USER,
-                tags=[
-                    Tag(title='normal_user_1_tag_1'),
-                    Tag(title='normal_user_1_tag_2'),
-                    Tag(title='normal_user_1_tag_3')
-                ],
-                api_clients=[
-                    APIClient(
-                        app_name='normal_user_1_api_client_1',
-                        app_publisher='normal_user_1_api_client_1_publisher'),
-                    APIClient(
-                        app_name='normal_user_1_api_client_2',
-                        app_publisher='normal_user_1_api_client_2_publisher'),
-                    APIClient(
-                        app_name='normal_user_1_api_client_3',
-                        app_publisher='normal_user_1_api_client_3_publisher')
-                ],
-                api_tokens=[
-                    APIToken(title='normal_user_1_api_token_1'),
-                    APIToken(title='normal_user_1_api_token_2'),
-                    APIToken(title='normal_user_1_api_token_3')
-                ],
-                user_settings=[
-                    UserSetting(setting='normal_user_1_test_setting_1',
-                                value='test_value_1'),
-                    UserSetting(setting='normal_user_1_test_setting_2',
-                                value='test_value_2'),
-                    UserSetting(setting='normal_user_1_test_setting_3',
-                                value='test_value_3')
-                ]
-            ))
-            session.add(User(
-                id=3,
-                fullname='Normal user 2',
-                username='normal.user.2',
-                email='normal_user_2@example.com',
-                role=UserRole.USER,
-                tags=[
-                    Tag(title='normal_user_2_tag_1'),
-                    Tag(title='normal_user_2_tag_2'),
-                    Tag(title='normal_user_2_tag_3')
-                ],
-                api_clients=[
-                    APIClient(
-                        app_name='normal_user_2_api_client_1',
-                        app_publisher='normal_user_2_api_client_1_publisher'),
-                    APIClient(
-                        app_name='normal_user_2_api_client_2',
-                        app_publisher='normal_user_2_api_client_2_publisher'),
-                    APIClient(
-                        app_name='normal_user_1_api_client_3',
-                        app_publisher='normal_user_2_api_client_3_publisher')
-                ],
-                api_tokens=[
-                    APIToken(title='normal_user_2_api_token_1'),
-                    APIToken(title='normal_user_2_api_token_2'),
-                    APIToken(title='normal_user_2_api_token_3')
-                ],
-                user_settings=[
-                    UserSetting(setting='normal_user_2_test_setting_1',
-                                value='test_value_1'),
-                    UserSetting(setting='normal_user_2_test_setting_2',
-                                value='test_value_2'),
-                    UserSetting(setting='normal_user_2_test_setting_3',
-                                value='test_value_3')
-                ]
-            ))
-            session.add(User(
-                id=4,
-                fullname='Service User - for tests',
-                username='service.user',
-                email='service.user@example.com',
-                role=UserRole.SERVICE,
-            ))
+            users: list[User] = [
+                User(
+                    id=1,
+                    fullname='root',
+                    username='root',
+                    email='root@example.com',
+                    role=UserRole.ROOT,
+                    tags=[
+                        Tag(title='root_tag_1'),
+                        Tag(title='root_tag_2'),
+                        Tag(title='root_tag_3')
+                    ],
+                    api_clients=[
+                        APIClient(
+                            app_name='root_api_client_1',
+                            app_publisher='root_api_client_1_publisher'),
+                        APIClient(
+                            app_name='root_api_client_2',
+                            app_publisher='root_api_client_2_publisher'),
+                        APIClient(
+                            app_name='root_api_client_3',
+                            app_publisher='root_api_client_3_publisher')
+                    ],
+                    api_tokens=[
+                        APIToken(title='root_api_token_1'),
+                        APIToken(title='root_api_token_2'),
+                        APIToken(title='root_api_token_3')
+                    ],
+                    user_settings=[
+                        UserSetting(setting='root_test_setting_1',
+                                    value='test_value_1'),
+                        UserSetting(setting='root_test_setting_2',
+                                    value='test_value_2'),
+                        UserSetting(setting='root_test_setting_3',
+                                    value='test_value_3')
+                    ]
+                ),
+                User(
+                    id=2,
+                    fullname='Normal user 1',
+                    username='normal.user.1',
+                    email='normal_user_1@example.com',
+                    role=UserRole.USER,
+                    tags=[
+                        Tag(title='normal_user_1_tag_1'),
+                        Tag(title='normal_user_1_tag_2'),
+                        Tag(title='normal_user_1_tag_3')
+                    ],
+                    api_clients=[
+                        APIClient(
+                            app_name='normal_user_1_api_client_1',
+                            app_publisher='normal_user_1_api_client_1_publisher'),
+                        APIClient(
+                            app_name='normal_user_1_api_client_2',
+                            app_publisher='normal_user_1_api_client_2_publisher'),
+                        APIClient(
+                            app_name='normal_user_1_api_client_3',
+                            app_publisher='normal_user_1_api_client_3_publisher')
+                    ],
+                    api_tokens=[
+                        APIToken(title='normal_user_1_api_token_1'),
+                        APIToken(title='normal_user_1_api_token_2'),
+                        APIToken(title='normal_user_1_api_token_3')
+                    ],
+                    user_settings=[
+                        UserSetting(setting='normal_user_1_test_setting_1',
+                                    value='test_value_1'),
+                        UserSetting(setting='normal_user_1_test_setting_2',
+                                    value='test_value_2'),
+                        UserSetting(setting='normal_user_1_test_setting_3',
+                                    value='test_value_3')
+                    ]
+                ),
+                User(
+                    id=3,
+                    fullname='Normal user 2',
+                    username='normal.user.2',
+                    email='normal_user_2@example.com',
+                    role=UserRole.USER,
+                    tags=[
+                        Tag(title='normal_user_2_tag_1'),
+                        Tag(title='normal_user_2_tag_2'),
+                        Tag(title='normal_user_2_tag_3')
+                    ],
+                    api_clients=[
+                        APIClient(
+                            app_name='normal_user_2_api_client_1',
+                            app_publisher='normal_user_2_api_client_1_publisher'),
+                        APIClient(
+                            app_name='normal_user_2_api_client_2',
+                            app_publisher='normal_user_2_api_client_2_publisher'),
+                        APIClient(
+                            app_name='normal_user_1_api_client_3',
+                            app_publisher='normal_user_2_api_client_3_publisher')
+                    ],
+                    api_tokens=[
+                        APIToken(title='normal_user_2_api_token_1'),
+                        APIToken(title='normal_user_2_api_token_2'),
+                        APIToken(title='normal_user_2_api_token_3')
+                    ],
+                    user_settings=[
+                        UserSetting(setting='normal_user_2_test_setting_1',
+                                    value='test_value_1'),
+                        UserSetting(setting='normal_user_2_test_setting_2',
+                                    value='test_value_2'),
+                        UserSetting(setting='normal_user_2_test_setting_3',
+                                    value='test_value_3')
+                    ]
+                ),
+                User(
+                    id=4,
+                    fullname='Service User - for tests',
+                    username='service.user',
+                    email='service.user@example.com',
+                    role=UserRole.SERVICE,
+                )]
+            users[0].set_password('root_pw')
+            users[1].set_password('normal_user_1_pw')
+            users[2].set_password('normal_user_2_pw')
+            users[3].set_password('service_password')
+            for user in users:
+                session.add(user)
             session.commit()
