@@ -3,8 +3,10 @@
 This module tests the things a Service user needs to do, like retrieving
 User objects or API tokens.
 """
+from pytest import raises
 
 from my_model.user_scoped_models import User, APIToken
+from my_data.exceptions import PermissionDeniedException
 
 from my_data.my_data import MyData
 
@@ -38,3 +40,16 @@ def test_retrieving_api_tokens(my_data: MyData) -> None:
             APIToken.token == 'normal_user_2_api_token_1')
         assert len(token) == 1
         assert (token[0].user.username == 'normal.user.2')
+
+
+def test_logging_in_with_wrong_service_credentials(my_data: MyData) -> None:
+    """Unit test to log in with wrong Service user credentials.
+
+    Tries to create a service user context with wrong credentials. Should
+    always fail.
+    """
+    with raises(PermissionDeniedException):
+        with my_data.get_context_for_service_user(
+                username='service.user',
+                password='wrong_password'):
+            pass

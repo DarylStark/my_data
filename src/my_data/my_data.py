@@ -4,18 +4,19 @@ This module contains the class `MyData`, which is the most important class for
 the complete project.
 """
 
+from operator import and_
 from typing import Any
 
 from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
                                          Tag, User, UserRole, UserSetting)
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
-from sqlmodel import Session, SQLModel, create_engine
+from sqlmodel import Session, SQLModel, create_engine, select, and_
 
 from .context import Context
 from .context_data import ContextData
 from .exceptions import (DatabaseConnectionException,
-                         DatabaseNotConfiguredException)
+                         DatabaseNotConfiguredException, PermissionDeniedException)
 
 
 class MyData:
@@ -150,6 +151,9 @@ class MyData:
             username: the username for the service user.
             password: the password for the service user.
 
+        Raises:
+            PermissionDeniedException: when the credentials are incorrect.
+
         Returns:
             The created Context object.
         """
@@ -160,7 +164,27 @@ class MyData:
                 'Database is not configured yet')
 
         with Session(self.database_engine) as session:
-            pass
+            sql_query = select(User)
+            sql_query = sql_query.where(
+                and_(User.username == username,
+                     User.role == UserRole.SERVICE))
+            users = session.exec(sql_query).all()
+
+            # Check the amount of users we got
+            if len(users) != 1:
+                raise PermissionDeniedException(
+                    f'Service account "{username}" does not exist')
+
+            # Check if the provided credentials are correct
+            user = users[0]
+            if not user.verify_credentials(username, password):
+                raise PermissionDeniedException(
+                    f'Password for Service account "{username}" is incorrect')
+
+            return Context(
+                database_engine=self.database_engine,
+                context_data=ContextData(user=user)
+            )
 
     def create_init_data(self) -> None:
         """Create initializer data.
