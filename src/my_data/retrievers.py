@@ -6,8 +6,8 @@ data from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model.user_scoped_models import (User, UserRole,  # type: ignore
-                                         UserScopedModel)
+from my_model.user_scoped_models import (APIToken, User,  # type: ignore
+                                         UserRole, UserScopedModel)
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
@@ -94,19 +94,25 @@ class UserScopedRetriever(Retriever):
 
         Raises:
             PermissionDeniedException: when a SERVICE user tries to work with
-                User Scpoped resources.
+                User Scpoped resources that is NOT a API token.
             WrongDataManipulatorException: when the model for the class is not
                 a UserScoped model.
 
         Returns:
             A list with the SQLalchmey filters.
         """
-        if self._context_data.user.role == UserRole.SERVICE:
+        if (self._context_data.user.role == UserRole.SERVICE and
+                self._database_model is not APIToken):
             raise PermissionDeniedException(
                 'Service users are not allowed to use user scoped resources')
+
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
+
+        if self._context_data.user.role == UserRole.SERVICE:
+            return []
+
         return [self._database_model.user_id == self._context_data.user.id]
 
 

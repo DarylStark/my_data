@@ -365,17 +365,16 @@ def test_data_retrieval_all_api_tokens_as_service_user(
         service_user: User) -> None:
     """Test API token retrieveal as a SERVICE user.
 
-    Retrieves API tokens as a SERVICE user. Should always fail cause the
-    service user cannot retrieve user specific models.
+    Retrieves API tokens as a SERVICE user. Should not fail. Service users are
+    allowed to retrieve APITokens.
 
     Args:
         my_data: a instance of a MyData object.
         service_user: the root user for the context.
     """
     with my_data.get_context(user=service_user) as context:
-        with raises(PermissionDeniedException):
-            # Get API tokens
-            resource = context.api_tokens.retrieve()
+        resources = context.api_tokens.retrieve()
+        assert len(resources) == 9
 
 
 def test_data_retrieval_all_user_settings_as_root(

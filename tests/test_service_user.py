@@ -36,13 +36,32 @@ def test_retrieving_api_tokens(my_data: MyData) -> None:
     with my_data.get_context_for_service_user(
             username='service.user',
             password='service_password') as context:
-        token = context.api_tokens.retrieve(
-            APIToken.token == 'normal_user_2_api_token_1')
+        # Get the APIToken object
+        token = context.api_tokens.retrieve([
+            APIToken.token == 'aRlIytpyz61JX2TvczLxJZUsRzk578pE',
+            APIToken.enabled == True])
         assert len(token) == 1
-        assert (token[0].user.username == 'normal.user.2')
+        assert (token[0].user_id == 3)
+
+        # Get the User object
+        user = context.users.retrieve(User.id == token[0].user_id)
+        assert len(user) == 1
 
 
-def test_logging_in_with_wrong_service_credentials(my_data: MyData) -> None:
+def test_logging_in_with_wrong_service_username(my_data: MyData) -> None:
+    """Unit test to log in with wrong Service user credentials.
+
+    Tries to create a service user context with wrong credentials. Should
+    always fail.
+    """
+    with raises(PermissionDeniedException):
+        with my_data.get_context_for_service_user(
+                username='wrong_username',
+                password='service_password'):
+            pass
+
+
+def test_logging_in_with_wrong_service_password(my_data: MyData) -> None:
     """Unit test to log in with wrong Service user credentials.
 
     Tries to create a service user context with wrong credentials. Should

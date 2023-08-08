@@ -292,7 +292,8 @@ class MyData:
                             app_publisher='normal_user_2_api_client_3_publisher')
                     ],
                     api_tokens=[
-                        APIToken(title='normal_user_2_api_token_1'),
+                        APIToken(title='normal_user_2_api_token_1',
+                                 token='aRlIytpyz61JX2TvczLxJZUsRzk578pE'),
                         APIToken(title='normal_user_2_api_token_2'),
                         APIToken(title='normal_user_2_api_token_3')
                     ],
