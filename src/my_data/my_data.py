@@ -4,19 +4,19 @@ This module contains the class `MyData`, which is the most important class for
 the complete project.
 """
 
-from operator import and_
 from typing import Any
 
 from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
                                          Tag, User, UserRole, UserSetting)
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
-from sqlmodel import Session, SQLModel, create_engine, select, and_
+from sqlmodel import Session, SQLModel, and_, create_engine, select
 
 from .context import Context
 from .context_data import ContextData
 from .exceptions import (DatabaseConnectionException,
-                         DatabaseNotConfiguredException, PermissionDeniedException)
+                         DatabaseNotConfiguredException,
+                         PermissionDeniedException)
 
 
 class MyData:
@@ -152,6 +152,8 @@ class MyData:
             password: the password for the service user.
 
         Raises:
+            DatabaseNotConfiguredException: method is called before configuring
+                the database.
             PermissionDeniedException: when the credentials are incorrect.
 
         Returns:
@@ -247,13 +249,16 @@ class MyData:
                     api_clients=[
                         APIClient(
                             app_name='normal_user_1_api_client_1',
-                            app_publisher='normal_user_1_api_client_1_publisher'),
+                            app_publisher='normal_user_1_api_client_1_' +
+                            'publisher'),
                         APIClient(
                             app_name='normal_user_1_api_client_2',
-                            app_publisher='normal_user_1_api_client_2_publisher'),
+                            app_publisher='normal_user_1_api_client_2_' +
+                            'publisher'),
                         APIClient(
                             app_name='normal_user_1_api_client_3',
-                            app_publisher='normal_user_1_api_client_3_publisher')
+                            app_publisher='normal_user_1_api_client_3_' +
+                            'publisher')
                     ],
                     api_tokens=[
                         APIToken(title='normal_user_1_api_token_1'),
@@ -283,13 +288,16 @@ class MyData:
                     api_clients=[
                         APIClient(
                             app_name='normal_user_2_api_client_1',
-                            app_publisher='normal_user_2_api_client_1_publisher'),
+                            app_publisher='normal_user_2_api_client_1_' +
+                            'publisher'),
                         APIClient(
                             app_name='normal_user_2_api_client_2',
-                            app_publisher='normal_user_2_api_client_2_publisher'),
+                            app_publisher='normal_user_2_api_client_2_' +
+                            'publisher'),
                         APIClient(
                             app_name='normal_user_1_api_client_3',
-                            app_publisher='normal_user_2_api_client_3_publisher')
+                            app_publisher='normal_user_2_api_client_3_' +
+                            'publisher')
                     ],
                     api_tokens=[
                         APIToken(title='normal_user_2_api_token_1',
