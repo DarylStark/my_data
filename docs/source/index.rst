@@ -16,6 +16,7 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    usage/overview
    usage/setup
    usage/contexts
+   usage/service_users
 
 .. toctree::
    :caption: API documentation
