@@ -3,72 +3,67 @@
 This module tests the things a Service user needs to do, like retrieving
 User objects or API tokens.
 """
+from my_model.user_scoped_models import APIToken, User
 from pytest import raises
 
-from my_model.user_scoped_models import User, APIToken
-from my_data.exceptions import PermissionDeniedException
-
+from my_data.exceptions import (PermissionDeniedException,
+                                UnknownUserAccountException)
 from my_data.my_data import MyData
 
 
-def test_retrieving_user_objects(my_data: MyData) -> None:
-    """Unit test to retrieve a User object using a Service user.
+def test_retrieving_user_objects_by_username(my_data: MyData):
+    """Unit test to retrieve a User object by the username.
 
     This unit test tries to log in with a Service user and retrieve a User
-    object using the username and password for the user. This can be used by
-    clients that need a user to login.
+    object using the username for the user. This can be used by clients that
+    need a user to login.
     """
     with my_data.get_context_for_service_user(
             username='service.user',
             password='service_password') as context:
-        user = context.users.retrieve(User.username == 'normal.user.1')
-        assert len(user) == 1
-        assert user[0].verify_credentials('normal.user.1', 'normal_user_1_pw')
+        user = context.get_user_account_by_username('normal.user.1')
+        assert user is not None
+        assert user.username == 'normal.user.1'
 
 
-def test_retrieving_api_tokens(my_data: MyData) -> None:
-    """Unit test to retrieve a User object using a API token.
+def test_retrieving_user_objects_by_username_wrong_user(my_data: MyData):
+    """Unit test to retrieve a User object by the username.
 
     This unit test tries to log in with a Service user and retrieve a User
-    object using a given API token. This can be used, for instance, by a
-    REST API service to retrieve the correct user for given API token.
+    object using the username for the user. This can be used by clients that
+    need a user to login.
     """
     with my_data.get_context_for_service_user(
             username='service.user',
             password='service_password') as context:
-        # Get the APIToken object
-        token = context.api_tokens.retrieve([
-            APIToken.token == 'aRlIytpyz61JX2TvczLxJZUsRzk578pE',
-            APIToken.enabled == True])
-        assert len(token) == 1
-        assert (token[0].user_id == 3)
-
-        # Get the User object
-        user = context.users.retrieve(User.id == token[0].user_id)
-        assert len(user) == 1
+        with raises(UnknownUserAccountException):
+            context.get_user_account_by_username('wrong.user.1')
 
 
-def test_logging_in_with_wrong_service_username(my_data: MyData) -> None:
-    """Unit test to log in with wrong Service user credentials.
+def test_retrieving_user_objects_by_api_token(my_data: MyData):
+    """Unit test to retrieve a User object by the API token.
 
-    Tries to create a service user context with wrong credentials. Should
-    always fail.
+    This unit test tries to log in with a Service user and retrieve a User
+    object using a API token.
     """
-    with raises(PermissionDeniedException):
-        with my_data.get_context_for_service_user(
-                username='wrong_username',
-                password='service_password'):
-            pass
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        user = context.get_user_account_by_api_token(
+            'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
+        assert user is not None
+        assert user.username == 'normal.user.2'
 
 
-def test_logging_in_with_wrong_service_password(my_data: MyData) -> None:
-    """Unit test to log in with wrong Service user credentials.
+def test_retrieving_user_objects_by_api_token_wrong_token(my_data: MyData):
+    """Unit test to retrieve a User object by the API token.
 
-    Tries to create a service user context with wrong credentials. Should
-    always fail.
+    This unit test tries to log in with a Service user and retrieve a User
+    object using a API token.
     """
-    with raises(PermissionDeniedException):
-        with my_data.get_context_for_service_user(
-                username='service.user',
-                password='wrong_password'):
-            pass
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        with raises(UnknownUserAccountException):
+            context.get_user_account_by_api_token(
+                'wrong_token')

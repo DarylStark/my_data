@@ -34,19 +34,16 @@ def test_data_retrieval_all_users_as_service_user(
         my_data: MyData, service_user: User) -> None:
     """Test User retrieval as a SERVICE user.
 
-    Retrieves Users from the database as a service user. Should retrieve all
-    users.
+    Retrieves Users from the database as a service user. This should fail since
+    service users are not allowed to retrieve data.
 
     Args:
         my_data: a instance to a MyData object.
         service_user: the service user for the context.
     """
     with my_data.get_context(user=service_user) as context:
-        users = context.users.retrieve()
-        assert users[0].username == 'root'
-        assert users[1].username == 'normal.user.1'
-        assert users[2].username == 'normal.user.2'
-        assert users[3].username == 'service.user'
+        with raises(PermissionDeniedException):
+            users = context.users.retrieve()
 
 
 def test_data_retrieval_filtered_users_as_root(
@@ -61,25 +58,6 @@ def test_data_retrieval_filtered_users_as_root(
         root_user: the service user for the context.
     """
     with my_data.get_context(user=root_user) as context:
-        users = context.users.retrieve(
-            or_(User.username == 'normal.user.2', User.username == 'root'))
-        assert len(users) == 2
-        assert users[0].username == 'root'
-        assert users[1].username == 'normal.user.2'
-
-
-def test_data_retrieval_filtered_users_as_service_user(
-        my_data: MyData, service_user: User) -> None:
-    """Test User retrieval as a SERVICE user with a filter.
-
-    Retrieves Users from the database as a service user with a filter. Should
-    retrieve two users.
-
-    Args:
-        my_data: a instance to a MyData object.
-        service_user: the service user for the context.
-    """
-    with my_data.get_context(user=service_user) as context:
         users = context.users.retrieve(
             or_(User.username == 'normal.user.2', User.username == 'root'))
         assert len(users) == 2
@@ -365,16 +343,16 @@ def test_data_retrieval_all_api_tokens_as_service_user(
         service_user: User) -> None:
     """Test API token retrieveal as a SERVICE user.
 
-    Retrieves API tokens as a SERVICE user. Should not fail. Service users are
-    allowed to retrieve APITokens.
+    Retrieves API tokens as a SERVICE user. Should fail since Service users are
+    not allowed to retrieve objects.
 
     Args:
         my_data: a instance of a MyData object.
         service_user: the root user for the context.
     """
     with my_data.get_context(user=service_user) as context:
-        resources = context.api_tokens.retrieve()
-        assert len(resources) == 9
+        with raises(PermissionDeniedException):
+            resources = context.api_tokens.retrieve()
 
 
 def test_data_retrieval_all_user_settings_as_root(

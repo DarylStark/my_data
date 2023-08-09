@@ -6,14 +6,13 @@ data from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model.user_scoped_models import (APIToken, User,  # type: ignore
-                                         UserRole, UserScopedModel)
+from my_model.user_scoped_models import (User, UserRole,  # type: ignore
+                                         UserScopedModel)
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from .data_manipulator import DataManipulator
-from .exceptions import (BaseClassCallException, PermissionDeniedException,
-                         WrongDataManipulatorException)
+from .exceptions import BaseClassCallException, WrongDataManipulatorException, PermissionDeniedException
 
 T = TypeVar('T')
 
@@ -42,17 +41,27 @@ class Retriever(DataManipulator):
             flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
         """Retrieve data.
 
-        The method to retrieve data from the database.
+        The method to retrieve data from the database. Can only be done by
+        normal users and root users. A Service user, for instance, cannot
+        use this method to retrieve data.
 
         Args:
             flt: a SQLalchemy filter to filter the retrieved data. Can be a
                 list of filters, or a single filter.
+
+        Raises:
+            PermissionDeniedException: when this user type is not allowed to
+                retrieve data this way.
 
         Returns:
             A list with retrieved data. If no data was found, a empty list is
             returned. If only one item is found, a list with one element is
             returned.
         """
+        if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
+            raise PermissionDeniedException(
+                'User must be a normal user or a root user to retrieve data.')
+
         # Retrieve the resources
         with Session(self._database_engine) as session:
             sql_query = select(self._database_model)
@@ -93,26 +102,15 @@ class UserScopedRetriever(Retriever):
         exception.
 
         Raises:
-            PermissionDeniedException: when a SERVICE user tries to work with
-                User Scpoped resources that is NOT a API token.
             WrongDataManipulatorException: when the model for the class is not
                 a UserScoped model.
 
         Returns:
             A list with the SQLalchmey filters.
         """
-        if (self._context_data.user.role == UserRole.SERVICE and
-                self._database_model is not APIToken):
-            raise PermissionDeniedException(
-                'Service users are not allowed to use user scoped resources')
-
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
-
-        if self._context_data.user.role == UserRole.SERVICE:
-            return []
-
         return [self._database_model.user_id == self._context_data.user.id]
 
 
@@ -135,8 +133,6 @@ class UserRetriever(Retriever):
         Raises:
             WrongDataManipulatorException: when the model for the class is not
                 a User model.
-            PermissionError: Raised when a unknown User Role is trying to
-                update User objects.
 
         Returns:
             A list with the SQLalchmey filters.
@@ -144,12 +140,8 @@ class UserRetriever(Retriever):
         if self._database_model is not User:
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a User')
-
         if self._context_data.user.role == UserRole.USER:
             return [User.id == self._context_data.user.id]
 
-        if self._context_data.user.role in (UserRole.ROOT, UserRole.SERVICE):
-            return []
-
-        raise PermissionError(
-            'Not allowed to retrieve users within this context')
+        # Root users get no filter
+        return []

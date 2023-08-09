@@ -7,12 +7,14 @@ from types import TracebackType
 from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
                                          Tag, User, UserSetting)
 from sqlalchemy.future import Engine
+from sqlmodel import Session, select
 
-from my_data.creators import UserCreator, UserScopedCreator
-from my_data.deleters import UserDeleter, UserScopedDeleter
-from my_data.resource_manager import ResourceManager
-from my_data.retrievers import UserRetriever, UserScopedRetriever
-from my_data.updaters import UserScopedUpdater, UserUpdater
+from .creators import UserCreator, UserScopedCreator
+from .deleters import UserDeleter, UserScopedDeleter
+from .exceptions import UnknownUserAccountException
+from .resource_manager import ResourceManager
+from .retrievers import UserRetriever, UserScopedRetriever
+from .updaters import UserScopedUpdater, UserUpdater
 
 from .context_data import ContextData
 
@@ -119,3 +121,51 @@ class Context:
             False if there are unhandled exceptions, True if there are none.
         """
         return exception_type is None
+
+    def get_user_account_by_username(self, username: str) -> User:
+        """Method to get a User account using a service account.
+
+        Retrieves a User account for a user by searching for a specific
+        username. This can only be done by a service user.
+
+        Args:
+            username: the username for the user.
+
+        Raises:
+            UnknownUserAccountException: the user is not found.
+
+        Returns:
+            A User object for the correct user.
+        """
+        # TODO: check if this is a SERVICE user
+        with Session(self.database_engine) as session:
+            sql_query = select(User).where(User.username == username)
+            user_object = session.exec(sql_query).all()
+            if len(user_object) == 1:
+                return user_object[0]
+            raise UnknownUserAccountException(
+                f'User with username "{username}" is not found.')
+
+    def get_user_account_by_api_token(self, api_token: str) -> User:
+        """Method to get a User account using via a API token.
+
+        Retrieves a User account for a user by searching for a specific API
+        token. This can only be done by a service user.
+
+        Args:
+            username: the username for the user.
+
+        Raises:
+            UnknownUserAccountException: the user is not found.
+
+        Returns:
+            A User object for the correct user.
+        """
+        # TODO: check if this is a SERVICE user
+        with Session(self.database_engine) as session:
+            sql_query = select(APIToken).where(APIToken.token == api_token)
+            api_tokens = session.exec(sql_query).all()
+            if len(api_tokens) == 1:
+                return api_tokens[0].user
+            raise UnknownUserAccountException(
+                f'Token "{api_token}" is not found.')

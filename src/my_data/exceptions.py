@@ -26,3 +26,7 @@ class WrongDataManipulatorException(MyDataException):
 
 class PermissionDeniedException(MyDataException):
     """User tries to do something he is not allowed to do."""
+
+
+class UnknownUserAccountException(MyDataException):
+    """Service user tries to retrieve a non-existing user account."""
