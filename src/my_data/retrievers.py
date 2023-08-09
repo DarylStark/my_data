@@ -12,7 +12,8 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from .data_manipulator import DataManipulator
-from .exceptions import BaseClassCallException, WrongDataManipulatorException, PermissionDeniedException
+from .exceptions import (BaseClassCallException, PermissionDeniedException,
+                         WrongDataManipulatorException)
 
 T = TypeVar('T')
 

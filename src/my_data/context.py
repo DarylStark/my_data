@@ -5,13 +5,13 @@ This module contains the Context class.
 from types import TracebackType
 
 from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
-                                         Tag, User, UserSetting)
+                                         Tag, User, UserSetting, UserRole)
 from sqlalchemy.future import Engine
 from sqlmodel import Session, select
 
 from .creators import UserCreator, UserScopedCreator
 from .deleters import UserDeleter, UserScopedDeleter
-from .exceptions import UnknownUserAccountException
+from .exceptions import UnknownUserAccountException, PermissionDeniedException
 from .resource_manager import ResourceManager
 from .retrievers import UserRetriever, UserScopedRetriever
 from .updaters import UserScopedUpdater, UserUpdater
@@ -123,7 +123,7 @@ class Context:
         return exception_type is None
 
     def get_user_account_by_username(self, username: str) -> User:
-        """Method to get a User account using a service account.
+        """Get a User account using a service account.
 
         Retrieves a User account for a user by searching for a specific
         username. This can only be done by a service user.
@@ -132,12 +132,16 @@ class Context:
             username: the username for the user.
 
         Raises:
+            PermissionDeniedException: user in the context is not a Service
+                user.
             UnknownUserAccountException: the user is not found.
 
         Returns:
             A User object for the correct user.
         """
-        # TODO: check if this is a SERVICE user
+        if self._context_data.user.role != UserRole.SERVICE:
+            raise PermissionDeniedException('Should be ran as a service user')
+
         with Session(self.database_engine) as session:
             sql_query = select(User).where(User.username == username)
             user_object = session.exec(sql_query).all()
@@ -147,21 +151,25 @@ class Context:
                 f'User with username "{username}" is not found.')
 
     def get_user_account_by_api_token(self, api_token: str) -> User:
-        """Method to get a User account using via a API token.
+        """Get a User account using via a API token.
 
         Retrieves a User account for a user by searching for a specific API
         token. This can only be done by a service user.
 
         Args:
-            username: the username for the user.
+            api_token: the API token for the user.
 
         Raises:
+            PermissionDeniedException: user in the context is not a Service
+                user.
             UnknownUserAccountException: the user is not found.
 
         Returns:
             A User object for the correct user.
         """
-        # TODO: check if this is a SERVICE user
+        if self._context_data.user.role != UserRole.SERVICE:
+            raise PermissionDeniedException('Should be ran as a service user')
+
         with Session(self.database_engine) as session:
             sql_query = select(APIToken).where(APIToken.token == api_token)
             api_tokens = session.exec(sql_query).all()
