@@ -31,9 +31,16 @@ class Updater(DataManipulator):
         Args:
             models: the models to update.
 
+        Raises:
+            PermissionDeniedException: when this user type is not allowed to
+                update data this way.
+
         Returns:
             A list with the updated data models.
         """
+        if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
+            raise PermissionDeniedException(
+                'User must be a normal user or a root user to update data.')
         return self._add_models_to_session(models)
 
 

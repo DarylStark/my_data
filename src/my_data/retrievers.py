@@ -12,7 +12,8 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import Session, select
 
 from .data_manipulator import DataManipulator
-from .exceptions import BaseClassCallException, WrongDataManipulatorException
+from .exceptions import (BaseClassCallException, PermissionDeniedException,
+                         WrongDataManipulatorException)
 
 T = TypeVar('T')
 
@@ -41,17 +42,27 @@ class Retriever(DataManipulator):
             flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
         """Retrieve data.
 
-        The method to retrieve data from the database.
+        The method to retrieve data from the database. Can only be done by
+        normal users and root users. A Service user, for instance, cannot
+        use this method to retrieve data.
 
         Args:
             flt: a SQLalchemy filter to filter the retrieved data. Can be a
                 list of filters, or a single filter.
+
+        Raises:
+            PermissionDeniedException: when this user type is not allowed to
+                retrieve data this way.
 
         Returns:
             A list with retrieved data. If no data was found, a empty list is
             returned. If only one item is found, a list with one element is
             returned.
         """
+        if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
+            raise PermissionDeniedException(
+                'User must be a normal user or a root user to retrieve data.')
+
         # Retrieve the resources
         with Session(self._database_engine) as session:
             sql_query = select(self._database_model)

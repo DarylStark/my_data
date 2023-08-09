@@ -48,6 +48,10 @@ class Creator(DataManipulator):
         Returns:
             A list with the created data models.
         """
+        if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
+            raise PermissionDeniedException(
+                'User must be a normal user or a root user to create data.')
+
         if not self.is_authorized():
             raise PermissionDeniedException(
                 'Not allowed to create this kind of object within the ' +
@@ -79,7 +83,7 @@ class UserScopedCreator(Creator):
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
-        return True
+        return self._context_data.user.role in (UserRole.ROOT, UserRole.USER)
 
     def create(self, models: list[T] | T) -> list[T]:
         """Create the UserScoped data.

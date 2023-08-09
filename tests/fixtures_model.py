@@ -46,6 +46,21 @@ def root_user(my_data: MyData) -> User | None:
 
 
 @fixture
+def service_user(my_data: MyData) -> User | None:
+    """Service user.
+
+    Fixture for a user with a SERVICE role.
+
+    Args:
+        my_data: a instance to a MyData object.
+
+    Returns:
+        The User object or None if it isn't found.
+    """
+    return get_user_with_username(my_data, 'service.user')
+
+
+@fixture
 def normal_user_1(my_data: MyData) -> User | None:
     """The first normal user.
 
