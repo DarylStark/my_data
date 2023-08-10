@@ -8,7 +8,6 @@ from typing import Generic, Type, TypeVar
 
 from my_model.user_scoped_models import UserScopedModel  # type: ignore
 from sqlalchemy.future import Engine
-from sqlmodel import Session
 
 from .context_data import ContextData
 from .exceptions import (PermissionDeniedException,
@@ -120,8 +119,6 @@ class DataManipulator(Generic[T]):
             models = [models]
 
         # Update the resources
-        with Session(self._database_engine, expire_on_commit=False) as session:
-            for model in models:
-                session.add(model)
-            session.commit()
+        for model in models:
+            self._context_data.db_session.add(model)
         return models

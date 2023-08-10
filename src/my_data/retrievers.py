@@ -9,7 +9,7 @@ from typing import TypeVar
 from my_model.user_scoped_models import (User, UserRole,  # type: ignore
                                          UserScopedModel)
 from sqlalchemy.sql.elements import ColumnElement
-from sqlmodel import Session, select
+from sqlmodel import select
 
 from .data_manipulator import DataManipulator
 from .exceptions import (BaseClassCallException, PermissionDeniedException,
@@ -64,22 +64,21 @@ class Retriever(DataManipulator):
                 'User must be a normal user or a root user to retrieve data.')
 
         # Retrieve the resources
-        with Session(self._database_engine) as session:
-            sql_query = select(self._database_model)
+        sql_query = select(self._database_model)
 
-            # Filter on the context-based filters
-            for filter_item in self.get_context_filters():
+        # Filter on the context-based filters
+        for filter_item in self.get_context_filters():
+            sql_query = sql_query.where(filter_item)
+
+        if isinstance(flt, ColumnElement):
+            flt = [flt]
+
+        # Add the filters from the command line
+        if flt:
+            for filter_item in flt:
                 sql_query = sql_query.where(filter_item)
 
-            if isinstance(flt, ColumnElement):
-                flt = [flt]
-
-            # Add the filters from the command line
-            if flt:
-                for filter_item in flt:
-                    sql_query = sql_query.where(filter_item)
-
-            resources = session.exec(sql_query).all()
+        resources = self._context_data.db_session.exec(sql_query).all()
 
         # Return the given resources
         return resources

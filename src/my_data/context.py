@@ -5,18 +5,17 @@ This module contains the Context class.
 from types import TracebackType
 
 from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
-                                         Tag, User, UserSetting, UserRole)
+                                         Tag, User, UserRole, UserSetting)
 from sqlalchemy.future import Engine
-from sqlmodel import Session, select
+from sqlmodel import select
 
+from .context_data import ContextData
 from .creators import UserCreator, UserScopedCreator
 from .deleters import UserDeleter, UserScopedDeleter
-from .exceptions import UnknownUserAccountException, PermissionDeniedException
+from .exceptions import PermissionDeniedException, UnknownUserAccountException
 from .resource_manager import ResourceManager
 from .retrievers import UserRetriever, UserScopedRetriever
 from .updaters import UserScopedUpdater, UserUpdater
-
-from .context_data import ContextData
 
 
 class Context:
@@ -120,6 +119,9 @@ class Context:
         Returns:
             False if there are unhandled exceptions, True if there are none.
         """
+        if self._context_data.db_session:
+            self._context_data.db_session.commit()
+            self._context_data.db_session.close()
         return exception_type is None
 
     def get_user_account_by_username(self, username: str) -> User:
@@ -142,13 +144,13 @@ class Context:
         if self._context_data.user.role != UserRole.SERVICE:
             raise PermissionDeniedException('Should be ran as a service user')
 
-        with Session(self.database_engine) as session:
-            sql_query = select(User).where(User.username == username)
-            user_object = session.exec(sql_query).all()
-            if len(user_object) == 1:
-                return user_object[0]
-            raise UnknownUserAccountException(
-                f'User with username "{username}" is not found.')
+        sql_query = select(User).where(User.username == username)
+        if self._context_data.db_session:
+            user_object = self._context_data.db_session.exec(sql_query).all()
+        if len(user_object) == 1:
+            return user_object[0]
+        raise UnknownUserAccountException(
+            f'User with username "{username}" is not found.')
 
     def get_user_account_by_api_token(self, api_token: str) -> User:
         """Get a User account using via a API token.
@@ -170,10 +172,9 @@ class Context:
         if self._context_data.user.role != UserRole.SERVICE:
             raise PermissionDeniedException('Should be ran as a service user')
 
-        with Session(self.database_engine) as session:
-            sql_query = select(APIToken).where(APIToken.token == api_token)
-            api_tokens = session.exec(sql_query).all()
-            if len(api_tokens) == 1:
-                return api_tokens[0].user
-            raise UnknownUserAccountException(
-                f'Token "{api_token}" is not found.')
+        sql_query = select(APIToken).where(APIToken.token == api_token)
+        api_tokens = self._context_data.db_session.exec(sql_query).all()
+        if len(api_tokens) == 1:
+            return api_tokens[0].user
+        raise UnknownUserAccountException(
+            f'Token "{api_token}" is not found.')

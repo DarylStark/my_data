@@ -5,8 +5,7 @@ from the database. The ResourceManager uses these classes.
 """
 from typing import TypeVar
 
-from my_model.user_scoped_models import (User, UserRole)  # type: ignore
-from sqlmodel import Session
+from my_model.user_scoped_models import User, UserRole  # type: ignore
 
 from my_data.exceptions import (PermissionDeniedException,
                                 WrongDataManipulatorException)
@@ -43,10 +42,8 @@ class Deleter(DataManipulator):
             models = [models]
 
         # Delete the resources
-        with Session(self._database_engine) as session:
-            for model in models:
-                session.delete(model)
-            session.commit()
+        for model in models:
+            self._context_data.db_session.delete(model)
 
 
 class UserScopedDeleter(Deleter):

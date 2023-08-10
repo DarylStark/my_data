@@ -136,7 +136,9 @@ class MyData:
 
         return Context(
             database_engine=self.database_engine,
-            context_data=ContextData(user=user)
+            context_data=ContextData(
+                database_engine=self.database_engine,
+                user=user)
         )
 
     def get_context_for_service_user(
@@ -185,7 +187,9 @@ class MyData:
 
             return Context(
                 database_engine=self.database_engine,
-                context_data=ContextData(user=user)
+                context_data=ContextData(
+                    database_engine=self.database_engine,
+                    user=user)
             )
 
     def create_init_data(self) -> None:
