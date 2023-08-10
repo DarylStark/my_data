@@ -20,7 +20,7 @@ jobs:
           python-version: "3.11"
           cache: "pip"
       - name: Install app requirements
-        run: pip install -r src/requirements.txt
+        run: pip install --no-cache-dir -r src/requirements.txt
       - name: Install dev requirements
         run: pip install -r src/requirements-dev.txt
       - name: Run unit tests
@@ -38,7 +38,7 @@ jobs:
           python-version: "3.11"
           cache: "pip"
       - name: Install app requirements
-        run: pip install -r src/requirements.txt
+        run: pip install --no-cache-dir -r src/requirements.txt
       - name: Install dev requirements
         run: pip install -r src/requirements-dev.txt
       - name: PyCodeStyle (source code)
