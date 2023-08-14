@@ -119,9 +119,7 @@ class Context:
         Returns:
             False if there are unhandled exceptions, True if there are none.
         """
-        if self._context_data.db_session:
-            self._context_data.db_session.commit()
-            self._context_data.db_session.close()
+        self._context_data.close_session()
         return exception_type is None
 
     def get_user_account_by_username(self, username: str) -> User:
