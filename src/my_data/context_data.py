@@ -31,3 +31,13 @@ class ContextData:
         """
         self.user: User = user
         self.db_session = Session(database_engine, expire_on_commit=False)
+
+    def close_session(self) -> None:
+        """Commit and closes the database sessions.
+
+        Method to commit the changes in the session and close the session. This
+        should be done when the Context is ready with this ContextData object.
+        """
+        if self.db_session:
+            self.db_session.commit()
+            self.db_session.close()
