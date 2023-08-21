@@ -5,7 +5,7 @@ __pycache__
 .pytest_cache
 
 # Exclude Python vritual environments
-env*
+.venv*
 
 # Exclude VIM swap files
 *swp
