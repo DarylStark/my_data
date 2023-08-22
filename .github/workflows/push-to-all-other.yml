@@ -5,11 +5,6 @@ on:
     branches-ignore:
     - dev*
     - main
-    - gh-pages
-permissions: 
-  contents: read
-  pages: write
-  id-token: write
 
 jobs:
   integration:
@@ -17,6 +12,4 @@ jobs:
     uses: ./.github/workflows/_integration.yml
     with:
       code-quality-may-fail: true
-  publish-docs:
-    name: Publish docs
-    uses: ./.github/workflows/_publish_docs.yml
+
