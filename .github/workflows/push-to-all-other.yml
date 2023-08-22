@@ -12,3 +12,6 @@ jobs:
     uses: ./.github/workflows/_integration.yml
     with:
       code-quality-may-fail: true
+  publish-docs:
+    name: Publish docs
+    uses: ./.github/workflows/_publish_docs.yml
