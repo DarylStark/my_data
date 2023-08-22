@@ -3,19 +3,18 @@ run-name: Deploy
 on:
   workflow_call:
     secrets:
-      repository_directory:
+      pypi_token:
         required: true
+    
 jobs:
   build-and-deploy:
     name: Build and deploy Python package
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
-      - name: Install build requirements
-        run: pip3 install -r src/requirements-build.txt
-      - name: Create the distributable
-        run: python3 -m build
+      - name: Install Poetry
+        run: pip3 install poetry
       - name: Distribute the package
         shell: bash
-        run: mv dist/*.tar.gz ${{ secrets.repository_directory }}/my-data/
+        run: poetry publish --username "__token__" --password "${{ secrets.pypi_token }}" --build

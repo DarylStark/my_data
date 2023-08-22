@@ -16,10 +16,4 @@ jobs:
     uses: ./.github/workflows/_integration.yml
     needs: check-version
     with:
-      code-quality-may-fail: true
-  build-and-deploy:
-    name: Deployment
-    uses: ./.github/workflows/_deploy.yml
-    needs: integration
-    secrets:
-      repository_directory: ${{ secrets.CB_KR23_REPO_DIR }}
+      code-quality-may-fail: false

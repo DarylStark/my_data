@@ -22,4 +22,4 @@ jobs:
     uses: ./.github/workflows/_deploy.yml
     needs: integration
     secrets:
-      repository_directory: ${{ secrets.CB_KR23_REPO_DIR }}
+      repository_directory: ${{ secrets.PYPI_TOKEN }}
