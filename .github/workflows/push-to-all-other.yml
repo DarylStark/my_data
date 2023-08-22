@@ -6,8 +6,6 @@ on:
     - dev*
     - main
     - gh-pages
-permissions: 
-  contents: write
 
 jobs:
   integration:
