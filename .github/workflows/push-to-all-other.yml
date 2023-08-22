@@ -12,3 +12,4 @@ jobs:
     uses: ./.github/workflows/_integration.yml
     with:
       code-quality-may-fail: true
+
