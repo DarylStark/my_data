@@ -13,10 +13,19 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    :caption: Library usage:
    :numbered:
 
+   usage/installation
    usage/overview
    usage/setup
    usage/contexts
    usage/service_users
+
+.. toctree::
+   :caption: Developing
+   :hidden:
+   :maxdepth: 2
+
+   developing/setting_up
+   developing/development
 
 .. toctree::
    :caption: API documentation
