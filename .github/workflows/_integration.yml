@@ -7,6 +7,11 @@ on:
         type: boolean
         default: false
         description: Determines if the workflow should continue when the Code Quality check fails
+      versions-may-be-invalid:
+        type: boolean
+        default: false
+        description: Determines if the workflow should continue when there are invalid versions
+  
 jobs:
   test-poetry-lock-file:
     name: Test `poetry` lock file
@@ -22,10 +27,28 @@ jobs:
         run: pip install poetry
       - name: Check `lock` file for inconsistensies
         run: poetry lock --check
+  test-dependency-versions:
+    name: Test dependency versions
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ inputs.versions-may-be-invalid }}
+    needs: test-poetry-lock-file
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install main and dev requirements
+        run: poetry install --with dev
+      - name: Check versions
+        run: poetry run python3 tools/check-dependency-versions.py
   unit-tests:
     name: Unit tests
     runs-on: ubuntu-latest
-    needs: test-poetry-lock-file
+    needs: test-dependency-versions
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
@@ -42,7 +65,7 @@ jobs:
   code-quality:
     name: Code quality
     runs-on: ubuntu-latest
-    needs: test-poetry-lock-file
+    needs: test-dependency-versions
     continue-on-error: ${{ inputs.code-quality-may-fail }}
     steps:
       - name: Checkout the repository

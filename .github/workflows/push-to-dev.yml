@@ -17,3 +17,4 @@ jobs:
     needs: check-version
     with:
       code-quality-may-fail: false
+      versions-may-be-invalid: true
