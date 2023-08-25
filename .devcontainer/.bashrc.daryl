@@ -175,5 +175,37 @@ else
     set_prompt_without_git;
 fi
 #-------------------------------------------------------------------------------
-# Done!
+# Done! Show welcome banner
 #-------------------------------------------------------------------------------
+echo
+echo "  Welcome to the Dev Container for ${TITLE}!"
+echo
+echo "  The source code for the project is in the directory"
+echo
+echo "        /workspaces/${FOLDERNAME}"
+echo
+echo "   The dev-environment is set up and you are ready to start programming!"
+echo "   We created a Python Virtual Environment for you in the following"
+echo "   folder:"
+echo
+echo "        /workspaces/${FOLDERNAME}/.venv"
+echo
+echo "    To use this in VScode or Codium, remember to configure the Python"
+echo "    interpreter to"
+echo
+echo "        /workspaces/${FOLDERNAME}/.venv/bin/python"
+echo
+echo "   That way, you can use all features related to Python, like linting,"
+echo "   autoformatting and unit testing."
+echo
+echo "   To add Python packages to the project you use the following command:"
+echo
+echo "        poetry add <packagename>"
+echo
+echo "    Don't forget to check out to a new branch when you're working on"
+echo "    features or bugfixes."
+echo
+echo "    Happy coding!"
+echo
+#-------------------------------------------------------------------------------
+

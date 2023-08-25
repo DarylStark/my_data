@@ -17,4 +17,10 @@ COPY setup-dev.sh /home/vscode/setup-dev.sh
 RUN echo 'source ~/.bashrc.daryl' >> /home/vscode/.bashrc
 
 # Set permissions to files
+RUN chown vscode:vscode /home/vscode/.*
+RUN chown vscode:vscode /home/vscode/*
 RUN chmod +x /home/vscode/setup-dev.sh
+
+# Set environment variables
+ENV FOLDERNAME 'my_data'
+ENV TITLE 'My Data'
