@@ -21,6 +21,7 @@ jobs:
     needs: check-version
     with:
       code-quality-may-fail: false
+      versions-may-be-invalid: false
   build-and-deploy:
     name: Deployment
     uses: ./.github/workflows/_deploy.yml
