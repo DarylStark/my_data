@@ -8,9 +8,9 @@ readme = "README.md"
 packages = [{ include = "my_data", from = "src" }]
 
 [tool.poetry.dependencies]
-my-model = "1.2.0-dev0" # TODO: update to `ds-my-model` once it is on PyPi
 python = "^3.10"
 sqlmodel = "^0.0.8"
+ds-my-model = "^1.2.0"
 
 [tool.poetry.group.dev]
 optional = true
