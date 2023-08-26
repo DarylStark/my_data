@@ -35,12 +35,6 @@ sphinx = "^6.2.1"
 sphinx-rtd-theme = "^1.2.2"
 sphinxcontrib-mermaid = "^0.9.2"
 
-[[tool.poetry.source]]
-# TODO: Remove once everything is on PyPI
-name = "local"
-url = "http://dev.dstark.nl/py/my/"
-priority = "supplemental"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -55,7 +49,7 @@ push = false
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
-"src/my_model/__init__.py" = ["{version}"]
+"src/my_data/__init__.py" = ["{version}"]
 
 [tool.pytest.ini_options]
 pythonpath = ['./src/', './tests/']
