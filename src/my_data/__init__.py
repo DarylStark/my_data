@@ -55,4 +55,4 @@ with my_data.get_context(user=root_user) as c:
 
 from .my_data import MyData  # noqa: F401
 
-__version__ = '1.0.1-dev'
+__version__ = '1.0.1'
