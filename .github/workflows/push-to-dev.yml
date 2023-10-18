@@ -1,5 +1,5 @@
-name: Test and deploy (dev)
-run-name: Test and deploy (dev)
+name: Test (dev)
+run-name: Test (dev)
 on:
   push:
     branches:
