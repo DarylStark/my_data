@@ -1,5 +1,5 @@
-name: Test
-run-name: Test
+name: Test (non-dev and non-main)
+run-name: Test (non-dev and non-main)
 on:
   push:
     branches-ignore:
