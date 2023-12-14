@@ -399,7 +399,7 @@ sqlmodel = "^0.0.14"
 type = "git"
 url = "https://github.com/DarylStark/my_model.git"
 reference = "issue-25/pydantic-2"
-resolved_reference = "5f33a456337dc600255f973ae9d65720165691f7"
+resolved_reference = "299ce0ce898cccd08db78bafa9248759f77cb2fe"
 
 [[package]]
 name = "exceptiongroup"
