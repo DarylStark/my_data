@@ -9,8 +9,8 @@ packages = [{ include = "my_data", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-sqlmodel = "^0.0.8"
-ds-my-model = "1.2.1"
+sqlmodel = "^0.0.14"
+ds-my-model = {git = "https://github.com/DarylStark/my_model.git", rev = "issue-25/pydantic-2"}
 
 [tool.poetry.group.dev]
 optional = true
