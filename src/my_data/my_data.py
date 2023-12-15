@@ -106,10 +106,11 @@ class MyData:
                 knows about.
         """
         self.create_engine()
-
-        if drop_tables:
-            SQLModel.metadata.drop_all(self.database_engine)
-        SQLModel.metadata.create_all(self.database_engine)
+        
+        if self.database_engine:
+            if drop_tables:
+                SQLModel.metadata.drop_all(self.database_engine)
+            SQLModel.metadata.create_all(self.database_engine)
 
     def get_context(self, user: User) -> Context:
         """Get a Context object for this database.
