@@ -40,7 +40,7 @@ if __name__ == '__main__':
     error = False
     for group_name, group_dependencies in dependencies.items():
         for dependency, version in group_dependencies.items():
-            if not is_valid_version(version):
+            if not is_valid_version(str(version)):
                 error = True
                 print(
                     f'Dependency "{dependency} {version}" in group ' +
