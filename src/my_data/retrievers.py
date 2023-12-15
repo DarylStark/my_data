@@ -81,7 +81,7 @@ class Retriever(DataManipulator):
         resources = self._context_data.db_session.exec(sql_query).all()
 
         # Return the given resources
-        return resources
+        return list(resources)
 
 
 class UserScopedRetriever(Retriever):
