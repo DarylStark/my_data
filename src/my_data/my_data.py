@@ -106,7 +106,7 @@ class MyData:
                 knows about.
         """
         self.create_engine()
-        
+
         if self.database_engine:
             if drop_tables:
                 SQLModel.metadata.drop_all(self.database_engine)
