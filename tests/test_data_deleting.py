@@ -5,10 +5,12 @@ deletion, it checks if the data has been deleted.
 """
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises
+from pytest import raises, mark
 
 from my_data.exceptions import PermissionDeniedException
 from my_data.my_data import MyData
+
+pytestmark = mark.deleting
 
 
 def test_data_deleting_own_user_as_root(

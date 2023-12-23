@@ -5,11 +5,12 @@ update, it checks if the data has been updated.
 """
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises
+from pytest import raises, mark
 
 from my_data.exceptions import PermissionDeniedException
 from my_data.my_data import MyData
 
+pytestmark = mark.updating
 
 def test_data_updating_own_user_as_root(
         my_data: MyData,

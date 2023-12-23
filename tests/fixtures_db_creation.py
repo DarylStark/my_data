@@ -6,7 +6,7 @@ from pytest import fixture
 from my_data import MyData
 
 
-@fixture
+@fixture(scope='module')
 def my_data() -> MyData:
     """Create a test database.
 

@@ -4,12 +4,13 @@ This module contains unit tests that retrieve data from the database.
 """
 
 from my_model.user_scoped_models import Tag, User
-from pytest import raises
+from pytest import raises, mark
 from sqlmodel import or_
 
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedException
 
+pytestmark = mark.retrieval
 
 def test_data_retrieval_all_users_as_root(
         my_data: MyData, root_user: User) -> None:

@@ -6,11 +6,12 @@ creation, it checks if the data has been created.
 
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises
+from pytest import raises, mark
 
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedException
 
+pytestmark = mark.creation
 
 def test_data_creation_users_as_root(
         my_data: MyData,
