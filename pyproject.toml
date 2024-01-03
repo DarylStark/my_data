@@ -26,6 +26,9 @@ darglint2 = "^1.8.2"
 autopep8 = "^2.0.2"
 bumpver = "^2023.1129"
 toml = "^0.10.2"
+coverage = "^7.3.4"
+pytest-cov = "^4.1.0"
+pytest-sugar = "^0.9.7"
 
 [tool.poetry.group.doc]
 optional = true
@@ -52,7 +55,7 @@ push = false
 "src/my_data/__init__.py" = ["{version}"]
 
 [tool.pytest.ini_options]
-pythonpath = ['./src/', './tests/']
+addopts = ['--cov=my_data', '--cov-report=html', '--cov-report=lcov']
 markers = [
     'creation: tests about creating data',
     'deleting: tests about deleting data',
