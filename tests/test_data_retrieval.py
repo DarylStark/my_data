@@ -12,6 +12,7 @@ from my_data.exceptions import PermissionDeniedException
 
 pytestmark = mark.retrieval
 
+
 def test_data_retrieval_all_users_as_root(
         my_data: MyData, root_user: User) -> None:
     """Test User retrieval as a ROOT user.

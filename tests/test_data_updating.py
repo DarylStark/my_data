@@ -12,6 +12,7 @@ from my_data.my_data import MyData
 
 pytestmark = mark.updating
 
+
 def test_data_updating_own_user_as_root(
         my_data: MyData,
         root_user: User) -> None:
