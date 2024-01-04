@@ -81,6 +81,8 @@ def test_data_retrieval_filtered_users_as_root(
     Args:
         my_data: a instance to a MyData object.
         root_user: the service user for the context.
+        index: test index.
+        username: test username.
     """
     with my_data.get_context(user=root_user) as context:
         users = context.users.retrieve(
@@ -204,6 +206,8 @@ def test_data_retrieval_all_tags_as_normal_user_2(
     Args:
         my_data: a instance to a MyData object.
         normal_user_2: the second normal user.
+        index: test index.
+        title: test title.
     """
     with my_data.get_context(user=normal_user_2) as context:
         tags = context.tags.retrieve()
@@ -269,6 +273,9 @@ def test_data_retrieval_all_api_clients_as_root(
     Args:
         my_data: a instance to a MyData object.
         root_user: the root user for the context.
+        index: test index.
+        app_name: test app name.
+        app_publisher: test app publisher.
     """
     with my_data.get_context(user=root_user) as context:
         api_clients = context.api_clients.retrieve()
@@ -305,6 +312,9 @@ def test_data_retrieval_all_api_clients_as_normal_user_1(
     Args:
         my_data: a instance to a MyData object.
         normal_user_1: the first normal user.
+        index: test index.
+        app_name: test app name.
+        app_publisher: test app publisher.
     """
     with my_data.get_context(user=normal_user_1) as context:
         api_clients = context.api_clients.retrieve()
@@ -341,6 +351,9 @@ def test_data_retrieval_all_api_clients_as_normal_user_2(
     Args:
         my_data: a instance to a MyData object.
         normal_user_2: the second normal user.
+        index: test index.
+        app_name: test app name.
+        app_publisher: test app publisher.
     """
     with my_data.get_context(user=normal_user_2) as context:
         api_clients = context.api_clients.retrieve()
@@ -388,6 +401,8 @@ def test_data_retrieval_all_api_tokens_as_root(
     Args:
         my_data: a instance to a MyData object.
         root_user: the root user for the context.
+        index: test index.
+        title: test title.
     """
     with my_data.get_context(user=root_user) as context:
         api_tokens = context.api_tokens.retrieve()
@@ -416,6 +431,8 @@ def test_data_retrieval_all_api_tokens_as_normal_user_1(
     Args:
         my_data: a instance to a MyData object.
         normal_user_1: the first normal user.
+        index: test index.
+        title: test title.
     """
     with my_data.get_context(user=normal_user_1) as context:
         api_tokens = context.api_tokens.retrieve()
@@ -444,6 +461,8 @@ def test_data_retrieval_all_api_tokens_as_normal_user_2(
     Args:
         my_data: a instance to a MyData object.
         normal_user_2: the second normal user.
+        index: test index.
+        title: test title.
     """
     with my_data.get_context(user=normal_user_2) as context:
         api_tokens = context.api_tokens.retrieve()
@@ -489,6 +508,8 @@ def test_data_retrieval_all_user_settings_as_root(
     Args:
         my_data: a instance to a MyData object.
         root_user: the root user for the context.
+        index: test index.
+        setting: test setting.
     """
     with my_data.get_context(user=root_user) as context:
         user_settings = context.user_settings.retrieve()
@@ -517,6 +538,8 @@ def test_data_retrieval_all_user_settings_as_normal_user_1(
     Args:
         my_data: a instance to a MyData object.
         normal_user_1: the first normal user.
+        index: test index.
+        setting: test setting.
     """
     with my_data.get_context(user=normal_user_1) as context:
         user_settings = context.user_settings.retrieve()
@@ -545,6 +568,8 @@ def test_data_retrieval_all_user_settings_as_normal_user_2(
     Args:
         my_data: a instance to a MyData object.
         normal_user_2: the second normal user.
+        index: test index.
+        setting: test setting.
     """
     with my_data.get_context(user=normal_user_2) as context:
         user_settings = context.user_settings.retrieve()
