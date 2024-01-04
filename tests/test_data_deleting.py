@@ -3,12 +3,13 @@
 This module contains unit tests that delete data from the database. After the
 deletion, it checks if the data has been deleted.
 """
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+from my_model.user_scoped_models import (APIClient,  # type:ignore
+                                         APIToken, Tag, User,
                                          UserSetting)
 from pytest import raises, mark
 
-from my_data.exceptions import PermissionDeniedException
-from my_data.my_data import MyData
+from my_data.exceptions import PermissionDeniedException  # type:ignore
+from my_data.my_data import MyData  # type:ignore
 
 pytestmark = mark.deleting
 
@@ -189,7 +190,7 @@ def test_data_deleting_api_clients_as_normal_user(
     Args:
         my_data: a instance of a MyData object.
         normal_user_1: the first normal user.
-        test_tag_to_delete: a test API client to create and delete.
+        test_api_client_to_delete: a test API client to create and delete.
     """
     with my_data.get_context(user=normal_user_1) as context:
         # Create a API client

@@ -4,12 +4,13 @@ Cotnains fixtures to mimick users. The `get_user_with_username` method is used
 to get a specific user from the test database, as defined in the `MyData`
 instance from the module `fixtures_db_creation`.
 """
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+from my_model.user_scoped_models import (APIClient,  # type:ignore
+                                         APIToken, Tag, User,
                                          UserRole, UserSetting)
 from pytest import fixture
 from sqlmodel import Session, select
 
-from my_data.my_data import MyData
+from my_data.my_data import MyData  # type:ignore
 
 
 def get_user_with_username(my_data: MyData, username: str) -> User | None:
@@ -62,7 +63,7 @@ def service_user(my_data: MyData) -> User | None:
 
 @fixture
 def normal_user_1(my_data: MyData) -> User | None:
-    """The first normal user.
+    """First normal user.
 
     Fixture for a user with a USER role.
 
@@ -77,7 +78,7 @@ def normal_user_1(my_data: MyData) -> User | None:
 
 @fixture
 def normal_user_2(my_data: MyData) -> User | None:
-    """The second normal user.
+    """Second normal user.
 
     Fixture for a user with a USER role.
 

@@ -2,13 +2,14 @@
 
 This module contains unit tests that retrieve data from the database.
 """
+# pylint: disable=redefined-outer-name
 
-from my_model.user_scoped_models import Tag, User
-from pytest import raises, mark
+from my_model.user_scoped_models import Tag, User  # type:ignore
+from pytest import mark, raises
 from sqlmodel import or_
 
-from my_data import MyData
-from my_data.exceptions import PermissionDeniedException
+from my_data import MyData  # type:ignore
+from my_data.exceptions import PermissionDeniedException  # type:ignore
 
 pytestmark = mark.retrieval
 
@@ -45,7 +46,7 @@ def test_data_retrieval_all_users_as_service_user(
     """
     with my_data.get_context(user=service_user) as context:
         with raises(PermissionDeniedException):
-            users = context.users.retrieve()
+            _ = context.users.retrieve()
 
 
 def test_data_retrieval_filtered_users_as_root(
@@ -173,7 +174,7 @@ def test_data_retrieval_tags_as_service_user(
     with my_data.get_context(user=service_user) as context:
         with raises(PermissionDeniedException):
             # Get a tag
-            resource = context.tags.retrieve()
+            _ = context.tags.retrieve()
 
 
 def test_data_retrieval_filtered_tags_as_normal_user_1(
@@ -280,7 +281,7 @@ def test_data_retrieval_all_api_clients_as_service_user(
     with my_data.get_context(user=service_user) as context:
         with raises(PermissionDeniedException):
             # Get API clients
-            resource = context.api_clients.retrieve()
+            _ = context.api_clients.retrieve()
 
 
 def test_data_retrieval_all_api_tokens_as_root(
@@ -354,7 +355,7 @@ def test_data_retrieval_all_api_tokens_as_service_user(
     """
     with my_data.get_context(user=service_user) as context:
         with raises(PermissionDeniedException):
-            resources = context.api_tokens.retrieve()
+            _ = context.api_tokens.retrieve()
 
 
 def test_data_retrieval_all_user_settings_as_root(
@@ -429,4 +430,4 @@ def test_data_retrieval_all_user_settings_as_service_user(
     with my_data.get_context(user=service_user) as context:
         with raises(PermissionDeniedException):
             # Get User Settings
-            resource = context.user_settings.retrieve()
+            _ = context.user_settings.retrieve()
