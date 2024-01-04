@@ -300,7 +300,7 @@ class MyData:
                             app_publisher='normal_user_2_api_client_2_' +
                             'publisher'),
                         APIClient(
-                            app_name='normal_user_1_api_client_3',
+                            app_name='normal_user_2_api_client_3',
                             app_publisher='normal_user_2_api_client_3_' +
                             'publisher')
                     ],
