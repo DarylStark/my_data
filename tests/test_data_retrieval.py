@@ -4,6 +4,7 @@ This module contains unit tests that retrieve data from the database.
 """
 # pylint: disable=redefined-outer-name
 
+import pytest
 from my_model.user_scoped_models import Tag, User  # type:ignore
 from pytest import mark, raises
 from sqlmodel import or_
@@ -14,8 +15,20 @@ from my_data.exceptions import PermissionDeniedException  # type:ignore
 pytestmark = mark.retrieval
 
 
+@pytest.mark.parametrize(
+    'index, username',
+    [
+        (0, 'root'),
+        (1, 'normal.user.1'),
+        (2, 'normal.user.2'),
+        (3, 'service.user')
+    ]
+)
 def test_data_retrieval_all_users_as_root(
-        my_data: MyData, root_user: User) -> None:
+        my_data: MyData,
+        root_user: User,
+        index: int,
+        username: str) -> None:
     """Test User retrieval as a ROOT user.
 
     Retrieves Users from the database as a root user. Should retrieve all
@@ -24,13 +37,12 @@ def test_data_retrieval_all_users_as_root(
     Args:
         my_data: a instance to a MyData object.
         root_user: the root user for the context.
+        index: the user index.
+        username: the username.
     """
     with my_data.get_context(user=root_user) as context:
         users = context.users.retrieve()
-        assert users[0].username == 'root'
-        assert users[1].username == 'normal.user.1'
-        assert users[2].username == 'normal.user.2'
-        assert users[3].username == 'service.user'
+        assert users[index].username == username
 
 
 def test_data_retrieval_all_users_as_service_user(
@@ -49,8 +61,18 @@ def test_data_retrieval_all_users_as_service_user(
             _ = context.users.retrieve()
 
 
+@pytest.mark.parametrize(
+    'index, username',
+    [
+        (0, 'root'),
+        (1, 'normal.user.2')
+    ]
+)
 def test_data_retrieval_filtered_users_as_root(
-        my_data: MyData, root_user: User) -> None:
+        my_data: MyData,
+        root_user: User,
+        index: int,
+        username: str) -> None:
     """Test User retrieval as a ROOT user with a filter.
 
     Retrieves Users from the database as a root user with a filter. Should
@@ -64,8 +86,7 @@ def test_data_retrieval_filtered_users_as_root(
         users = context.users.retrieve(
             or_(User.username == 'normal.user.2', User.username == 'root'))
         assert len(users) == 2
-        assert users[0].username == 'root'
-        assert users[1].username == 'normal.user.2'
+        assert users[index].username == username
 
 
 def test_data_retrieval_all_users_as_normal_user_1(
@@ -102,8 +123,19 @@ def test_data_retrieval_all_users_as_normal_user_2(
         assert users[0].username == 'normal.user.2'
 
 
+@pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'root_tag_1'),
+        (1, 'root_tag_2'),
+        (2, 'root_tag_3')
+    ]
+)
 def test_data_retrieval_all_tags_as_root(
-        my_data: MyData, root_user: User) -> None:
+        my_data: MyData,
+        root_user: User,
+        index: int,
+        title: str) -> None:
     """Test Tag retrieval as a ROOT user.
 
     Retrieves Tags from the database as a root user. Should retrieve only
@@ -112,17 +144,28 @@ def test_data_retrieval_all_tags_as_root(
     Args:
         my_data: a instance to a MyData object.
         root_user: the root user for the context.
+        index: the user index.
+        title: the title.
     """
     with my_data.get_context(user=root_user) as context:
         tags = context.tags.retrieve()
         assert len(tags) == 3
-        assert tags[0].title == 'root_tag_1'
-        assert tags[1].title == 'root_tag_2'
-        assert tags[2].title == 'root_tag_3'
+        assert tags[index].title == title
 
 
+@pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'normal_user_1_tag_1'),
+        (1, 'normal_user_1_tag_2'),
+        (2, 'normal_user_1_tag_3')
+    ]
+)
 def test_data_retrieval_all_tags_as_normal_user_1(
-        my_data: MyData, normal_user_1: User) -> None:
+        my_data: MyData,
+        normal_user_1: User,
+        index: int,
+        title: str) -> None:
     """Test Tag retrieval as a USER user.
 
     Retrieves Tags from the database as a normal user. Should retrieve only
@@ -131,17 +174,28 @@ def test_data_retrieval_all_tags_as_normal_user_1(
     Args:
         my_data: a instance to a MyData object.
         normal_user_1: the first normal user.
+        index: the user index.
+        title: the title.
     """
     with my_data.get_context(user=normal_user_1) as context:
         tags = context.tags.retrieve()
         assert len(tags) == 3
-        assert tags[0].title == 'normal_user_1_tag_1'
-        assert tags[1].title == 'normal_user_1_tag_2'
-        assert tags[2].title == 'normal_user_1_tag_3'
+        assert tags[index].title == title
 
 
+@pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'normal_user_2_tag_1'),
+        (1, 'normal_user_2_tag_2'),
+        (2, 'normal_user_2_tag_3')
+    ]
+)
 def test_data_retrieval_all_tags_as_normal_user_2(
-        my_data: MyData, normal_user_2: User) -> None:
+        my_data: MyData,
+        normal_user_2: User,
+        index: int,
+        title: str) -> None:
     """Test Tag retrieval as a USER user.
 
     Retrieves Tags from the database as a normal user. Should retrieve only
@@ -154,9 +208,7 @@ def test_data_retrieval_all_tags_as_normal_user_2(
     with my_data.get_context(user=normal_user_2) as context:
         tags = context.tags.retrieve()
         assert len(tags) == 3
-        assert tags[0].title == 'normal_user_2_tag_1'
-        assert tags[1].title == 'normal_user_2_tag_2'
-        assert tags[2].title == 'normal_user_2_tag_3'
+        assert tags[index].title == title
 
 
 def test_data_retrieval_tags_as_service_user(
@@ -194,8 +246,21 @@ def test_data_retrieval_filtered_tags_as_normal_user_1(
         assert tags[0].title == 'normal_user_1_tag_2'
 
 
+@pytest.mark.parametrize(
+    'index, app_name, app_publisher',
+    [
+        (0, 'root_api_client_1', 'root_api_client_1_publisher'),
+        (1, 'root_api_client_2', 'root_api_client_2_publisher'),
+        (2, 'root_api_client_3', 'root_api_client_3_publisher'),
+    ]
+)
 def test_data_retrieval_all_api_clients_as_root(
-        my_data: MyData, root_user: User) -> None:
+        my_data: MyData,
+        root_user: User,
+        index: int,
+        app_name: str,
+        app_publisher: str
+) -> None:
     """Test API Client retrieval as a ROOT user.
 
     Retrieves API clients from the database as a root user. Should retrieve
@@ -208,16 +273,30 @@ def test_data_retrieval_all_api_clients_as_root(
     with my_data.get_context(user=root_user) as context:
         api_clients = context.api_clients.retrieve()
         assert len(api_clients) == 3
-        assert api_clients[0].app_name == 'root_api_client_1'
-        assert api_clients[0].app_publisher == 'root_api_client_1_publisher'
-        assert api_clients[1].app_name == 'root_api_client_2'
-        assert api_clients[1].app_publisher == 'root_api_client_2_publisher'
-        assert api_clients[2].app_name == 'root_api_client_3'
-        assert api_clients[2].app_publisher == 'root_api_client_3_publisher'
+        assert api_clients[index].app_name == app_name
+        assert api_clients[index].app_publisher == app_publisher
 
 
+@pytest.mark.parametrize(
+    'index, app_name, app_publisher',
+    [
+        (0,
+         'normal_user_1_api_client_1',
+         'normal_user_1_api_client_1_publisher'),
+        (1,
+         'normal_user_1_api_client_2',
+         'normal_user_1_api_client_2_publisher'),
+        (2,
+         'normal_user_1_api_client_3',
+         'normal_user_1_api_client_3_publisher'),
+    ]
+)
 def test_data_retrieval_all_api_clients_as_normal_user_1(
-        my_data: MyData, normal_user_1: User) -> None:
+        my_data: MyData,
+        normal_user_1: User,
+        index: int,
+        app_name: str,
+        app_publisher: str) -> None:
     """Test API Client retrieval as a USER user.
 
     Retrieves API Clients from the database as a normal user. Should retrieve
@@ -230,19 +309,30 @@ def test_data_retrieval_all_api_clients_as_normal_user_1(
     with my_data.get_context(user=normal_user_1) as context:
         api_clients = context.api_clients.retrieve()
         assert len(api_clients) == 3
-        assert api_clients[0].app_name == 'normal_user_1_api_client_1'
-        assert (api_clients[0].app_publisher ==
-                'normal_user_1_api_client_1_publisher')
-        assert api_clients[1].app_name == 'normal_user_1_api_client_2'
-        assert (api_clients[1].app_publisher ==
-                'normal_user_1_api_client_2_publisher')
-        assert api_clients[2].app_name == 'normal_user_1_api_client_3'
-        assert (api_clients[2].app_publisher ==
-                'normal_user_1_api_client_3_publisher')
+        assert api_clients[index].app_name == app_name
+        assert api_clients[index].app_publisher == app_publisher
 
 
+@pytest.mark.parametrize(
+    'index, app_name, app_publisher',
+    [
+        (0,
+         'normal_user_2_api_client_1',
+         'normal_user_2_api_client_1_publisher'),
+        (1,
+         'normal_user_2_api_client_2',
+         'normal_user_2_api_client_2_publisher'),
+        (2,
+         'normal_user_2_api_client_3',
+         'normal_user_2_api_client_3_publisher'),
+    ]
+)
 def test_data_retrieval_all_api_clients_as_normal_user_2(
-        my_data: MyData, normal_user_2: User) -> None:
+        my_data: MyData,
+        normal_user_2: User,
+        index: int,
+        app_name: str,
+        app_publisher: str) -> None:
     """Test API client retrieval as a USER user.
 
     Retrieves API Clients from the database as a normal user. Should retrieve
@@ -255,15 +345,8 @@ def test_data_retrieval_all_api_clients_as_normal_user_2(
     with my_data.get_context(user=normal_user_2) as context:
         api_clients = context.api_clients.retrieve()
         assert len(api_clients) == 3
-        assert api_clients[0].app_name == 'normal_user_2_api_client_1'
-        assert (api_clients[0].app_publisher ==
-                'normal_user_2_api_client_1_publisher')
-        assert api_clients[1].app_name == 'normal_user_2_api_client_2'
-        assert (api_clients[1].app_publisher ==
-                'normal_user_2_api_client_2_publisher')
-        assert api_clients[2].app_name == 'normal_user_1_api_client_3'
-        assert (api_clients[2].app_publisher ==
-                'normal_user_2_api_client_3_publisher')
+        assert api_clients[index].app_name == app_name
+        assert api_clients[index].app_publisher == app_publisher
 
 
 def test_data_retrieval_all_api_clients_as_service_user(
@@ -284,8 +367,19 @@ def test_data_retrieval_all_api_clients_as_service_user(
             _ = context.api_clients.retrieve()
 
 
+@pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'root_api_token_1'),
+        (1, 'root_api_token_2'),
+        (2, 'root_api_token_3')
+    ]
+)
 def test_data_retrieval_all_api_tokens_as_root(
-        my_data: MyData, root_user: User) -> None:
+        my_data: MyData,
+        root_user: User,
+        index: int,
+        title: str) -> None:
     """Test API Token retrieval as a ROOT user.
 
     Retrieves API token from the database as a root user. Should retrieve
@@ -298,13 +392,22 @@ def test_data_retrieval_all_api_tokens_as_root(
     with my_data.get_context(user=root_user) as context:
         api_tokens = context.api_tokens.retrieve()
         assert len(api_tokens) == 3
-        assert api_tokens[0].title == 'root_api_token_1'
-        assert api_tokens[1].title == 'root_api_token_2'
-        assert api_tokens[2].title == 'root_api_token_3'
+        assert api_tokens[index].title == title
 
 
+@pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'normal_user_1_api_token_1'),
+        (1, 'normal_user_1_api_token_2'),
+        (2, 'normal_user_1_api_token_3')
+    ]
+)
 def test_data_retrieval_all_api_tokens_as_normal_user_1(
-        my_data: MyData, normal_user_1: User) -> None:
+        my_data: MyData,
+        normal_user_1: User,
+        index: int,
+        title: str) -> None:
     """Test API Token retrieval as a USER user.
 
     Retrieves API tokens from the database as a normal user. Should retrieve
@@ -317,13 +420,22 @@ def test_data_retrieval_all_api_tokens_as_normal_user_1(
     with my_data.get_context(user=normal_user_1) as context:
         api_tokens = context.api_tokens.retrieve()
         assert len(api_tokens) == 3
-        assert api_tokens[0].title == 'normal_user_1_api_token_1'
-        assert api_tokens[1].title == 'normal_user_1_api_token_2'
-        assert api_tokens[2].title == 'normal_user_1_api_token_3'
+        assert api_tokens[index].title == title
 
 
+@pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'normal_user_2_api_token_1'),
+        (1, 'normal_user_2_api_token_2'),
+        (2, 'normal_user_2_api_token_3')
+    ]
+)
 def test_data_retrieval_all_api_tokens_as_normal_user_2(
-        my_data: MyData, normal_user_2: User) -> None:
+        my_data: MyData,
+        normal_user_2: User,
+        index: int,
+        title: str) -> None:
     """Test API tokens retrieval as a USER user.
 
     Retrieves API tokens from the database as a normal user. Should retrieve
@@ -336,9 +448,7 @@ def test_data_retrieval_all_api_tokens_as_normal_user_2(
     with my_data.get_context(user=normal_user_2) as context:
         api_tokens = context.api_tokens.retrieve()
         assert len(api_tokens) == 3
-        assert api_tokens[0].title == 'normal_user_2_api_token_1'
-        assert api_tokens[1].title == 'normal_user_2_api_token_2'
-        assert api_tokens[2].title == 'normal_user_2_api_token_3'
+        assert api_tokens[index].title == title
 
 
 def test_data_retrieval_all_api_tokens_as_service_user(
@@ -358,8 +468,19 @@ def test_data_retrieval_all_api_tokens_as_service_user(
             _ = context.api_tokens.retrieve()
 
 
+@pytest.mark.parametrize(
+    'index, setting',
+    [
+        (0, 'root_test_setting_1'),
+        (1, 'root_test_setting_2'),
+        (2, 'root_test_setting_3')
+    ]
+)
 def test_data_retrieval_all_user_settings_as_root(
-        my_data: MyData, root_user: User) -> None:
+        my_data: MyData,
+        root_user: User,
+        index: int,
+        setting: str) -> None:
     """Test User Setting retrieval as a ROOT user.
 
     Retrieves User Settings from the database as a root user. Should retrieve
@@ -372,13 +493,22 @@ def test_data_retrieval_all_user_settings_as_root(
     with my_data.get_context(user=root_user) as context:
         user_settings = context.user_settings.retrieve()
         assert len(user_settings) == 3
-        assert user_settings[0].setting == 'root_test_setting_1'
-        assert user_settings[1].setting == 'root_test_setting_2'
-        assert user_settings[2].setting == 'root_test_setting_3'
+        assert user_settings[index].setting == setting
 
 
+@pytest.mark.parametrize(
+    'index, setting',
+    [
+        (0, 'normal_user_1_test_setting_1'),
+        (1, 'normal_user_1_test_setting_2'),
+        (2, 'normal_user_1_test_setting_3')
+    ]
+)
 def test_data_retrieval_all_user_settings_as_normal_user_1(
-        my_data: MyData, normal_user_1: User) -> None:
+        my_data: MyData,
+        normal_user_1: User,
+        index: int,
+        setting: str) -> None:
     """Test User Setting retrieval as a USER user.
 
     Retrieves User Settings from the database as a normal user. Should
@@ -391,13 +521,22 @@ def test_data_retrieval_all_user_settings_as_normal_user_1(
     with my_data.get_context(user=normal_user_1) as context:
         user_settings = context.user_settings.retrieve()
         assert len(user_settings) == 3
-        assert user_settings[0].setting == 'normal_user_1_test_setting_1'
-        assert user_settings[1].setting == 'normal_user_1_test_setting_2'
-        assert user_settings[2].setting == 'normal_user_1_test_setting_3'
+        assert user_settings[index].setting == setting
 
 
+@pytest.mark.parametrize(
+    'index, setting',
+    [
+        (0, 'normal_user_2_test_setting_1'),
+        (1, 'normal_user_2_test_setting_2'),
+        (2, 'normal_user_2_test_setting_3')
+    ]
+)
 def test_data_retrieval_all_user_settings_as_normal_user_2(
-        my_data: MyData, normal_user_2: User) -> None:
+        my_data: MyData,
+        normal_user_2: User,
+        index: int,
+        setting: str) -> None:
     """Test User Setting retrieval as a USER user.
 
     Retrieves User Settings from the database as a normal user. Should
@@ -410,9 +549,7 @@ def test_data_retrieval_all_user_settings_as_normal_user_2(
     with my_data.get_context(user=normal_user_2) as context:
         user_settings = context.user_settings.retrieve()
         assert len(user_settings) == 3
-        assert user_settings[0].setting == 'normal_user_2_test_setting_1'
-        assert user_settings[1].setting == 'normal_user_2_test_setting_2'
-        assert user_settings[2].setting == 'normal_user_2_test_setting_3'
+        assert user_settings[index].setting == setting
 
 
 def test_data_retrieval_all_user_settings_as_service_user(
