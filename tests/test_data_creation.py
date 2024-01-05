@@ -6,7 +6,7 @@ creation, it checks if the data has been created.
 # pylint: disable=no-member # disabled for the `like` method of Pydantic
 # fields.
 
-from my_model.user_scoped_models import (APIClient,  # type:ignore
+from my_model.user_scoped_models import (APIClient,
                                          APIToken, Tag, User,
                                          UserSetting)
 from pytest import raises, mark
@@ -38,7 +38,7 @@ def test_data_creation_users_as_root(
 
         # Check if they exist
         created_users = context.users.retrieve(
-            User.username.like('creation_test_%'))
+            User.username.like('creation_test_%'))  # type: ignore
 
         assert len(created_users) == 2
         assert created_users[0].username == 'creation_test_root_user_1'
@@ -120,7 +120,7 @@ def test_data_creation_tags_as_root(
 
         # Check if they exist
         created_tags = context.tags.retrieve(
-            Tag.title.like('test_creation_tag_%'))
+            Tag.title.like('test_creation_tag_%'))  # type: ignore
 
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
@@ -146,7 +146,7 @@ def test_data_creation_tag_as_normal_user_1(
 
         # Check if they exist
         created_tags = context.tags.retrieve(
-            Tag.title.like('test_creation_tag_%'))
+            Tag.title.like('test_creation_tag_%'))  # type: ignore
 
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
@@ -172,7 +172,7 @@ def test_data_creation_tag_as_normal_user_2(
 
         # Check if they exist
         created_tags = context.tags.retrieve(
-            Tag.title.like('test_creation_tag_%'))
+            Tag.title.like('test_creation_tag_%'))  # type: ignore
 
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
@@ -239,7 +239,8 @@ def test_data_creation_api_clients_as_root(
 
         # Check if they exist
         created_api_clients = context.api_clients.retrieve(
-            APIClient.app_name.like('test_creation_api_client_%'))
+            APIClient.app_name.like(  # type: ignore
+                'test_creation_api_client_%'))
 
         assert len(created_api_clients) == 3
         assert created_api_clients[0].app_name == 'test_creation_api_client_1'
@@ -265,7 +266,8 @@ def test_data_creation_api_clients_as_normal_user_1(
 
         # Check if they exist
         created_api_clients = context.api_clients.retrieve(
-            APIClient.app_name.like('test_creation_api_client_%'))
+            APIClient.app_name.like(  # type: ignore
+                'test_creation_api_client_%'))
 
         assert len(created_api_clients) == 3
         assert created_api_clients[0].app_name == 'test_creation_api_client_1'
@@ -291,7 +293,8 @@ def test_data_creation_api_clients_as_normal_user_2(
 
         # Check if they exist
         created_api_clients = context.api_clients.retrieve(
-            APIClient.app_name.like('test_creation_api_client_%'))
+            APIClient.app_name.like(  # type: ignore
+                'test_creation_api_client_%'))
 
         assert len(created_api_clients) == 3
         assert created_api_clients[0].app_name == 'test_creation_api_client_1'
@@ -358,7 +361,8 @@ def test_data_creation_api_tokens_as_root(
 
         # Check if they exist
         created_api_tokens = context.api_tokens.retrieve(
-            APIToken.title.like('test_creation_api_token_%'))
+            APIToken.title.like(  # type: ignore
+                'test_creation_api_token_%'))
 
         assert len(created_api_tokens) == 3
         assert created_api_tokens[0].title == 'test_creation_api_token_1'
@@ -384,7 +388,8 @@ def test_data_creation_api_tokens_as_normal_user_1(
 
         # Check if they exist
         created_api_tokens = context.api_tokens.retrieve(
-            APIToken.title.like('test_creation_api_token_%'))
+            APIToken.title.like(  # type: ignore
+                'test_creation_api_token_%'))
 
         assert len(created_api_tokens) == 3
         assert created_api_tokens[0].title == 'test_creation_api_token_1'
@@ -410,7 +415,8 @@ def test_data_creation_api_tokens_as_normal_user_2(
 
         # Check if they exist
         created_api_tokens = context.api_tokens.retrieve(
-            APIToken.title.like('test_creation_api_token_%'))
+            APIToken.title.like(  # type: ignore
+                'test_creation_api_token_%'))
 
         assert len(created_api_tokens) == 3
         assert created_api_tokens[0].title == 'test_creation_api_token_1'
@@ -477,7 +483,8 @@ def test_data_creation_user_settings_as_root(
 
         # Check if they exist
         created_user_settings = context.user_settings.retrieve(
-            UserSetting.setting.like('test_creation_user_setting_%'))
+            UserSetting.setting.like(  # type: ignore
+                'test_creation_user_setting_%'))
 
         assert len(created_user_settings) == 3
         assert (created_user_settings[0].setting ==
@@ -506,7 +513,8 @@ def test_data_creation_user_settings_as_normal_user_1(
 
         # Check if they exist
         created_user_settings = context.user_settings.retrieve(
-            UserSetting.setting.like('test_creation_user_setting_%'))
+            UserSetting.setting.like(  # type: ignore
+                'test_creation_user_setting_%'))
 
         assert len(created_user_settings) == 3
         assert (created_user_settings[0].setting ==
@@ -535,7 +543,8 @@ def test_data_creation_user_settings_as_normal_user_2(
 
         # Check if they exist
         created_user_settings = context.user_settings.retrieve(
-            UserSetting.setting.like('test_creation_user_setting_%'))
+            UserSetting.setting.like(  # type: ignore
+                'test_creation_user_setting_%'))
 
         assert len(created_user_settings) == 3
         assert (created_user_settings[0].setting ==

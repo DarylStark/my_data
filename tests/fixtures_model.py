@@ -4,7 +4,7 @@ Cotnains fixtures to mimick users. The `get_user_with_username` method is used
 to get a specific user from the test database, as defined in the `MyData`
 instance from the module `fixtures_db_creation`.
 """
-from my_model.user_scoped_models import (APIClient,  # type:ignore
+from my_model.user_scoped_models import (APIClient,
                                          APIToken, Tag, User,
                                          UserRole, UserSetting)
 from pytest import fixture
