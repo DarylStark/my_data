@@ -3,13 +3,12 @@
 This module contains unit tests that update data in the database. After the
 update, it checks if the data has been updated.
 """
-from my_model.user_scoped_models import (APIClient,
-                                         APIToken, Tag, User,
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises, mark
+from pytest import mark, raises
 
-from my_data.exceptions import PermissionDeniedException  # type:ignore
-from my_data.my_data import MyData  # type:ignore
+from my_data.exceptions import PermissionDeniedException
+from my_data.my_data import MyData
 
 pytestmark = mark.updating
 
@@ -28,7 +27,8 @@ def test_data_updating_own_user_as_root(
     """
     with my_data.get_context(user=root_user) as context:
         # Get the root user
-        user = context.users.retrieve(User.username == 'root')[0]
+        user = context.users.retrieve(User.username ==  # type:ignore
+                                      'root')[0]
 
         # Update the password
         user.set_password('test')
@@ -37,7 +37,8 @@ def test_data_updating_own_user_as_root(
         context.users.update(user)
 
         # Get the user again
-        user = context.users.retrieve(User.username == 'root')[0]
+        user = context.users.retrieve(User.username ==  # type:ignore
+                                      'root')[0]
 
         # Check the password
         assert user.verify_credentials('root', 'test')
@@ -57,7 +58,8 @@ def test_data_updating_other_user_as_root(
     """
     with my_data.get_context(user=root_user) as context:
         # Get the root user
-        user = context.users.retrieve(User.username == 'normal.user.1')[0]
+        user = context.users.retrieve(User.username ==  # type:ignore
+                                      'normal.user.1')[0]
 
         # Update the password
         user.set_password('test')
@@ -66,7 +68,8 @@ def test_data_updating_other_user_as_root(
         context.users.update(user)
 
         # Get the user again
-        user = context.users.retrieve(User.username == 'normal.user.1')[0]
+        user = context.users.retrieve(User.username ==  # type:ignore
+                                      'normal.user.1')[0]
 
         # Check the password
         assert user.verify_credentials('normal.user.1', 'test')
@@ -87,7 +90,8 @@ def test_data_updating_own_user_as_normal_user_1(
     with my_data.get_context(user=normal_user_1) as context:
         # Get the root user
         user = context.users.retrieve(
-            User.username == normal_user_1.username)[0]
+            User.username ==  # type:ignore
+            normal_user_1.username)[0]
 
         # Update the password
         user.set_password('test')
@@ -97,7 +101,8 @@ def test_data_updating_own_user_as_normal_user_1(
 
         # Get the user again
         user = context.users.retrieve(
-            User.username == normal_user_1.username)[0]
+            User.username ==  # type:ignore
+            normal_user_1.username)[0]
 
         # Check the password
         assert user.verify_credentials(normal_user_1.username, 'test')
@@ -121,7 +126,8 @@ def test_data_updating_other_user_as_normal_user_1(
     with my_data.get_context(user=root_user) as context:
         # Get the root user. We have to do this in a context with the root user
         # as the user, otherwide we won't get the user account.
-        user = context.users.retrieve(User.username == 'root')[0]
+        user = context.users.retrieve(User.username ==  # type:ignore
+                                      'root')[0]
 
     with my_data.get_context(user=normal_user_1) as context:
         # Update the password
@@ -155,7 +161,8 @@ def test_data_updating_tag_as_root(
         context.tags.update(tag)
 
         # Get the tag again and check the title
-        tag = context.tags.retrieve(Tag.title == 'root_tag_1_new')[0]
+        tag = context.tags.retrieve(Tag.title ==  # type:ignore
+                                    'root_tag_1_new')[0]
         assert tag.title == 'root_tag_1_new'
 
         # Reset the title again
@@ -186,7 +193,8 @@ def test_data_updating_tag_as_normal_user_1(
         context.tags.update(tag)
 
         # Get the tag again and check the title
-        tag = context.tags.retrieve(Tag.title == 'normal_user_1_tag_1_new')[0]
+        tag = context.tags.retrieve(Tag.title ==  # type:ignore
+                                    'normal_user_1_tag_1_new')[0]
         assert tag.title == 'normal_user_1_tag_1_new'
 
         # Reset the title again
@@ -218,7 +226,8 @@ def test_data_updating_api_client_as_root(
 
         # Get the client again and check the title
         api_client = context.api_clients.retrieve(
-            APIClient.app_name == 'root_api_client_1_new')[0]
+            APIClient.app_name ==  # type:ignore
+            'root_api_client_1_new')[0]
         assert api_client.app_name == 'root_api_client_1_new'
 
         # Reset the name again
@@ -250,7 +259,8 @@ def test_data_updating_api_client_as_normal_user_1(
 
         # Get the client again and check the title
         api_client = context.api_clients.retrieve(
-            APIClient.app_name == 'normal_user_1_api_client_1_new')[0]
+            APIClient.app_name ==  # type:ignore
+            'normal_user_1_api_client_1_new')[0]
         assert api_client.app_name == 'normal_user_1_api_client_1_new'
 
         # Reset the name again
@@ -282,7 +292,8 @@ def test_data_updating_api_token_as_root(
 
         # Get the token again and check the title
         api_token = context.api_tokens.retrieve(
-            APIToken.title == 'root_api_token_1_new')[0]
+            APIToken.title ==  # type:ignore
+            'root_api_token_1_new')[0]
         assert api_token.title == 'root_api_token_1_new'
 
         # Reset the name again
@@ -314,7 +325,8 @@ def test_data_updating_api_token_as_normal_user_1(
 
         # Get the token again and check the title
         api_token = context.api_tokens.retrieve(
-            APIToken.title == 'normal_user_1_api_token_1_new')[0]
+            APIToken.title ==  # type:ignore
+            'normal_user_1_api_token_1_new')[0]
         assert api_token.title == 'normal_user_1_api_token_1_new'
 
         # Reset the name again
@@ -346,7 +358,7 @@ def test_data_updating_user_setting_as_root(
 
         # Get the setting again and check the value
         user_setting = context.user_settings.retrieve(
-            UserSetting.value == 'test_value_new')[0]
+            UserSetting.value == 'test_value_new')[0]  # type:ignore
         assert user_setting.value == 'test_value_new'
 
         # Reset the name again
@@ -378,7 +390,7 @@ def test_data_updating_user_setting_as_normal_user_1(
 
         # Get the setting again and check the value
         user_setting = context.user_settings.retrieve(
-            UserSetting.value == 'test_value_new')[0]
+            UserSetting.value == 'test_value_new')[0]  # type:ignore
         assert user_setting.value == 'test_value_new'
 
         # Reset the name again

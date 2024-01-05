@@ -9,8 +9,8 @@ from my_model.user_scoped_models import Tag, User
 from pytest import mark, raises
 from sqlmodel import or_
 
-from my_data import MyData  # type:ignore
-from my_data.exceptions import PermissionDeniedException  # type:ignore
+from my_data import MyData
+from my_data.exceptions import PermissionDeniedException
 
 pytestmark = mark.retrieval
 
@@ -245,7 +245,8 @@ def test_data_retrieval_filtered_tags_as_normal_user_1(
         normal_user_1: the first normal user.
     """
     with my_data.get_context(user=normal_user_1) as context:
-        tags = context.tags.retrieve(Tag.title == 'normal_user_1_tag_2')
+        tags = context.tags.retrieve(Tag.title ==  # type:ignore
+                                     'normal_user_1_tag_2')
         assert len(tags) == 1
         assert tags[0].title == 'normal_user_1_tag_2'
 

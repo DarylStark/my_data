@@ -6,13 +6,12 @@ creation, it checks if the data has been created.
 # pylint: disable=no-member # disabled for the `like` method of Pydantic
 # fields.
 
-from my_model.user_scoped_models import (APIClient,
-                                         APIToken, Tag, User,
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises, mark
+from pytest import mark, raises
 
-from my_data import MyData  # type:ignore
-from my_data.exceptions import PermissionDeniedException  # type:ignore
+from my_data import MyData
+from my_data.exceptions import PermissionDeniedException
 
 pytestmark = mark.creation
 

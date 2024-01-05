@@ -6,8 +6,8 @@ the complete project.
 
 from typing import Any
 
-from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
-                                         Tag, User, UserRole, UserSetting)
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+                                         UserRole, UserSetting)
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, and_, create_engine, select

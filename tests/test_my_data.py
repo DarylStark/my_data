@@ -3,9 +3,9 @@
 import pytest
 from my_model.user_scoped_models import User
 
-from my_data.exceptions import (DatabaseNotConfiguredException,  # type:ignore
+from my_data.exceptions import (DatabaseNotConfiguredException,
                                 PermissionDeniedException)
-from my_data.my_data import MyData  # type:ignore
+from my_data.my_data import MyData
 
 
 def test_creating_empty_engine() -> None:

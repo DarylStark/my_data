@@ -5,7 +5,8 @@ Fixture to create a test database for PyTest.
 # pylint: disable=redefined-outer-name
 
 from pytest import fixture
-from my_data import MyData  # type:ignore
+
+from my_data import MyData
 
 
 @fixture(scope='module')
