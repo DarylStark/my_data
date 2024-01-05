@@ -3,12 +3,11 @@
 This module tests the things a Service user needs to do, like retrieving
 User objects or API tokens.
 """
-from my_model.user_scoped_models import User
+from my_model.user_scoped_models import User  # type:ignore
 from pytest import mark, raises
 
-from my_data.exceptions import (DatabaseNotConfiguredException,  # type:ignore
-                                PermissionDeniedException,
-                                UnknownUserAccountException)
+from my_data.exceptions import PermissionDeniedException  # type:ignore
+from my_data.exceptions import UnknownUserAccountException  # type:ignore
 from my_data.my_data import MyData  # type:ignore
 
 pytestmark = mark.service_user

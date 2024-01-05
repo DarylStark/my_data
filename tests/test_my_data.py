@@ -1,11 +1,11 @@
 """Tests for the MyData object."""
 
 import pytest
-from my_model.user_scoped_models import User
+from my_model.user_scoped_models import User  # type:ignore
 
-from my_data.exceptions import (DatabaseNotConfiguredException,
+from my_data.exceptions import (DatabaseNotConfiguredException,  # type:ignore
                                 PermissionDeniedException)
-from my_data.my_data import MyData
+from my_data.my_data import MyData  # type:ignore
 
 
 def test_creating_empty_engine() -> None:

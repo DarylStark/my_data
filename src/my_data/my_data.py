@@ -131,6 +131,10 @@ class MyData:
         """
         self.create_engine()
 
+        if not self.database_engine:  # pragma: no cover
+            raise DatabaseNotConfiguredException(
+                'Database is not configured yet')
+
         return Context(
             database_engine=self.database_engine,
             context_data=ContextData(
@@ -159,6 +163,10 @@ class MyData:
             The created Context object.
         """
         self.create_engine()
+
+        if not self.database_engine:  # pragma: no cover
+            raise DatabaseNotConfiguredException(
+                'Database is not configured yet')
 
         with Session(self.database_engine) as session:
             sql_query = select(User)

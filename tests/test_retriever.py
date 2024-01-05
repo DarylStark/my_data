@@ -1,13 +1,14 @@
 """Module with tests for the Retriever classes."""
 
 import pytest
-from my_model.user_scoped_models import Tag, User
+from my_model.user_scoped_models import Tag, User  # type:ignore
 
-from my_data.context_data import ContextData
-from my_data.exceptions import (BaseClassCallException,
+from my_data.context_data import ContextData  # type:ignore
+from my_data.exceptions import (BaseClassCallException,  # type:ignore
                                 WrongDataManipulatorException)
-from my_data.my_data import MyData
-from my_data.retrievers import Retriever, UserRetriever, UserScopedRetriever
+from my_data.my_data import MyData  # type:ignore
+from my_data.retrievers import (Retriever,  # type:ignore
+                                UserRetriever, UserScopedRetriever)
 
 
 def test_base_class_exception(my_data: MyData, root_user: User) -> None:
@@ -27,7 +28,7 @@ def test_base_class_exception(my_data: MyData, root_user: User) -> None:
         with pytest.raises(BaseClassCallException):
             retriever.get_context_filters()
     else:
-        assert TypeError, "MyData not configured"
+        assert False, "MyData not configured"
 
 
 def test_userscoped_wrong_manipulator_exception(
@@ -48,7 +49,7 @@ def test_userscoped_wrong_manipulator_exception(
         with pytest.raises(WrongDataManipulatorException):
             creator.get_context_filters()
     else:
-        assert TypeError, "MyData not configured"
+        assert False, "MyData not configured"
 
 
 def test_usercreator_wrong_manipulator_exception(
@@ -69,4 +70,4 @@ def test_usercreator_wrong_manipulator_exception(
         with pytest.raises(WrongDataManipulatorException):
             creator.get_context_filters()
     else:
-        assert TypeError, "MyData not configured"
+        assert False, "MyData not configured"

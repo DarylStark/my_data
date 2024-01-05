@@ -18,7 +18,14 @@ def test_deleting_users_with_a_service_account(
     my_data: MyData,
     service_user: User
 ) -> None:
-    """Test if we get an error when deleting with a service account."""
+    """Test if we get an error when deleting with a service account.
+
+    Should raise a PermissionDeniedException.
+
+    Args:
+        my_data: a instance of a MyData object.
+        service_user: the service user for the context.
+    """
     with my_data.get_context(user=service_user) as context:
         # Delete the user. This should give an error
         with raises(PermissionDeniedException):
