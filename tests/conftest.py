@@ -2,7 +2,7 @@
 
 Imports all fixtures that are used in the unittesting.
 """
-
+# pylint: disable=unused-import
 from fixtures_db_creation import my_data
 from fixtures_model import (normal_user_1, normal_user_2, root_user,
                             service_user, test_api_client_to_delete,

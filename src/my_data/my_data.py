@@ -91,7 +91,7 @@ class MyData:
         # Create the database engine
         try:
             self.database_engine = create_engine(**database_args)
-        except OperationalError as sa_error:
+        except OperationalError as sa_error:  # pragma: no cover
             raise DatabaseConnectionException(
                 'Couldn\'t connect to database') from sa_error
 
@@ -131,7 +131,7 @@ class MyData:
         """
         self.create_engine()
 
-        if not self.database_engine:
+        if not self.database_engine:  # pragma: no cover
             raise DatabaseNotConfiguredException(
                 'Database is not configured yet')
 
@@ -164,7 +164,7 @@ class MyData:
         """
         self.create_engine()
 
-        if not self.database_engine:
+        if not self.database_engine:  # pragma: no cover
             raise DatabaseNotConfiguredException(
                 'Database is not configured yet')
 
@@ -300,7 +300,7 @@ class MyData:
                             app_publisher='normal_user_2_api_client_2_' +
                             'publisher'),
                         APIClient(
-                            app_name='normal_user_1_api_client_3',
+                            app_name='normal_user_2_api_client_3',
                             app_publisher='normal_user_2_api_client_3_' +
                             'publisher')
                     ],

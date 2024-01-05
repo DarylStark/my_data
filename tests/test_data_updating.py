@@ -3,12 +3,15 @@
 This module contains unit tests that update data in the database. After the
 update, it checks if the data has been updated.
 """
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+from my_model.user_scoped_models import (APIClient,  # type:ignore
+                                         APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises
+from pytest import raises, mark
 
-from my_data.exceptions import PermissionDeniedException
-from my_data.my_data import MyData
+from my_data.exceptions import PermissionDeniedException  # type:ignore
+from my_data.my_data import MyData  # type:ignore
+
+pytestmark = mark.updating
 
 
 def test_data_updating_own_user_as_root(

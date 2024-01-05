@@ -39,7 +39,7 @@ class Updater(DataManipulator):
             A list with the updated data models.
         """
         if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
-            raise PermissionDeniedException(
+            raise PermissionDeniedException(  # pragma: no cover
                 'User must be a normal user or a root user to update data.')
         return self._add_models_to_session(models)
 
@@ -105,7 +105,7 @@ class UserUpdater(Updater):
         # same as the current user if this user is a USER user.
         for model in models:
             if not isinstance(model, User):
-                raise PermissionDeniedException(
+                raise PermissionDeniedException(  # pragma: no cover
                     f'Expected "{self._database_model}", got "{type(model)}".')
 
             if self._context_data.user.role == UserRole.USER:

@@ -3,13 +3,18 @@
 This module contains unit tests that create data in the database. After the
 creation, it checks if the data has been created.
 """
+# pylint: disable=no-member # disabled for the `like` method of Pydantic
+# fields.
 
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+from my_model.user_scoped_models import (APIClient,  # type:ignore
+                                         APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises
+from pytest import raises, mark
 
-from my_data import MyData
-from my_data.exceptions import PermissionDeniedException
+from my_data import MyData  # type:ignore
+from my_data.exceptions import PermissionDeniedException  # type:ignore
+
+pytestmark = mark.creation
 
 
 def test_data_creation_users_as_root(
@@ -51,7 +56,7 @@ def test_data_creation_user_as_service_account(
 
     Args:
         my_data: a instance of a MyData object.
-        test_service_user: the service user.
+        service_user: the service user.
         test_normal_user: a USER user to create.
     """
     with raises(PermissionDeniedException):
@@ -186,7 +191,7 @@ def test_data_creation_tag_as_service_account(
 
     Args:
         my_data: a instance of a MyData object.
-        test_service_user: the service user.
+        service_user: the service user.
         test_tags: a list with tags to add.
     """
     with raises(PermissionDeniedException):
@@ -305,7 +310,7 @@ def test_data_creation_api_clients_as_service_account(
 
     Args:
         my_data: a instance of a MyData object.
-        test_service_user: the service user.
+        service_user: the service user.
         test_api_clients: a list with API clients to add.
     """
     with raises(PermissionDeniedException):
@@ -424,7 +429,7 @@ def test_data_creation_api_tokens_as_service_account(
 
     Args:
         my_data: a instance of a MyData object.
-        test_service_user: the service user.
+        service_user: the service user.
         test_api_tokens: a list with API tokens to add.
     """
     with raises(PermissionDeniedException):
@@ -574,7 +579,7 @@ def test_data_creation_user_settings_as_service_account(
 
     Args:
         my_data: a instance of a MyData object.
-        test_service_user: the service user.
+        service_user: the service user.
         test_user_settings: a list with API tokens to add.
     """
     with raises(PermissionDeniedException):
