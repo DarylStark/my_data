@@ -111,7 +111,8 @@ class UserScopedRetriever(Retriever):
         if not issubclass(self._database_model, UserScopedModel):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
-        return [self._database_model.user_id == self._context_data.user.id]
+        return [self._database_model.user_id  # type: ignore
+                == self._context_data.user.id]
 
 
 class UserRetriever(Retriever):
@@ -141,7 +142,7 @@ class UserRetriever(Retriever):
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a User')
         if self._context_data.user.role == UserRole.USER:
-            return [User.id == self._context_data.user.id]
+            return [User.id == self._context_data.user.id]  # type: ignore
 
         # Root users get no filter
         return []

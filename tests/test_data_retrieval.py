@@ -5,7 +5,7 @@ This module contains unit tests that retrieve data from the database.
 # pylint: disable=redefined-outer-name
 
 import pytest
-from my_model.user_scoped_models import Tag, User  # type:ignore
+from my_model.user_scoped_models import Tag, User
 from pytest import mark, raises
 from sqlmodel import or_
 

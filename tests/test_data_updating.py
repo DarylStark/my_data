@@ -3,7 +3,7 @@
 This module contains unit tests that update data in the database. After the
 update, it checks if the data has been updated.
 """
-from my_model.user_scoped_models import (APIClient,  # type:ignore
+from my_model.user_scoped_models import (APIClient,
                                          APIToken, Tag, User,
                                          UserSetting)
 from pytest import raises, mark
