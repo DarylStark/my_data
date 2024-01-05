@@ -6,7 +6,7 @@ for other DataManipulator classes.
 
 from typing import Generic, Type, TypeVar
 
-from my_model.user_scoped_models import UserScopedModel  # type: ignore
+from my_model.user_scoped_models import UserScopedModel
 from sqlalchemy.future import Engine
 
 from .context_data import ContextData

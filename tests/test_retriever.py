@@ -3,12 +3,11 @@
 import pytest
 from my_model.user_scoped_models import Tag, User
 
-from my_data.context_data import ContextData  # type:ignore
-from my_data.exceptions import (BaseClassCallException,  # type:ignore
+from my_data.context_data import ContextData
+from my_data.exceptions import (BaseClassCallException,
                                 WrongDataManipulatorException)
-from my_data.my_data import MyData  # type:ignore
-from my_data.retrievers import (Retriever,  # type:ignore
-                                UserRetriever, UserScopedRetriever)
+from my_data.my_data import MyData
+from my_data.retrievers import Retriever, UserRetriever, UserScopedRetriever
 
 
 def test_base_class_exception(my_data: MyData, root_user: User) -> None:

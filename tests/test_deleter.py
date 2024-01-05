@@ -3,10 +3,10 @@
 import pytest
 from my_model.user_scoped_models import Tag, User
 
-from my_data.context_data import ContextData  # type:ignore
-from my_data.deleters import UserDeleter  # type:ignore
-from my_data.exceptions import WrongDataManipulatorException  # type:ignore
-from my_data.my_data import MyData  # type:ignore
+from my_data.context_data import ContextData
+from my_data.deleters import UserDeleter
+from my_data.exceptions import WrongDataManipulatorException
+from my_data.my_data import MyData
 
 
 def test_usercreator_wrong_manipulator_exception(

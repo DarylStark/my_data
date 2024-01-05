@@ -6,7 +6,7 @@ in the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model.user_scoped_models import User, UserRole  # type: ignore
+from my_model.user_scoped_models import User, UserRole
 
 from my_data.exceptions import (PermissionDeniedException,
                                 WrongDataManipulatorException)

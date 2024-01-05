@@ -4,8 +4,8 @@ This module contains the Context class.
 """
 from types import TracebackType
 
-from my_model.user_scoped_models import (APIClient, APIToken,  # type: ignore
-                                         Tag, User, UserRole, UserSetting)
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
+                                         UserRole, UserSetting)
 from sqlalchemy.future import Engine
 from sqlmodel import select
 

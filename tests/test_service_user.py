@@ -6,9 +6,9 @@ User objects or API tokens.
 from my_model.user_scoped_models import User
 from pytest import mark, raises
 
-from my_data.exceptions import PermissionDeniedException  # type:ignore
-from my_data.exceptions import UnknownUserAccountException  # type:ignore
-from my_data.my_data import MyData  # type:ignore
+from my_data.exceptions import (PermissionDeniedException,
+                                UnknownUserAccountException)
+from my_data.my_data import MyData
 
 pytestmark = mark.service_user
 

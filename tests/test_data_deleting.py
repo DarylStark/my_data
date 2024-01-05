@@ -3,13 +3,12 @@
 This module contains unit tests that delete data from the database. After the
 deletion, it checks if the data has been deleted.
 """
-from my_model.user_scoped_models import (APIClient,
-                                         APIToken, Tag, User,
+from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import raises, mark
+from pytest import mark, raises
 
-from my_data.exceptions import PermissionDeniedException  # type:ignore
-from my_data.my_data import MyData  # type:ignore
+from my_data.exceptions import PermissionDeniedException
+from my_data.my_data import MyData
 
 pytestmark = mark.deleting
 
@@ -47,7 +46,8 @@ def test_data_deleting_own_user_as_root(
     with my_data.get_context(user=root_user) as context:
         # Get the user
         users = context.users.retrieve(
-            User.username == 'root')
+            User.username ==  # type:ignore
+            'root')
 
         # Delete the user. This should give an error
         with raises(PermissionDeniedException):
@@ -74,14 +74,16 @@ def test_data_deleting_other_user_as_root(
 
         # Get the user
         users = context.users.retrieve(
-            User.username == 'deletion_test_user_user_1')
+            User.username ==  # type:ignore
+            'deletion_test_user_user_1')
 
         # Delete the user
         context.users.delete(users)
 
         # Check if the user is deleted
         users = context.users.retrieve(
-            User.username == 'deletion_test_user_user_1')
+            User.username ==  # type:ignore
+            'deletion_test_user_user_1')
         assert len(users) == 0
 
 
@@ -100,7 +102,8 @@ def test_data_deleting_own_user_as_normal_user(
     with my_data.get_context(user=normal_user_1) as context:
         # Get the user
         users = context.users.retrieve(
-            User.username == 'normal.user.1')
+            User.username ==  # type:ignore
+            'normal.user.1')
 
         # Delete the user. This should give an error
         with raises(PermissionDeniedException):
@@ -126,14 +129,16 @@ def test_data_deleting_tags_as_root(
 
         # Get the tag
         tags = context.tags.retrieve(
-            Tag.title == 'test_deletion_tag_1')
+            Tag.title ==  # type:ignore
+            'test_deletion_tag_1')
 
         # Delete the user
         context.tags.delete(tags)
 
         # Check if the user is deleted
         tags = context.tags.retrieve(
-            Tag.title == 'test_deletion_tag_1')
+            Tag.title ==  # type:ignore
+            'test_deletion_tag_1')
         assert len(tags) == 0
 
 
@@ -156,14 +161,16 @@ def test_data_deleting_tags_as_normal_user(
 
         # Get the tag
         tags = context.tags.retrieve(
-            Tag.title == 'test_deletion_tag_1')
+            Tag.title ==  # type:ignore
+            'test_deletion_tag_1')
 
         # Delete the user
         context.tags.delete(tags)
 
         # Check if the user is deleted
         tags = context.tags.retrieve(
-            Tag.title == 'test_deletion_tag_1')
+            Tag.title ==  # type:ignore
+            'test_deletion_tag_1')
         assert len(tags) == 0
 
 
@@ -186,14 +193,16 @@ def test_data_deleting_api_clients_as_root(
 
         # Get the API client
         api_clients = context.api_clients.retrieve(
-            APIClient.app_name == 'test_deletion_api_client_1')
+            APIClient.app_name ==  # type:ignore
+            'test_deletion_api_client_1')
 
         # Delete the API client
         context.api_clients.delete(api_clients)
 
         # Check if the API client is deleted
         api_clients = context.api_clients.retrieve(
-            APIClient.app_name == 'test_deletion_api_client_1')
+            APIClient.app_name ==  # type:ignore
+            'test_deletion_api_client_1')
         assert len(api_clients) == 0
 
 
@@ -216,14 +225,16 @@ def test_data_deleting_api_clients_as_normal_user(
 
         # Get the API client
         api_clients = context.api_clients.retrieve(
-            APIClient.app_name == 'test_deletion_api_client_1')
+            APIClient.app_name ==  # type:ignore
+            'test_deletion_api_client_1')
 
         # Delete the API client
         context.api_clients.delete(api_clients)
 
         # Check if the API client is deleted
         api_clients = context.api_clients.retrieve(
-            APIClient.app_name == 'test_deletion_api_client_1')
+            APIClient.app_name ==  # type:ignore
+            'test_deletion_api_client_1')
         assert len(api_clients) == 0
 
 
@@ -246,14 +257,16 @@ def test_data_deleting_api_tokens_as_root(
 
         # Get the API token
         api_tokens = context.api_tokens.retrieve(
-            APIToken.title == 'test_deletion_api_token_1')
+            APIToken.title ==  # type:ignore
+            'test_deletion_api_token_1')
 
         # Delete the API token
         context.api_tokens.delete(api_tokens)
 
         # Check if the API token is deleted
         api_tokens = context.api_tokens.retrieve(
-            APIToken.title == 'test_deletion_api_token_1')
+            APIToken.title ==  # type:ignore
+            'test_deletion_api_token_1')
         assert len(api_tokens) == 0
 
 
@@ -276,14 +289,16 @@ def test_data_deleting_api_tokens_as_normal_user(
 
         # Get the API token
         api_tokens = context.api_tokens.retrieve(
-            APIToken.title == 'test_deletion_api_token_1')
+            APIToken.title ==  # type:ignore
+            'test_deletion_api_token_1')
 
         # Delete the API token
         context.api_tokens.delete(api_tokens)
 
         # Check if the API token is deleted
         api_tokens = context.api_tokens.retrieve(
-            APIToken.title == 'test_deletion_api_token_1')
+            APIToken.title ==  # type:ignore
+            'test_deletion_api_token_1')
         assert len(api_tokens) == 0
 
 
@@ -307,14 +322,16 @@ def test_data_deleting_user_settings_as_root(
 
         # Get the User Setting
         user_settings = context.user_settings.retrieve(
-            UserSetting.setting == 'test_deletion_user_setting_1')
+            UserSetting.setting ==  # type:ignore
+            'test_deletion_user_setting_1')
 
         # Delete the User Setting
         context.user_settings.delete(user_settings)
 
         # Check if the API token is deleted
         user_settings = context.user_settings.retrieve(
-            UserSetting.setting == 'test_deletion_user_setting_1')
+            UserSetting.setting ==  # type:ignore
+            'test_deletion_user_setting_1')
         assert len(user_settings) == 0
 
 
@@ -338,12 +355,14 @@ def test_data_deleting_user_settings_as_normal_user(
 
         # Get the User Setting
         user_settings = context.user_settings.retrieve(
-            UserSetting.setting == 'test_deletion_user_setting_1')
+            UserSetting.setting ==  # type:ignore
+            'test_deletion_user_setting_1')
 
         # Delete the User Setting
         context.user_settings.delete(user_settings)
 
         # Check if the API token is deleted
         user_settings = context.user_settings.retrieve(
-            UserSetting.setting == 'test_deletion_user_setting_1')
+            UserSetting.setting ==  # type:ignore
+            'test_deletion_user_setting_1')
         assert len(user_settings) == 0
