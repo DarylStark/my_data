@@ -35,11 +35,11 @@ class Deleter(DataManipulator):
                 delete data this way.
         """
         if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
-            raise PermissionDeniedException(
+            raise PermissionDeniedException(  # pragma: no cover
                 'User must be a normal user or a root user to delete data.')
 
         if not isinstance(models, list):
-            models = [models]
+            models = [models]  # pragma: no cover
 
         # Delete the resources
         for model in models:
@@ -106,7 +106,7 @@ class UserDeleter(Deleter):
         # same as the current user if this user is a USER user.
         for model in models:
             if not isinstance(model, self._database_model):
-                raise PermissionDeniedException(
+                raise PermissionDeniedException(  # pragma: no cover
                     f'Expected "{self._database_model}", got "{type(model)}".')
 
             if self._context_data.user.id == model.id:

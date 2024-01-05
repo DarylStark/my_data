@@ -26,4 +26,8 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.autopep8"
     },
+    "python.testing.pytestArgs": [
+        "--no-cov",
+        "tests"
+    ],
 }

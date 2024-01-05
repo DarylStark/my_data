@@ -14,6 +14,17 @@ from my_data.my_data import MyData  # type:ignore
 pytestmark = mark.deleting
 
 
+def test_deleting_users_with_a_service_account(
+    my_data: MyData,
+    service_user: User
+) -> None:
+    """Test if we get an error when deleting with a service account."""
+    with my_data.get_context(user=service_user) as context:
+        # Delete the user. This should give an error
+        with raises(PermissionDeniedException):
+            context.users.delete(service_user)
+
+
 def test_data_deleting_own_user_as_root(
         my_data: MyData,
         root_user: User) -> None:

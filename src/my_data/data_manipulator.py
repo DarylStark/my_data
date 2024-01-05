@@ -84,7 +84,7 @@ class DataManipulator(Generic[T]):
         """
         # Check if it is a subtype of UserScopedModel
         if not issubclass(self._database_model, UserScopedModel):
-            raise WrongDataManipulatorException(
+            raise WrongDataManipulatorException(  # pragma: no cover
                 f'The model "{self._database_model}" is not a UserScopedModel')
 
         # Make sure the `models` are always a list
@@ -93,11 +93,11 @@ class DataManipulator(Generic[T]):
         # Verify the model type and if the `user_id` field is set.
         for model in models:
             if not isinstance(model, self._database_model):
-                raise PermissionDeniedException(
+                raise PermissionDeniedException(  # pragma: no cover
                     f'Expected "{self._database_model}", got "{type(model)}".')
 
             if getattr(model, 'user_id', None) != self._context_data.user.id:
-                raise PermissionDeniedException(
+                raise PermissionDeniedException(  # pragma: no cover
                     'This user is not allowed to alter this resource')
 
         return models

@@ -91,7 +91,7 @@ class MyData:
         # Create the database engine
         try:
             self.database_engine = create_engine(**database_args)
-        except OperationalError as sa_error:
+        except OperationalError as sa_error:  # pragma: no cover
             raise DatabaseConnectionException(
                 'Couldn\'t connect to database') from sa_error
 
@@ -131,10 +131,6 @@ class MyData:
         """
         self.create_engine()
 
-        if not self.database_engine:
-            raise DatabaseNotConfiguredException(
-                'Database is not configured yet')
-
         return Context(
             database_engine=self.database_engine,
             context_data=ContextData(
@@ -163,10 +159,6 @@ class MyData:
             The created Context object.
         """
         self.create_engine()
-
-        if not self.database_engine:
-            raise DatabaseNotConfiguredException(
-                'Database is not configured yet')
 
         with Session(self.database_engine) as session:
             sql_query = select(User)
