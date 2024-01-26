@@ -78,6 +78,7 @@ class Retriever(DataManipulator):
             for filter_item in flt:
                 sql_query = sql_query.where(filter_item)
 
+        # Sort the resources
         sql_query = sql_query.order_by(sort)
 
         resources = self._context_data.db_session.exec(sql_query).all()
