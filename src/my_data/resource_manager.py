@@ -101,7 +101,9 @@ class ResourceManager(Generic[T]):
     def retrieve(
             self,
             flt: list[ColumnElement] | ColumnElement | None = None,
-            sort: ColumnElement | None = None) -> list[T]:
+            sort: ColumnElement | None = None,
+            start: int | None = None,
+            max_items: int | None = None) -> list[T]:
         """Retrieve resources for the specified object.
 
         Returns a list of resources for the specified model. It does this using
@@ -118,7 +120,9 @@ class ResourceManager(Generic[T]):
         # Get all DB objects from the database
         return self.retriever.retrieve(
             flt=flt,
-            sort=sort)
+            sort=sort,
+            start=start,
+            max_items=max_items)
 
     def update(self, models: list[T] | T) -> list[T]:
         """Update resources.

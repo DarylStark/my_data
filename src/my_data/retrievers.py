@@ -39,7 +39,9 @@ class Retriever(DataManipulator):
     def retrieve(
             self,
             flt: list[ColumnElement] | ColumnElement | None = None,
-            sort: ColumnElement | None = None) -> list[T]:
+            sort: ColumnElement | None = None,
+            start: int | None = None,
+            max_items: int | None = None) -> list[T]:
         """Retrieve data.
 
         The method to retrieve data from the database. Can only be done by
@@ -80,6 +82,10 @@ class Retriever(DataManipulator):
 
         # Sort the resources
         sql_query = sql_query.order_by(sort)
+
+        # Pagination
+        if start is not None and max_items is not None:
+            sql_query = sql_query.offset(start).limit(max_items)
 
         resources = self._context_data.db_session.exec(sql_query).all()
 

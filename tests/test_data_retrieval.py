@@ -246,6 +246,37 @@ def test_data_retrieval_all_tags_as_normal_user_2_reverse_sort(
         assert tags[index].title == title
 
 
+@pytest.mark.parametrize(
+    'start, title',
+    [
+        (0, 'normal_user_2_tag_1'),
+        (1, 'normal_user_2_tag_2'),
+        (2, 'normal_user_2_tag_3')
+    ]
+)
+def test_data_retrieval_all_tags_as_normal_user_2_paginated(
+        my_data: MyData,
+        normal_user_2: User,
+        start: int,
+        title: str) -> None:
+    """Test Tag retrieval as a USER user and do it one by one.
+
+    Retrieves Tags from the database as a normal user and specify to only
+    retrieve one item each time in a new page. This way, we can test the
+    pagination.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the second normal user.
+        start: the start to test.
+        title: test title.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        tags = context.tags.retrieve(start=start, max_items=1)
+        assert len(tags) == 1
+        assert tags[0].title == title
+
+
 def test_data_retrieval_tags_as_service_user(
         my_data: MyData,
         service_user: User) -> None:
