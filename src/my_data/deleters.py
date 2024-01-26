@@ -5,6 +5,7 @@ from the database. The ResourceManager uses these classes.
 """
 from typing import TypeVar
 
+from my_model.my_model import MyModel
 from my_model.user_scoped_models import User, UserRole
 
 from my_data.exceptions import (PermissionDeniedException,
@@ -12,10 +13,10 @@ from my_data.exceptions import (PermissionDeniedException,
 
 from .data_manipulator import DataManipulator
 
-T = TypeVar('T')
+T = TypeVar('T', bound=MyModel)
 
 
-class Deleter(DataManipulator):
+class Deleter(DataManipulator[T]):
     """Baseclass for Deleters.
 
     The baseclass for deleters. The sub deleters use this class to make sure
@@ -46,7 +47,7 @@ class Deleter(DataManipulator):
             self._context_data.db_session.delete(model)
 
 
-class UserScopedDeleter(Deleter):
+class UserScopedDeleter(Deleter[T]):
     """Deleter for UserScoped models.
 
     This deleter should be used for UserScoped models, like Tags and APITokens.
@@ -66,7 +67,7 @@ class UserScopedDeleter(Deleter):
         super().delete(models)
 
 
-class UserDeleter(Deleter):
+class UserDeleter(Deleter[T]):
     """Deleter for User models.
 
     This deleter should be used to delete Users.

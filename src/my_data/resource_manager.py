@@ -5,6 +5,7 @@ ResourceManager for specific resources.
 """
 from typing import Generic, Type, TypeVar
 
+from my_model.my_model import MyModel
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 
@@ -14,7 +15,7 @@ from .deleters import Deleter, UserScopedDeleter
 from .retrievers import Retriever, UserScopedRetriever
 from .updaters import Updater, UserScopedUpdater
 
-T = TypeVar('T')
+T = TypeVar('T', bound=MyModel)
 
 
 class ResourceManager(Generic[T]):
@@ -41,11 +42,11 @@ class ResourceManager(Generic[T]):
     def __init__(self,
                  database_model: Type[T],
                  database_engine: Engine,
-                 context_data: ContextData | None = None,
-                 creator: Type = UserScopedCreator,
-                 retriever: Type = UserScopedRetriever,
-                 updater: Type = UserScopedUpdater,
-                 deleter: Type = UserScopedDeleter) -> None:
+                 context_data: ContextData,
+                 creator: Type[Creator[T]] = UserScopedCreator,
+                 retriever: Type[Retriever[T]] = UserScopedRetriever,
+                 updater: Type[Updater[T]] = UserScopedUpdater,
+                 deleter: Type[Deleter[T]] = UserScopedDeleter) -> None:
         """Set attributes for the object.
 
         The initiator sets the attributes for the object.
@@ -59,26 +60,26 @@ class ResourceManager(Generic[T]):
             updater: the class for the Updater.
             deleter: the class for the Deleter.
         """
-        self._database_model: Type = database_model
+        self._database_model: Type[T] = database_model
         self._database_engine: Engine = database_engine
-        self._context_data: ContextData | None = context_data
+        self._context_data: ContextData = context_data
 
-        self.retriever: Retriever = retriever(
+        self.retriever: Retriever[T] = retriever(
             database_model=database_model,
             database_engine=database_engine,
             context_data=context_data
         )
-        self.creator: Creator = creator(
+        self.creator: Creator[T] = creator(
             database_model=database_model,
             database_engine=database_engine,
             context_data=context_data
         )
-        self.updater: Updater = updater(
+        self.updater: Updater[T] = updater(
             database_model=database_model,
             database_engine=database_engine,
             context_data=context_data
         )
-        self.deleter: Deleter = deleter(
+        self.deleter: Deleter[T] = deleter(
             database_model=database_model,
             database_engine=database_engine,
             context_data=context_data
@@ -100,8 +101,8 @@ class ResourceManager(Generic[T]):
 
     def retrieve(
             self,
-            flt: list[ColumnElement] | ColumnElement | None = None,
-            sort: ColumnElement | None = None,
+            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
+            sort: ColumnElement[T] | None = None,
             start: int | None = None,
             max_items: int | None = None) -> list[T]:
         """Retrieve resources for the specified object.

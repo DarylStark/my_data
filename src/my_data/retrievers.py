@@ -6,6 +6,7 @@ data from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
+from my_model.my_model import MyModel
 from my_model.user_scoped_models import User, UserRole, UserScopedModel
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import select
@@ -14,17 +15,17 @@ from .data_manipulator import DataManipulator
 from .exceptions import (BaseClassCallException, PermissionDeniedException,
                          WrongDataManipulatorException)
 
-T = TypeVar('T')
+T = TypeVar('T', bound=MyModel)
 
 
-class Retriever(DataManipulator):
+class Retriever(DataManipulator[T]):
     """Baseclass for Retrievers.
 
     The baseclass for retrievers. The sub retrievers use this class to make
     sure all retrievers have the same interface.
     """
 
-    def get_context_filters(self) -> list[ColumnElement]:
+    def get_context_filters(self) -> list[ColumnElement[bool]]:
         """Set default filters for the object.
 
         Method that returns the default filters for this specific getters. This
@@ -38,8 +39,8 @@ class Retriever(DataManipulator):
 
     def retrieve(
             self,
-            flt: list[ColumnElement] | ColumnElement | None = None,
-            sort: ColumnElement | None = None,
+            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
+            sort: ColumnElement[T] | None = None,
             start: int | None = None,
             max_items: int | None = None) -> list[T]:
         """Retrieve data.
@@ -96,14 +97,14 @@ class Retriever(DataManipulator):
         return list(resources)
 
 
-class UserScopedRetriever(Retriever):
+class UserScopedRetriever(Retriever[T]):
     """Retriever for UserScoped models.
 
     This retriever should be used for UserScoped models, like Tags and
     APITokens.
     """
 
-    def get_context_filters(self) -> list[ColumnElement]:
+    def get_context_filters(self) -> list[ColumnElement[bool]]:
         """Get default filters for the current context.
 
         Returns the fitlers that are relevant for the current context. In the
@@ -127,13 +128,13 @@ class UserScopedRetriever(Retriever):
                 == self._context_data.user.id]
 
 
-class UserRetriever(Retriever):
+class UserRetriever(Retriever[T]):
     """Retriever for Users.
 
     This retrieved should be used for User models.
     """
 
-    def get_context_filters(self) -> list[ColumnElement]:
+    def get_context_filters(self) -> list[ColumnElement[bool]]:
         """Get default filters for the current context.
 
         Returns the fitlers that are relevant for the current context. In this
