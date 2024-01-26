@@ -5,16 +5,17 @@ in the database. The ResourceManager uses these classes.
 """
 from typing import TypeVar
 
+from my_model.my_model import MyModel
 from my_model.user_scoped_models import User, UserRole, UserScopedModel
 
 from .data_manipulator import DataManipulator
 from .exceptions import (BaseClassCallException, PermissionDeniedException,
                          WrongDataManipulatorException)
 
-T = TypeVar('T')
+T = TypeVar('T', bound=MyModel)
 
 
-class Creator(DataManipulator):
+class Creator(DataManipulator[T]):
     """Baseclass for Creators.
 
     The baseclass for creators. The sub creators use this class to make sure
@@ -58,7 +59,7 @@ class Creator(DataManipulator):
         return self._add_models_to_session(models)
 
 
-class UserScopedCreator(Creator):
+class UserScopedCreator(Creator[T]):
     """Creator for UserScoped models.
 
     This creator should be used for UserScoped models, like Tags and APItokens.
@@ -116,7 +117,7 @@ class UserScopedCreator(Creator):
         return super().create(models)
 
 
-class UserCreator(Creator):
+class UserCreator(Creator[T]):
     """Creator for Users.
 
     This creator should be used to create Users.
@@ -140,5 +141,5 @@ class UserCreator(Creator):
         if self._database_model is not User:
             raise WrongDataManipulatorException(
                 f'The model "{self._database_model}" is not a UserScopedModel')
-        return (self._context_data.user is None or
+        return (not self._context_data.user or
                 self._context_data.user.role == UserRole.ROOT)

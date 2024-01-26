@@ -6,6 +6,7 @@ in the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
+from my_model.my_model import MyModel
 from my_model.user_scoped_models import User, UserRole
 
 from my_data.exceptions import (PermissionDeniedException,
@@ -13,10 +14,10 @@ from my_data.exceptions import (PermissionDeniedException,
 
 from .data_manipulator import DataManipulator
 
-T = TypeVar('T')
+T = TypeVar('T', bound=MyModel)
 
 
-class Updater(DataManipulator):
+class Updater(DataManipulator[T]):
     """Baseclass for Updaters.
 
     The baseclass for updaters. The sub updaters use this class to make sure
@@ -44,7 +45,7 @@ class Updater(DataManipulator):
         return self._add_models_to_session(models)
 
 
-class UserScopedUpdater(Updater):
+class UserScopedUpdater(Updater[T]):
     """Updater for UserScoped models.
 
     This updater should be used for UserScoped models, like Tags and APItokens.
@@ -67,7 +68,7 @@ class UserScopedUpdater(Updater):
         return super().update(models)
 
 
-class UserUpdater(Updater):
+class UserUpdater(Updater[T]):
     """Updater for Users.
 
     This updaters should be used to update Users.
