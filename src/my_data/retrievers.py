@@ -38,7 +38,8 @@ class Retriever(DataManipulator):
 
     def retrieve(
             self,
-            flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
+            flt: list[ColumnElement] | ColumnElement | None = None,
+            sort: ColumnElement | None = None) -> list[T]:
         """Retrieve data.
 
         The method to retrieve data from the database. Can only be done by
@@ -76,6 +77,8 @@ class Retriever(DataManipulator):
         if flt:
             for filter_item in flt:
                 sql_query = sql_query.where(filter_item)
+
+        sql_query = sql_query.order_by(sort)
 
         resources = self._context_data.db_session.exec(sql_query).all()
 
