@@ -51,6 +51,9 @@ class Retriever(DataManipulator):
         Args:
             flt: a SQLalchemy filter to filter the retrieved data. Can be a
                 list of filters, or a single filter.
+            sort: the SQLmodel field to sort on.
+            start: the index of the first item to retrieve.
+            max_items: the maximum number of items to retrieve.
 
         Raises:
             PermissionDeniedException: when this user type is not allowed to

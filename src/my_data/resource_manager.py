@@ -112,6 +112,9 @@ class ResourceManager(Generic[T]):
 
         Args:
             flt: SQLModel type filters to filter this resource.
+            sort: the SQLmodel field to sort on.
+            start: the index of the first item to retrieve.
+            max_items: the maximum number of items to retrieve.
 
         Returns:
             list[Model]: a list with the retrieved resources in models defined
