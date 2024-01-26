@@ -43,3 +43,53 @@ For example, to create a tag for the user account saved in the ``my_user`` objec
         context.tags.create(my_tag)
 
 After doing this, the tag is created in the context for the ``my_user`` user.
+
+Retreiving data
+---------------
+
+To retrieve data, you can use the ``retrieve`` method of the ``ResourceManager`` object. This method has four optional arguments:
+
+* ``flt``: used to filter the data
+* ``sort``: used to order the data
+* ``start``: used to start the data at a certain point
+* ``max_items``: used to limit the amount of data returned
+
+The ``flt`` argument is a SQLAlchemy filter object. This way, you can filter the data using the SQLAlchemy filter syntax. For example, to retrieve all tags with the title ``my shiny tag``, you can use the following code:
+
+.. code-block:: python
+
+    from my_model.user_scoped_models import Tag
+
+    with data_object.get_context(user=my_user) as context:
+        # Retrieve the Tag object
+        my_tag = context.tags.retrieve(
+            flt=Tag.title == 'my shiny tag'
+        )
+
+The ``sort`` argument is a SQLAlchemy order object. This way, you can order the data using the SQLAlchemy order syntax. For example, to retrieve all tags with the title ``my shiny tag`` and order them by title, you can use the following code:
+
+.. code-block:: python
+
+    from my_model.user_scoped_models import Tag
+
+    with data_object.get_context(user=my_user) as context:
+        # Retrieve the Tag object
+        my_tag = context.tags.retrieve(
+            flt=Tag.title == 'my shiny tag',
+            sort=Tag.title
+        )
+
+The ``start`` and ``max_items`` arguments are integers. If you give them both, you can specify at what item to start and how many items to return. For example, to retrieve all tags with the title ``my shiny tag``, order them by title and only retrieve the second ten items, you can use the following code:
+
+.. code-block:: python
+
+    from my_model.user_scoped_models import Tag
+
+    with data_object.get_context(user=my_user) as context:
+        # Retrieve the Tag object
+        my_tag = context.tags.retrieve(
+            flt=Tag.title == 'my shiny tag',
+            sort=Tag.title,
+            start=10,
+            max_items=10
+        )
