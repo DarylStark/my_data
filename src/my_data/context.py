@@ -127,6 +127,33 @@ class Context:
         raise UnknownUserAccountException(
             f'User with username "{username}" is not found.')
 
+    def get_api_token_object_by_api_token(self, api_token: str) -> APIToken:
+        """Get a User account using via a API token.
+
+        Retrieves a APIToken object for a user by searching for a specific API
+        token. This can only be done by a service user.
+
+        Args:
+            api_token: the API token for the user.
+
+        Raises:
+            PermissionDeniedException: user in the context is not a Service
+                user.
+            UnknownUserAccountException: the user is not found.
+
+        Returns:
+            A APIToken object for the API token.
+        """
+        if self._context_data.user.role != UserRole.SERVICE:
+            raise PermissionDeniedException('Should be ran as a service user')
+
+        sql_query = select(APIToken).where(APIToken.token == api_token)
+        api_tokens = self._context_data.db_session.exec(sql_query).all()
+        if len(api_tokens) == 1:
+            return api_tokens[0]
+        raise UnknownUserAccountException(
+            f'Token "{api_token}" is not found.')
+
     def get_user_account_by_api_token(self, api_token: str) -> User:
         """Get a User account using via a API token.
 
@@ -139,17 +166,10 @@ class Context:
         Raises:
             PermissionDeniedException: user in the context is not a Service
                 user.
-            UnknownUserAccountException: the user is not found.
 
         Returns:
             A User object for the correct user.
         """
         if self._context_data.user.role != UserRole.SERVICE:
             raise PermissionDeniedException('Should be ran as a service user')
-
-        sql_query = select(APIToken).where(APIToken.token == api_token)
-        api_tokens = self._context_data.db_session.exec(sql_query).all()
-        if len(api_tokens) == 1:
-            return api_tokens[0].user
-        raise UnknownUserAccountException(
-            f'Token "{api_token}" is not found.')
+        return self.get_api_token_object_by_api_token(api_token).user

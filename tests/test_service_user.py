@@ -116,3 +116,56 @@ def test_getting_user_account_with_normal_account_by_api_token(
         with my_data.get_context(root_user) as context:
             _ = context.get_user_account_by_api_token(
                 'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
+
+
+def test_getting_api_token_with_normal_account_by_api_token(
+        my_data: MyData,
+        root_user: User) -> None:
+    """Test retrieving a API token with a normal account with a API token.
+
+    Should raise a PermissionDeniedException.
+
+    Args:
+        my_data: a instance of a MyData object.
+        root_user: a root user.
+    """
+    with raises(PermissionDeniedException):
+        with my_data.get_context(root_user) as context:
+            _ = context.get_api_token_object_by_api_token(
+                'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
+
+
+def test_retrieving_token_objects_by_api_token(my_data: MyData) -> None:
+    """Unit test to retrieve a APIToken object by the API token.
+
+    This unit test tries to log in with a Service user and retrieve a APIToken
+    object using a API token.
+
+    Args:
+        my_data: a instance of a MyData object.
+    """
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        token = context.get_api_token_object_by_api_token(
+            'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
+        assert token is not None
+        assert token.user.username == 'normal.user.2'
+
+
+def test_retrieving_token_objects_by_api_token_wrong_token(
+        my_data: MyData) -> None:
+    """Unit test to retrieve a APIToken object by the API token.
+
+    This unit test tries to log in with a Service user and retrieve a User
+    object using a API token. This should fail because the token is wrong.
+
+    Args:
+        my_data: a instance of a MyData object.
+    """
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        with raises(UnknownUserAccountException):
+            context.get_api_token_object_by_api_token(
+                'wrong_token')
