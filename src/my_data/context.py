@@ -10,12 +10,9 @@ from sqlalchemy.future import Engine
 from sqlmodel import select
 
 from .context_data import ContextData
-from .creators import UserCreator, UserScopedCreator
-from .deleters import UserDeleter, UserScopedDeleter
 from .exceptions import PermissionDeniedException, UnknownUserAccountException
-from .resource_manager import ResourceManager
-from .retrievers import UserRetriever, UserScopedRetriever
-from .updaters import UserScopedUpdater, UserUpdater
+from .resource_manager import (UserResourceManagerFactory,
+                               UserScopedResourceManagerFactory)
 
 
 class Context:
@@ -50,46 +47,26 @@ class Context:
 
         # Exposure of Resource Managers to manage specific resources in the
         # data model.
-        self.users = ResourceManager(
+        self.users = UserResourceManagerFactory(
             database_model=User,
             database_engine=database_engine,
-            context_data=self._context_data,
-            creator=UserCreator,
-            retriever=UserRetriever,
-            updater=UserUpdater,
-            deleter=UserDeleter)
-        self.tags = ResourceManager(
+            context_data=self._context_data).create()
+        self.tags = UserScopedResourceManagerFactory(
             database_model=Tag,
             database_engine=database_engine,
-            context_data=self._context_data,
-            creator=UserScopedCreator,
-            retriever=UserScopedRetriever,
-            updater=UserScopedUpdater,
-            deleter=UserScopedDeleter)
-        self.api_clients = ResourceManager(
+            context_data=self._context_data).create()
+        self.api_clients = UserScopedResourceManagerFactory(
             database_model=APIClient,
             database_engine=database_engine,
-            context_data=self._context_data,
-            creator=UserScopedCreator,
-            retriever=UserScopedRetriever,
-            updater=UserScopedUpdater,
-            deleter=UserScopedDeleter)
-        self.api_tokens = ResourceManager(
+            context_data=self._context_data).create()
+        self.api_tokens = UserScopedResourceManagerFactory(
             database_model=APIToken,
             database_engine=database_engine,
-            context_data=self._context_data,
-            creator=UserScopedCreator,
-            retriever=UserScopedRetriever,
-            updater=UserScopedUpdater,
-            deleter=UserScopedDeleter)
-        self.user_settings = ResourceManager(
+            context_data=self._context_data).create()
+        self.user_settings = UserScopedResourceManagerFactory(
             database_model=UserSetting,
             database_engine=database_engine,
-            context_data=self._context_data,
-            creator=UserScopedCreator,
-            retriever=UserScopedRetriever,
-            updater=UserScopedUpdater,
-            deleter=UserScopedDeleter)
+            context_data=self._context_data).create()
 
     def __enter__(self) -> 'Context':
         """Start a Python context manager.

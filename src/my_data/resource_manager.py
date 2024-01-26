@@ -3,6 +3,7 @@
 Contains the ResourceManager class that is used by a Context to create a
 ResourceManager for specific resources.
 """
+from abc import ABC, abstractmethod
 from typing import Generic, Type, TypeVar
 
 from my_model.my_model import MyModel
@@ -10,10 +11,10 @@ from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 
 from .context_data import ContextData
-from .creators import Creator, UserScopedCreator
-from .deleters import Deleter, UserScopedDeleter
-from .retrievers import Retriever, UserScopedRetriever
-from .updaters import Updater, UserScopedUpdater
+from .creators import Creator, UserCreator, UserScopedCreator
+from .deleters import Deleter, UserDeleter, UserScopedDeleter
+from .retrievers import Retriever, UserRetriever, UserScopedRetriever
+from .updaters import Updater, UserScopedUpdater, UserUpdater
 
 T = TypeVar('T', bound=MyModel)
 
@@ -152,3 +153,153 @@ class ResourceManager(Generic[T]):
             models: the model or models to update.
         """
         self.deleter.delete(models)
+
+
+class ResourceManagerFactory(Generic[T], ABC):
+    """Factory for ResourceManagers.
+
+    Abstract class for a factory that creates ResourceManagers.
+    """
+
+    def __init__(self,
+                 database_model: Type[T],
+                 database_engine: Engine,
+                 context_data: ContextData) -> None:
+        """Set attributes for the object.
+
+        Args:
+            database_model: the SQLmodel model used by this ResourceManager.
+            database_engine: the SQLalchemy engine to use.
+            context_data: specifies in what context to execute the methods.
+        """
+        self._database_model: Type[T] = database_model
+        self._database_engine: Engine = database_engine
+        self._context_data: ContextData = context_data
+
+    def create(self) -> ResourceManager[T]:
+        """Create a ResourceManager.
+
+        Returns:
+            ResourceManager: the created ResourceManager.
+        """
+        return ResourceManager(
+            database_model=self._database_model,
+            database_engine=self._database_engine,
+            context_data=self._context_data,
+            creator=self._create_creator(),
+            retriever=self._create_retriever(),
+            updater=self._create_updater(),
+            deleter=self._create_deleter()
+        )
+
+    @abstractmethod
+    def _create_creator(self) -> Type[Creator[T]]:
+        """Create a Creator.
+
+        Returns:
+            Creator: the created Creator.
+        """
+
+    @abstractmethod
+    def _create_retriever(self) -> Type[Retriever[T]]:
+        """Create a Retriever.
+
+        Returns:
+            Retriever: the created Retriever.
+        """
+
+    @abstractmethod
+    def _create_updater(self) -> Type[Updater[T]]:
+        """Create a Updater.
+
+        Returns:
+            Updater: the created Updater.
+        """
+
+    @abstractmethod
+    def _create_deleter(self) -> Type[Deleter[T]]:
+        """Create a Deleter.
+
+        Returns:
+            Deleter: the created Deleter.
+        """
+
+
+class UserResourceManagerFactory(ResourceManagerFactory[T]):
+    """Factory for ResourceManagers for User resources.
+
+    The UserResourceManagerFactory is a factory that creates ResourceManagers
+    for User resources.
+    """
+
+    def _create_creator(self) -> Type[Creator[T]]:
+        """Create a Creator.
+
+        Returns:
+            Creator: the created Creator.
+        """
+        return UserCreator[T]
+
+    def _create_retriever(self) -> Type[Retriever[T]]:
+        """Create a Retriever.
+
+        Returns:
+            Retriever: the created Retriever.
+        """
+        return UserRetriever[T]
+
+    def _create_updater(self) -> Type[Updater[T]]:
+        """Create a Updater.
+
+        Returns:
+            Updater: the created Updater.
+        """
+        return UserUpdater[T]
+
+    def _create_deleter(self) -> Type[Deleter[T]]:
+        """Create a Deleter.
+
+        Returns:
+            Deleter: the created Deleter.
+        """
+        return UserDeleter[T]
+
+
+class UserScopedResourceManagerFactory(ResourceManagerFactory[T]):
+    """Factory for ResourceManagers for UserScoped resources.
+
+    The UserResourceManagerFactory is a factory that creates ResourceManagers
+    for UserScoped resources.
+    """
+
+    def _create_creator(self) -> Type[Creator[T]]:
+        """Create a Creator.
+
+        Returns:
+            Creator: the created Creator.
+        """
+        return UserScopedCreator[T]
+
+    def _create_retriever(self) -> Type[Retriever[T]]:
+        """Create a Retriever.
+
+        Returns:
+            Retriever: the created Retriever.
+        """
+        return UserScopedRetriever[T]
+
+    def _create_updater(self) -> Type[Updater[T]]:
+        """Create a Updater.
+
+        Returns:
+            Updater: the created Updater.
+        """
+        return UserScopedUpdater[T]
+
+    def _create_deleter(self) -> Type[Deleter[T]]:
+        """Create a Deleter.
+
+        Returns:
+            Deleter: the created Deleter.
+        """
+        return UserScopedDeleter[T]
