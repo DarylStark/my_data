@@ -8,6 +8,7 @@ import pytest
 from my_model.user_scoped_models import Tag, User
 from pytest import mark, raises
 from sqlmodel import or_
+from sqlmodel.sql.expression import desc
 
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedException
@@ -213,6 +214,67 @@ def test_data_retrieval_all_tags_as_normal_user_2(
         tags = context.tags.retrieve()
         assert len(tags) == 3
         assert tags[index].title == title
+
+
+@pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'normal_user_2_tag_3'),
+        (1, 'normal_user_2_tag_2'),
+        (2, 'normal_user_2_tag_1')
+    ]
+)
+def test_data_retrieval_all_tags_as_normal_user_2_reverse_sort(
+        my_data: MyData,
+        normal_user_2: User,
+        index: int,
+        title: str) -> None:
+    """Test Tag retrieval as a USER user and sort it reversed on title.
+
+    Retrieves Tags from the database as a normal user and sort it on title
+    reversed. This way, we can test the sorting.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the second normal user.
+        index: test index.
+        title: test title.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        tags = context.tags.retrieve(sort=desc(Tag.title))
+        assert len(tags) == 3
+        assert tags[index].title == title
+
+
+@pytest.mark.parametrize(
+    'start, title',
+    [
+        (0, 'normal_user_2_tag_1'),
+        (1, 'normal_user_2_tag_2'),
+        (2, 'normal_user_2_tag_3')
+    ]
+)
+def test_data_retrieval_all_tags_as_normal_user_2_paginated(
+        my_data: MyData,
+        normal_user_2: User,
+        start: int,
+        title: str) -> None:
+    """Test Tag retrieval as a USER user and do it one by one.
+
+    Retrieves Tags from the database as a normal user and specify to only
+    retrieve one item each time in a new page. This way, we can test the
+    pagination.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the second normal user.
+        start: the start to test.
+        title: test title.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        tags = context.tags.retrieve(start=start, max_items=1)
+        assert len(tags) == 1
+        assert tags[0].title == title
 
 
 def test_data_retrieval_tags_as_service_user(

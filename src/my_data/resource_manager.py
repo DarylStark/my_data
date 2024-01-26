@@ -100,7 +100,10 @@ class ResourceManager(Generic[T]):
 
     def retrieve(
             self,
-            flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
+            flt: list[ColumnElement] | ColumnElement | None = None,
+            sort: ColumnElement | None = None,
+            start: int | None = None,
+            max_items: int | None = None) -> list[T]:
         """Retrieve resources for the specified object.
 
         Returns a list of resources for the specified model. It does this using
@@ -109,13 +112,20 @@ class ResourceManager(Generic[T]):
 
         Args:
             flt: SQLModel type filters to filter this resource.
+            sort: the SQLmodel field to sort on.
+            start: the index of the first item to retrieve.
+            max_items: the maximum number of items to retrieve.
 
         Returns:
             list[Model]: a list with the retrieved resources in models defined
                 in the `my-models` package.
         """
         # Get all DB objects from the database
-        return self.retriever.retrieve(flt=flt)
+        return self.retriever.retrieve(
+            flt=flt,
+            sort=sort,
+            start=start,
+            max_items=max_items)
 
     def update(self, models: list[T] | T) -> list[T]:
         """Update resources.

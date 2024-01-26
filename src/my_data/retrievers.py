@@ -38,7 +38,10 @@ class Retriever(DataManipulator):
 
     def retrieve(
             self,
-            flt: list[ColumnElement] | ColumnElement | None = None) -> list[T]:
+            flt: list[ColumnElement] | ColumnElement | None = None,
+            sort: ColumnElement | None = None,
+            start: int | None = None,
+            max_items: int | None = None) -> list[T]:
         """Retrieve data.
 
         The method to retrieve data from the database. Can only be done by
@@ -48,6 +51,9 @@ class Retriever(DataManipulator):
         Args:
             flt: a SQLalchemy filter to filter the retrieved data. Can be a
                 list of filters, or a single filter.
+            sort: the SQLmodel field to sort on.
+            start: the index of the first item to retrieve.
+            max_items: the maximum number of items to retrieve.
 
         Raises:
             PermissionDeniedException: when this user type is not allowed to
@@ -76,6 +82,13 @@ class Retriever(DataManipulator):
         if flt:
             for filter_item in flt:
                 sql_query = sql_query.where(filter_item)
+
+        # Sort the resources
+        sql_query = sql_query.order_by(sort)
+
+        # Pagination
+        if start is not None and max_items is not None:
+            sql_query = sql_query.offset(start).limit(max_items)
 
         resources = self._context_data.db_session.exec(sql_query).all()
 
