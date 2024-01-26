@@ -122,8 +122,8 @@ class Context:
         sql_query = select(User).where(User.username == username)
         if self._context_data.db_session:
             user_object = self._context_data.db_session.exec(sql_query).all()
-        if len(user_object) == 1:
-            return user_object[0]
+            if len(user_object) == 1:
+                return user_object[0]
         raise UnknownUserAccountException(
             f'User with username "{username}" is not found.')
 
