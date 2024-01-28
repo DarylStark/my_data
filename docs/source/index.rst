@@ -18,6 +18,7 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    usage/setup
    usage/contexts
    usage/service_users
+   usage/authentication
 
 .. toctree::
    :caption: Developing
@@ -33,8 +34,9 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    :maxdepth: 2
 
    api_documentation/class_diagram
-   api_documentation/context_data
+   api_documentation/authenticator
    api_documentation/context
+   api_documentation/context_data
    api_documentation/creators
    api_documentation/data_manipulator
    api_documentation/deleters
