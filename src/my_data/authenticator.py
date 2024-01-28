@@ -7,7 +7,8 @@ from my_model.user_scoped_models import APIToken, User, UserRole
 
 from my_data.my_data import MyData
 
-from .exceptions import (AuthenticationFailed, AuthenticatorNotConfiguredException,
+from .exceptions import (AuthenticationFailed,
+                         AuthenticatorNotConfiguredException,
                          UnknownUserAccountException,
                          UserAuthenticatorAlreadySetException)
 
@@ -78,6 +79,7 @@ class UserAuthenticator:
         token.
 
         Args:
+            session_timeout_in_seconds: the session timeout in seconds.
             title: The title of the API token.
 
         Returns:
@@ -129,7 +131,7 @@ class Authenticator(ABC):
         """Initialize the authenticator.
 
         Args:
-            api_authenticator: The API authenticator to use.
+            user_authenticator: The user authenticator to use.
         """
         self._user_authenticator = user_authenticator
 
@@ -137,7 +139,7 @@ class Authenticator(ABC):
         """Set the API authenticator.
 
         Args:
-            api_authenticator: The API authenticator to use.
+            user_authenticator: The user authenticator to use.
 
         Raises:
             UserAuthenticatorAlreadySetException: when the user authenticator
@@ -211,8 +213,6 @@ class CredentialsAuthenticator(Authenticator):
             The authenticated user.
 
         Raises:
-            UnknownUserAccountException: unknow user account or wrong
-                credentials.
             AuthenticationFailed: when the authentication fails.
         """
         self._raise_for_invalid_my_data()
