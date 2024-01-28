@@ -30,3 +30,19 @@ class PermissionDeniedException(MyDataException):
 
 class UnknownUserAccountException(MyDataException):
     """Service user tries to retrieve a non-existing user account."""
+
+
+class AthenticatorExceptions(MyDataException):
+    """Base exception for authenticator exceptions."""
+
+
+class UserAuthenticatorAlreadySetException(AthenticatorExceptions):
+    """Raised when the API token authenticator is already set."""
+
+
+class AuthenticatorNotConfiguredException(AthenticatorExceptions):
+    """Raised when the authenticator is not configured."""
+
+
+class AuthenticationFailed(AthenticatorExceptions):
+    """Raised when the authentication fails."""
