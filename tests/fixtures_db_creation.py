@@ -7,6 +7,7 @@ Fixture to create a test database for PyTest.
 from pytest import fixture
 
 from my_data import MyData
+from my_data.authenticator import UserAuthenticator
 
 
 @fixture(scope='module')
@@ -30,6 +31,13 @@ def my_data() -> MyData:
     # Create the engine and the test data
     my_data.create_engine()
     my_data.create_init_data()
+
+    # Configure the Authenticator to use this database
+    UserAuthenticator.configure(
+        my_data_object=my_data,
+        service_username='service.user',
+        service_password='service_password'
+    )
 
     # Return the created object
     return my_data
