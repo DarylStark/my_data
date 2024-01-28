@@ -1,7 +1,7 @@
 """Tests for the Authenticator class and it's authenticators."""
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
-import time
+
 import pytest
 from my_model.user_scoped_models import APIToken, User
 
@@ -68,7 +68,10 @@ def test_credentials_authenticator_valid_credentials(
 
     Args:
         my_data: a instance of a MyData object.
-        normal_user_1: a normal user to test with.
+        user_id: the id of the user to test with.
+        username: the username to test with.
+        password: the password to test with.
+        second_factor: the second factor to test with.
     """
     credentials_authenticator = CredentialsAuthenticator(
         username=username,
@@ -97,7 +100,8 @@ def test_credentials_authenticator_wrong_username(
 
     Args:
         my_data: a instance of a MyData object.
-        normal_user_1: a normal user to test with.
+        username: the username to test with.
+        password: the password to test with.
     """
     credentials_authenticator = CredentialsAuthenticator(
         username=username,
@@ -188,7 +192,8 @@ def test_creating_api_token(
         title='test')
 
     with my_data.get_context(normal_user_1) as context:
-        api_tokens = context.api_tokens.retrieve(APIToken.title == 'test')
+        api_tokens = context.api_tokens.retrieve(
+            APIToken.title == 'test')  # type: ignore
         assert len(api_tokens) == 1
 
 
