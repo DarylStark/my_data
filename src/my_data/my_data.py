@@ -256,5 +256,3 @@ class MyData:
             for user in users_to_add:
                 session.add(user)
             session.commit()
-
-        return
