@@ -11,6 +11,17 @@ from my_data.authenticator import UserAuthenticator
 from my_data.authorizer import APITokenAuthorizer
 from my_data.data_loader import DataLoader, JSONDataSource
 
+import os
+
+
+def test_filename() -> str:
+    """Return the filename of the test data file.
+
+    Returns:
+        The filename of the test data file.
+    """
+    return os.path.join(os.path.dirname(__file__), 'test_data.json')
+
 
 @fixture(scope='module')
 def my_data() -> MyData:
@@ -30,14 +41,15 @@ def my_data() -> MyData:
         }
     )
 
-    # Create the engine and the test data
+    # Create the engine and the tables
     my_data.create_engine()
     my_data.create_db_tables(drop_tables=True)
-    # TODO: Make this path not relative
+
+    # Create testdata
     loader = DataLoader(
         my_data_object=my_data,
         data_source=JSONDataSource(
-            './tests/test_data.json'))
+            test_filename()))
     loader.load()
 
     # Configure the Authenticator to use this database
