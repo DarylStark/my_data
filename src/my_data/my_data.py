@@ -4,12 +4,9 @@ This module contains the class `MyData`, which is the most important class for
 the complete project.
 """
 
-from typing import Any, Type
-import json
+from typing import Any
 
-from my_model.my_model import MyModel
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         UserRole, UserSetting)
+from my_model.user_scoped_models import User, UserRole
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, and_, create_engine, select
@@ -194,65 +191,3 @@ class MyData:
                     database_engine=self.database_engine,
                     user=user)
             )
-
-    def create_init_data(self, json_filename: str) -> None:
-        """Create initializer data.
-
-        Method to create initialization data in the database. Creates data in
-        the database that can be used to initialize a database or to create a
-        test database. Warning: this method will erase the complete database!
-
-        Data comes from a given JSON file.
-
-        Args:
-            json_filename: the JSON file that contains the data for the
-                database.
-        """
-        users_to_add: list[User] = []
-
-        # Dict with userscoped resources as found in the JSON file.
-        user_scoped_resources: dict[str, Type[MyModel]] = {
-            '_tags': Tag,
-            '_api_clients': APIClient,
-            '_api_tokens': APIToken,
-            '_user_settings': UserSetting
-        }
-
-        # Load the JSON data
-        with open(json_filename, 'r', encoding='utf-8') as json_file:
-            json_data = json.load(json_file)
-
-        # Create the objects for users
-        for user in json_data['users']:
-            # Extract the fields that are User specific
-            user_specific_fields = {
-                key: value for key, value in user.items() if key[0] != '_'
-            }
-
-            # Create the user object
-            user_object = User(**user_specific_fields)
-
-            # Get the password
-            if user.get('_password'):
-                user_object.set_password(user['_password'])
-
-            # Add connected resources
-
-            # Add the tags
-            for field, object_type in user_scoped_resources.items():
-                if user.get(field):
-                    setattr(user_object, field[1:], [
-                        object_type(**tag) for tag in user[field]
-                    ])
-
-            # Add it to the list
-            users_to_add.append(user_object)
-
-        # Erase the database and create new tables
-        self.create_db_tables(drop_tables=True)
-
-        # Add the users
-        with Session(self.database_engine) as session:
-            for user in users_to_add:
-                session.add(user)
-            session.commit()

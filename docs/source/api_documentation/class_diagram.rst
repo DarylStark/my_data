@@ -20,8 +20,7 @@ The ``MyData`` class is the main class for the library and is the only class tha
    MyData: none configure()
    MyData: none create_db_tables()
    MyData: none creat_engine()
-   MyData: create_init_data()
-   MyData: Cotnext get_context()
+   MyData: Context get_context()
 
 ``Context`` and ``ContextData``
 -------------------------------

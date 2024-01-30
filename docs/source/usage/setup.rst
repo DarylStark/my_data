@@ -37,12 +37,15 @@ To create the tables, you use the following code:
 Creating initialization data
 ----------------------------
 
-After you have a database with the correct schema, you can optionally create initialization data. This can be used for testing or when creating a initial database. This initialization data contains a few users with resources allocated to them. To create the initialization data, use the following code:
+After you have a database with the correct schema, you can optionally create initialization data. This can be used for testing or when creating a initial database.
 
 .. code-block:: python
 
-    my_data.create_init_data()
+    from my_data.data_loader import DataLoader, JSONDataSource
 
-.. warning::
+    loader = DataLoader(
+        my_data_object=my_data,
+        data_source=JSONDataSource(
+            './tests/test_data.json'))
+    loader.load()
 
-    This will remove all data in the current database! Be aware when doing this! Only use this for **new** databases.

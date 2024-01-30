@@ -4,11 +4,13 @@ Fixture to create a test database for PyTest.
 """
 # pylint: disable=redefined-outer-name
 
+from json import load
 from pytest import fixture
 
 from my_data import MyData
 from my_data.authenticator import UserAuthenticator
 from my_data.authorizer import APITokenAuthorizer
+from my_data.data_loader import DataLoader, JSONDataSource
 
 
 @fixture(scope='module')
@@ -31,8 +33,13 @@ def my_data() -> MyData:
 
     # Create the engine and the test data
     my_data.create_engine()
+    my_data.create_db_tables(drop_tables=True)
     # TODO: Make this path not relative
-    my_data.create_init_data('./tests/test_data.json')
+    loader = DataLoader(
+        my_data_object=my_data,
+        data_source=JSONDataSource(
+            './tests/test_data.json'))
+    loader.load()
 
     # Configure the Authenticator to use this database
     UserAuthenticator.configure(
