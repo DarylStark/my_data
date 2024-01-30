@@ -3,6 +3,8 @@
 # pylint: disable=unused-argument
 import pytest
 
+from my_model.user_scoped_models import UserRole
+
 from my_data import MyData
 from my_data.authorizer import APITokenAuthorizer, InvalidTokenAuthorizer, ShortLivedTokenAuthorizer, ValidTokenAuthorizer
 from my_data.exceptions import (APITokenAuthorizerAlreadySetException,
@@ -138,3 +140,157 @@ def test_short_lived_token_authorizer_long_lived_token(
         authorizer=ShortLivedTokenAuthorizer())
     with pytest.raises(AuthorizationFailed):
         authorizer.authorize()
+
+
+def test_api_token_authorizer_get_api_token_empty_user(
+    my_data: MyData
+) -> None:
+    authorizer = APITokenAuthorizer(
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer._get_api_token() is None
+
+
+def test_api_token_authorizer_get_api_token_invalid_token(
+    my_data: MyData
+) -> None:
+    authorizer = APITokenAuthorizer(
+        api_token='invalid_token',
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer._get_api_token() is None
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+])
+def test_api_token_authorizer_get_user_role(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test retrieving the User Role from the API Token."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    user_role = authorizer._get_user_role()
+    assert user_role is UserRole.USER
+
+
+def test_api_token_authorizer_get_user_role_invalid_token(
+        my_data: MyData) -> None:
+    """Test retrieving the User Role from the API Token."""
+    authorizer = APITokenAuthorizer(
+        api_token='invalid_token',
+        authorizer=ShortLivedTokenAuthorizer())
+    user_role = authorizer._get_user_role()
+    assert user_role is None
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+])
+def test_api_token_authorizer_is_valid_user(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_valid_user property."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_valid_user is True
+
+
+def test_api_token_authorizer_is_valid_user_invalid_token(
+        my_data: MyData) -> None:
+    """Test checking is_valid_user property."""
+    authorizer = APITokenAuthorizer(
+        api_token='invalid_token',
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_valid_user is False
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+])
+def test_api_token_authorizer_is_root(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_root property."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_root is False
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+])
+def test_api_token_authorizer_is_normal_user(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_normal_user property."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_normal_user is True
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+])
+def test_api_token_authorizer_is_service_user(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_service_user property."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_service_user is False
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+])
+def test_api_token_authorizer_is_short_lived(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_short_lived_token property with a short lived token."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_short_lived_token is True
+
+
+@pytest.mark.parametrize("api_token", [
+    '2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv', None
+])
+def test_api_token_authorizer_is_short_lived_invalid_token(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_short_lived_token property with a long lived token."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_short_lived_token is False
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE', None
+])
+def test_api_token_authorizer_is_long_lived(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_long_lived_token property with a short lived token."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_long_lived_token is False
+
+
+@pytest.mark.parametrize("api_token", [
+    '2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv'
+])
+def test_api_token_authorizer_is_long_lived_invalid_token(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_long_lived_token property with a long lived token."""
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=ShortLivedTokenAuthorizer())
+    assert authorizer.is_long_lived_token is True

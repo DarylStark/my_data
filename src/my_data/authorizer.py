@@ -117,9 +117,9 @@ class APITokenAuthorizer:
             invalid.
         """
         user = self.user
-        if not user:
-            return None
-        return user.role
+        if user:
+            return user.role
+        return None
 
     def authorize(self) -> None:
         """Authorize the user.
@@ -187,8 +187,6 @@ class APITokenAuthorizer:
         Returns:
             True if the user is a normal user, False otherwise.
         """
-        if not self.user:
-            return False
         return self._get_user_role() == UserRole.USER
 
     @property
