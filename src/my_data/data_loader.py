@@ -102,7 +102,7 @@ class DataLoader:
 
         Args:
             my_data_object: the MyData object.
-            data_loader_source: the DataLoader object to use to load data.
+            data_source: the DataSource object to use to load data.
         """
         self._my_data_object = my_data_object
         self._data_loader = data_source
