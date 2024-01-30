@@ -8,7 +8,7 @@ creation, it checks if the data has been created.
 
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import mark, raises
+from pytest import raises
 
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedException

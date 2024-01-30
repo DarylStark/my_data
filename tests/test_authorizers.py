@@ -2,11 +2,12 @@
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 import pytest
-
 from my_model.user_scoped_models import UserRole
 
 from my_data import MyData
-from my_data.authorizer import APITokenAuthorizer, InvalidTokenAuthorizer, ShortLivedTokenAuthorizer, ValidTokenAuthorizer
+from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,
+                                ShortLivedTokenAuthorizer,
+                                ValidTokenAuthorizer)
 from my_data.exceptions import (APITokenAuthorizerAlreadySetException,
                                 AuthorizationFailed)
 
@@ -16,6 +17,9 @@ def test_creating_api_token_authorizer(my_data: MyData) -> None:
 
     After doing this, the `_api_token_authorizer` attribute of the authorizer
     should be set to the APITokenAuthorizer.
+
+    Args:
+        my_data: a instance to a MyData object.
     """
     invalid_token_authroizer = InvalidTokenAuthorizer()
     api_token_authorizer = APITokenAuthorizer(
@@ -28,6 +32,9 @@ def test_setting_api_token_authorizer_again(my_data: MyData) -> None:
     """Test setting a authorizer when it is already set.
 
     Should raise a APITokenAuthorizerAlreadySetException exception.
+
+    Args:
+        my_data: a instance to a MyData object.
     """
     invalid_token_authroizer = InvalidTokenAuthorizer()
     api_token_authorizer = APITokenAuthorizer(
@@ -42,11 +49,14 @@ def test_setting_api_token_authorizer_again(my_data: MyData) -> None:
 ])
 def test_invalid_token_authorizer_invalid_token(
         my_data: MyData,
-        api_token: str | None
-) -> None:
+        api_token: str | None) -> None:
     """Test the InvalidTokenAuthorizer with a invalid token.
 
     Should not raise an exception since the token is invalid.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
     """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
@@ -63,7 +73,11 @@ def test_invalid_token_authorizer_valid_token(
 ) -> None:
     """Test the InvalidTokenAuthorizer with a valid token.
 
-    Should raise an exception. A valid token
+    Should raise an exception.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
     """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
@@ -82,6 +96,10 @@ def test_valid_token_authorizer_valid_token(
     """Test the ValidTokenAuthorizer with a valid token.
 
     Should not raise an exception since the token is valid.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
     """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
@@ -99,6 +117,10 @@ def test_valid_token_authorizer_invalid_token(
     """Test the ValidTokenAuthorizer with a invalid token.
 
     Should raise an exception.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
     """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
@@ -117,6 +139,10 @@ def test_short_lived_token_authorizer_valid_token(
     """Test the ShortLivedTokenAuthorizer with a valid token.
 
     Should not raise an exception since the token is valid _and_ short lived.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
     """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
@@ -134,6 +160,10 @@ def test_short_lived_token_authorizer_long_lived_token(
     """Test the ShortLivedTokenAuthorizer with a long lived token.
 
     Should raise an exception.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
     """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
@@ -145,6 +175,11 @@ def test_short_lived_token_authorizer_long_lived_token(
 def test_api_token_authorizer_get_api_token_empty_user(
     my_data: MyData
 ) -> None:
+    """Test `_get_api_token` with an empty user.
+
+    Args:
+        my_data: a instance to a MyData object.
+    """
     authorizer = APITokenAuthorizer(
         authorizer=ShortLivedTokenAuthorizer())
     assert authorizer._get_api_token() is None
@@ -153,6 +188,11 @@ def test_api_token_authorizer_get_api_token_empty_user(
 def test_api_token_authorizer_get_api_token_invalid_token(
     my_data: MyData
 ) -> None:
+    """Test `_get_api_token` with an a invalid token.
+
+    Args:
+        my_data: a instance to a MyData object.
+    """
     authorizer = APITokenAuthorizer(
         api_token='invalid_token',
         authorizer=ShortLivedTokenAuthorizer())
@@ -165,7 +205,12 @@ def test_api_token_authorizer_get_api_token_invalid_token(
 def test_api_token_authorizer_get_user_role(
         my_data: MyData,
         api_token: str) -> None:
-    """Test retrieving the User Role from the API Token."""
+    """Test retrieving the User Role from the API Token.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -175,7 +220,11 @@ def test_api_token_authorizer_get_user_role(
 
 def test_api_token_authorizer_get_user_role_invalid_token(
         my_data: MyData) -> None:
-    """Test retrieving the User Role from the API Token."""
+    """Test retrieving the User Role from the API Token.
+
+    Args:
+        my_data: a instance to a MyData object.
+    """
     authorizer = APITokenAuthorizer(
         api_token='invalid_token',
         authorizer=ShortLivedTokenAuthorizer())
@@ -189,7 +238,12 @@ def test_api_token_authorizer_get_user_role_invalid_token(
 def test_api_token_authorizer_is_valid_user(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_valid_user property."""
+    """Test checking is_valid_user property.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -198,7 +252,11 @@ def test_api_token_authorizer_is_valid_user(
 
 def test_api_token_authorizer_is_valid_user_invalid_token(
         my_data: MyData) -> None:
-    """Test checking is_valid_user property."""
+    """Test checking is_valid_user property.
+
+    Args:
+        my_data: a instance to a MyData object.
+    """
     authorizer = APITokenAuthorizer(
         api_token='invalid_token',
         authorizer=ShortLivedTokenAuthorizer())
@@ -211,7 +269,12 @@ def test_api_token_authorizer_is_valid_user_invalid_token(
 def test_api_token_authorizer_is_root(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_root property."""
+    """Test checking is_root property.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -224,7 +287,12 @@ def test_api_token_authorizer_is_root(
 def test_api_token_authorizer_is_normal_user(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_normal_user property."""
+    """Test checking is_normal_user property.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -237,7 +305,12 @@ def test_api_token_authorizer_is_normal_user(
 def test_api_token_authorizer_is_service_user(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_service_user property."""
+    """Test checking is_service_user property.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -250,7 +323,12 @@ def test_api_token_authorizer_is_service_user(
 def test_api_token_authorizer_is_short_lived(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_short_lived_token property with a short lived token."""
+    """Test checking is_short_lived_token property with a short lived token.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -263,7 +341,12 @@ def test_api_token_authorizer_is_short_lived(
 def test_api_token_authorizer_is_short_lived_invalid_token(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_short_lived_token property with a long lived token."""
+    """Test checking is_short_lived_token property with a long lived token.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -276,7 +359,12 @@ def test_api_token_authorizer_is_short_lived_invalid_token(
 def test_api_token_authorizer_is_long_lived(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_long_lived_token property with a short lived token."""
+    """Test checking is_long_lived_token property with a short lived token.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
@@ -289,7 +377,12 @@ def test_api_token_authorizer_is_long_lived(
 def test_api_token_authorizer_is_long_lived_invalid_token(
         my_data: MyData,
         api_token: str) -> None:
-    """Test checking is_long_lived_token property with a long lived token."""
+    """Test checking is_long_lived_token property with a long lived token.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())

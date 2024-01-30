@@ -6,7 +6,7 @@ This module contains unit tests that retrieve data from the database.
 
 import pytest
 from my_model.user_scoped_models import Tag, User, APIToken
-from pytest import mark, raises
+from pytest import raises
 from sqlmodel import or_
 from sqlmodel.sql.expression import desc
 
@@ -526,7 +526,8 @@ def test_data_retrieval_all_api_tokens_as_normal_user_2(
         title: test title.
     """
     with my_data.get_context(user=normal_user_2) as context:
-        api_tokens = context.api_tokens.retrieve(sort=APIToken.title)
+        api_tokens = context.api_tokens.retrieve(
+            sort=APIToken.title)  # type:ignore
         assert len(api_tokens) == 3
         assert api_tokens[index].title == title
 

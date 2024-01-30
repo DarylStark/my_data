@@ -5,7 +5,7 @@ update, it checks if the data has been updated.
 """
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
-from pytest import mark, raises
+from pytest import raises
 
 from my_data.exceptions import PermissionDeniedException
 from my_data.my_data import MyData
