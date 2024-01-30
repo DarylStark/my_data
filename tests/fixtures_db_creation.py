@@ -4,7 +4,6 @@ Fixture to create a test database for PyTest.
 """
 # pylint: disable=redefined-outer-name
 
-from json import load
 from pytest import fixture
 
 from my_data import MyData
