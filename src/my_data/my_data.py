@@ -203,6 +203,9 @@ class MyData:
         self.create_db_tables(drop_tables=True)
 
         with Session(self.database_engine) as session:
+            pre_created_api_client: APIClient = APIClient(
+                app_name='normal_user_2_api_client_1',
+                app_publisher='normal_user_2_api_client_1_publisher')
             users: list[User] = [
                 User(
                     id=1,
@@ -291,10 +294,7 @@ class MyData:
                         Tag(title='normal_user_2_tag_3')
                     ],
                     api_clients=[
-                        APIClient(
-                            app_name='normal_user_2_api_client_1',
-                            app_publisher='normal_user_2_api_client_1_' +
-                            'publisher'),
+                        pre_created_api_client,
                         APIClient(
                             app_name='normal_user_2_api_client_2',
                             app_publisher='normal_user_2_api_client_2_' +
@@ -307,7 +307,10 @@ class MyData:
                     api_tokens=[
                         APIToken(title='normal_user_2_api_token_1',
                                  token='aRlIytpyz61JX2TvczLxJZUsRzk578pE'),
-                        APIToken(title='normal_user_2_api_token_2'),
+                        APIToken(
+                            title='normal_user_2_api_token_2',
+                            api_client=pre_created_api_client,
+                            token='2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv'),
                         APIToken(title='normal_user_2_api_token_3')
                     ],
                     user_settings=[

@@ -46,3 +46,15 @@ class AuthenticatorNotConfiguredException(AthenticatorExceptions):
 
 class AuthenticationFailed(AthenticatorExceptions):
     """Raised when the authentication fails."""
+
+
+class AuthorizerExceptions(MyDataException):
+    """Base exception for authorizer exceptions."""
+
+
+class APITokenAuthorizerAlreadySetException(AuthorizerExceptions):
+    """Raised when the API token authorizer is already set."""
+
+
+class AuthorizationFailed(AuthorizerExceptions):
+    """Raised when the authorization fails."""
