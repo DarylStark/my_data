@@ -4,8 +4,10 @@ This module contains the class `MyData`, which is the most important class for
 the complete project.
 """
 
-from typing import Any
+from typing import Any, Type
+import json
 
+from my_model.my_model import MyModel
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserRole, UserSetting)
 from sqlalchemy.exc import OperationalError
@@ -193,146 +195,66 @@ class MyData:
                     user=user)
             )
 
-    def create_init_data(self) -> None:
+    def create_init_data(self, json_filename: str) -> None:
         """Create initializer data.
 
         Method to create initialization data in the database. Creates data in
         the database that can be used to initialize a database or to create a
         test database. Warning: this method will erase the complete database!
+
+        Data comes from a given JSON file.
+
+        Args:
+            json_filename: the JSON file that contains the data for the
+                database.
         """
+        users_to_add: list[User] = []
+
+        # Dict with userscoped resources as found in the JSON file.
+        user_scoped_resources: dict[str, Type[MyModel]] = {
+            '_tags': Tag,
+            '_api_clients': APIClient,
+            '_api_tokens': APIToken,
+            '_user_settings': UserSetting
+        }
+
+        # Load the JSON data
+        with open(json_filename, 'r', encoding='utf-8') as json_file:
+            json_data = json.load(json_file)
+
+        # Create the objects for users
+        for user in json_data['users']:
+            # Extract the fields that are User specific
+            user_specific_fields = {
+                key: value for key, value in user.items() if key[0] != '_'
+            }
+
+            # Create the user object
+            user_object = User(**user_specific_fields)
+
+            # Get the password
+            if user.get('_password'):
+                user_object.set_password(user['_password'])
+
+            # Add connected resources
+
+            # Add the tags
+            for field, object_type in user_scoped_resources.items():
+                if user.get(field):
+                    setattr(user_object, field[1:], [
+                        object_type(**tag) for tag in user[field]
+                    ])
+
+            # Add it to the list
+            users_to_add.append(user_object)
+
+        # Erase the database and create new tables
         self.create_db_tables(drop_tables=True)
 
+        # Add the users
         with Session(self.database_engine) as session:
-            pre_created_api_client: APIClient = APIClient(
-                app_name='normal_user_2_api_client_1',
-                app_publisher='normal_user_2_api_client_1_publisher')
-            users: list[User] = [
-                User(
-                    id=1,
-                    fullname='root',
-                    username='root',
-                    email='root@example.com',
-                    role=UserRole.ROOT,
-                    tags=[
-                        Tag(title='root_tag_1'),
-                        Tag(title='root_tag_2'),
-                        Tag(title='root_tag_3')
-                    ],
-                    api_clients=[
-                        APIClient(
-                            app_name='root_api_client_1',
-                            app_publisher='root_api_client_1_publisher'),
-                        APIClient(
-                            app_name='root_api_client_2',
-                            app_publisher='root_api_client_2_publisher'),
-                        APIClient(
-                            app_name='root_api_client_3',
-                            app_publisher='root_api_client_3_publisher')
-                    ],
-                    api_tokens=[
-                        APIToken(title='root_api_token_1'),
-                        APIToken(title='root_api_token_2'),
-                        APIToken(title='root_api_token_3')
-                    ],
-                    user_settings=[
-                        UserSetting(setting='root_test_setting_1',
-                                    value='test_value_1'),
-                        UserSetting(setting='root_test_setting_2',
-                                    value='test_value_2'),
-                        UserSetting(setting='root_test_setting_3',
-                                    value='test_value_3')
-                    ]
-                ),
-                User(
-                    id=2,
-                    fullname='Normal user 1',
-                    username='normal.user.1',
-                    email='normal_user_1@example.com',
-                    role=UserRole.USER,
-                    tags=[
-                        Tag(title='normal_user_1_tag_1'),
-                        Tag(title='normal_user_1_tag_2'),
-                        Tag(title='normal_user_1_tag_3')
-                    ],
-                    api_clients=[
-                        APIClient(
-                            app_name='normal_user_1_api_client_1',
-                            app_publisher='normal_user_1_api_client_1_' +
-                            'publisher'),
-                        APIClient(
-                            app_name='normal_user_1_api_client_2',
-                            app_publisher='normal_user_1_api_client_2_' +
-                            'publisher'),
-                        APIClient(
-                            app_name='normal_user_1_api_client_3',
-                            app_publisher='normal_user_1_api_client_3_' +
-                            'publisher')
-                    ],
-                    api_tokens=[
-                        APIToken(title='normal_user_1_api_token_1'),
-                        APIToken(title='normal_user_1_api_token_2'),
-                        APIToken(title='normal_user_1_api_token_3')
-                    ],
-                    user_settings=[
-                        UserSetting(setting='normal_user_1_test_setting_1',
-                                    value='test_value_1'),
-                        UserSetting(setting='normal_user_1_test_setting_2',
-                                    value='test_value_2'),
-                        UserSetting(setting='normal_user_1_test_setting_3',
-                                    value='test_value_3')
-                    ]
-                ),
-                User(
-                    id=3,
-                    fullname='Normal user 2',
-                    username='normal.user.2',
-                    email='normal_user_2@example.com',
-                    role=UserRole.USER,
-                    tags=[
-                        Tag(title='normal_user_2_tag_1'),
-                        Tag(title='normal_user_2_tag_2'),
-                        Tag(title='normal_user_2_tag_3')
-                    ],
-                    api_clients=[
-                        pre_created_api_client,
-                        APIClient(
-                            app_name='normal_user_2_api_client_2',
-                            app_publisher='normal_user_2_api_client_2_' +
-                            'publisher'),
-                        APIClient(
-                            app_name='normal_user_2_api_client_3',
-                            app_publisher='normal_user_2_api_client_3_' +
-                            'publisher')
-                    ],
-                    api_tokens=[
-                        APIToken(title='normal_user_2_api_token_1',
-                                 token='aRlIytpyz61JX2TvczLxJZUsRzk578pE'),
-                        APIToken(
-                            title='normal_user_2_api_token_2',
-                            api_client=pre_created_api_client,
-                            token='2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv'),
-                        APIToken(title='normal_user_2_api_token_3')
-                    ],
-                    user_settings=[
-                        UserSetting(setting='normal_user_2_test_setting_1',
-                                    value='test_value_1'),
-                        UserSetting(setting='normal_user_2_test_setting_2',
-                                    value='test_value_2'),
-                        UserSetting(setting='normal_user_2_test_setting_3',
-                                    value='test_value_3')
-                    ]
-                ),
-                User(
-                    id=4,
-                    fullname='Service User - for tests',
-                    username='service.user',
-                    email='service.user@example.com',
-                    role=UserRole.SERVICE,
-                )]
-            users[0].set_password('root_pw')
-            users[1].set_password('normal_user_1_pw')
-            users[2].set_password('normal_user_2_pw')
-            users[3].set_password('service_password')
-            for user in users:
+            for user in users_to_add:
                 session.add(user)
             session.commit()
+
+        return

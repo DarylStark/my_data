@@ -31,7 +31,8 @@ def my_data() -> MyData:
 
     # Create the engine and the test data
     my_data.create_engine()
-    my_data.create_init_data()
+    # TODO: Make this path not relative
+    my_data.create_init_data('./tests/test_data.json')
 
     # Configure the Authenticator to use this database
     UserAuthenticator.configure(
