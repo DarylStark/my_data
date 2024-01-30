@@ -4,13 +4,11 @@ This module tests the things a Service user needs to do, like retrieving
 User objects or API tokens.
 """
 from my_model.user_scoped_models import User
-from pytest import mark, raises
+from pytest import raises
 
 from my_data.exceptions import (PermissionDeniedException,
                                 UnknownUserAccountException)
 from my_data.my_data import MyData
-
-pytestmark = mark.service_user
 
 
 def test_retrieving_user_objects_by_username(my_data: MyData) -> None:

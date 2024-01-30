@@ -56,10 +56,4 @@ push = false
 
 [tool.pytest.ini_options]
 addopts = ['--cov=my_data', '--cov-report=html', '--cov-report=lcov']
-markers = [
-    'creation: tests about creating data',
-    'deleting: tests about deleting data',
-    'retrieval: tests about retrieving data',
-    'updating: tests about updating data',
-    'service_user: tests about the service user system',
-]
+

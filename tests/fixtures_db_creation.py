@@ -8,6 +8,7 @@ from pytest import fixture
 
 from my_data import MyData
 from my_data.authenticator import UserAuthenticator
+from my_data.authorizer import APITokenAuthorizer
 
 
 @fixture(scope='module')
@@ -34,6 +35,13 @@ def my_data() -> MyData:
 
     # Configure the Authenticator to use this database
     UserAuthenticator.configure(
+        my_data_object=my_data,
+        service_username='service.user',
+        service_password='service_password'
+    )
+
+    # Configure the Authorizer to use this database
+    APITokenAuthorizer.configure(
         my_data_object=my_data,
         service_username='service.user',
         service_password='service_password'
