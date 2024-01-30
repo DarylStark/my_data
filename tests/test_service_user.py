@@ -10,8 +10,6 @@ from my_data.exceptions import (PermissionDeniedException,
                                 UnknownUserAccountException)
 from my_data.my_data import MyData
 
-pytestmark = mark.service_user
-
 
 def test_retrieving_user_objects_by_username(my_data: MyData) -> None:
     """Unit test to retrieve a User object by the username.

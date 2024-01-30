@@ -10,8 +10,6 @@ from pytest import mark, raises
 from my_data.exceptions import PermissionDeniedException
 from my_data.my_data import MyData
 
-pytestmark = mark.updating
-
 
 def test_data_updating_own_user_as_root(
         my_data: MyData,

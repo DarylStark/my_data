@@ -10,8 +10,6 @@ from pytest import mark, raises
 from my_data.exceptions import PermissionDeniedException
 from my_data.my_data import MyData
 
-pytestmark = mark.deleting
-
 
 def test_deleting_users_with_a_service_account(
     my_data: MyData,

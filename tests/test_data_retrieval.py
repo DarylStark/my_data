@@ -13,8 +13,6 @@ from sqlmodel.sql.expression import desc
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedException
 
-pytestmark = mark.retrieval
-
 
 @pytest.mark.parametrize(
     'index, username',

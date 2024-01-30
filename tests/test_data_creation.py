@@ -13,8 +13,6 @@ from pytest import mark, raises
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedException
 
-pytestmark = mark.creation
-
 
 def test_data_creation_users_as_root(
         my_data: MyData,
