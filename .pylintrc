@@ -13,4 +13,8 @@ extension-pkg-whitelist=pydantic
 # The `too-few-public-methods` error is displayed when a classes have too
 # little public methods.. We disabled this bacause this triggers errors on
 # bases classes that are only there as way to define a standard initiator.
-disable=too-many-arguments,too-few-public-methods
+#
+# The `too-many-instance-attributes` error is displayed when a class has too
+# many instance attributes. We disabled this because this triggers errors on
+# after adding logging.
+disable=too-many-arguments,too-few-public-methods,too-many-instance-attributes

@@ -3,7 +3,6 @@
 This module contains the updator classes. These classes are used to update data
 in the database. The ResourceManager uses these classes.
 """
-import logging
 from typing import TypeVar
 
 from my_model.my_model import MyModel
