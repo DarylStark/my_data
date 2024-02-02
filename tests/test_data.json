@@ -34,10 +34,14 @@
             ],
             "_api_tokens": [
                 {
-                    "title": "root_api_token_1"
+                    "title": "root_api_token_1",
+                    "token": "MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL",
+                    "enabled": false
                 },
                 {
-                    "title": "root_api_token_2"
+                    "title": "root_api_token_2",
+                    "token": "Cbxfv44aNlWRMu4bVqawWu9vofhFWmED",
+                    "expires": "1999-12-31T23:59:59Z"
                 },
                 {
                     "title": "root_api_token_3"
@@ -152,11 +156,13 @@
             "_api_tokens": [
                 {
                     "title": "normal_user_2_api_token_1",
-                    "token": "aRlIytpyz61JX2TvczLxJZUsRzk578pE"
+                    "token": "aRlIytpyz61JX2TvczLxJZUsRzk578pE",
+                    "expires": "2099-12-31T23:59:59Z"
                 },
                 {
                     "title": "normal_user_2_api_token_2",
                     "token": "2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv",
+                    "expires": "2099-12-31T23:59:59Z",
                     "api_client_id": 100
                 },
                 {
