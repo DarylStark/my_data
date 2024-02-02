@@ -2,6 +2,7 @@
 
 This module contains the Context class.
 """
+import logging
 from types import TracebackType
 
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
@@ -42,6 +43,7 @@ class Context:
             database_engine: a database engine to work with.
             context_data: the context data for this context.
         """
+        self._logger = logging.getLogger(f'Context-{id(self)}')
         self.database_engine = database_engine
         self._context_data = context_data
 
@@ -77,6 +79,7 @@ class Context:
         Returns:
             This own class.
         """
+        self._logger.debug('Context object as context manager started')
         return self
 
     def __exit__(self,
@@ -96,6 +99,7 @@ class Context:
         Returns:
             False if there are unhandled exceptions, True if there are none.
         """
+        self._logger.debug('Context object as context manager closed')
         self._context_data.close_session()
         return exception_type is None
 
@@ -119,10 +123,13 @@ class Context:
         if self._context_data.user.role != UserRole.SERVICE:
             raise PermissionDeniedException('Should be ran as a service user')
 
+        self._logger.debug('Retrieving user account by username: %s', username)
+
         sql_query = select(User).where(User.username == username)
         if self._context_data.db_session:
             user_object = self._context_data.db_session.exec(sql_query).all()
             if len(user_object) == 1:
+                self._logger.debug('User account: "%d"', user_object[0].id)
                 return user_object[0]
         raise UnknownUserAccountException(
             f'User with username "{username}" is not found.')
@@ -147,9 +154,12 @@ class Context:
         if self._context_data.user.role != UserRole.SERVICE:
             raise PermissionDeniedException('Should be ran as a service user')
 
+        self._logger.debug('Retrieving API token object by API token')
+
         sql_query = select(APIToken).where(APIToken.token == api_token)
         api_tokens = self._context_data.db_session.exec(sql_query).all()
         if len(api_tokens) == 1:
+            self._logger.debug('API token object: "%d"', api_tokens[0].id)
             return api_tokens[0]
         raise UnknownUserAccountException(
             f'Token "{api_token}" is not found.')
@@ -172,4 +182,5 @@ class Context:
         """
         if self._context_data.user.role != UserRole.SERVICE:
             raise PermissionDeniedException('Should be ran as a service user')
+        self._logger.debug('Retrieving API token object by API token')
         return self.get_api_token_object_by_api_token(api_token).user

@@ -1,4 +1,5 @@
 """Authenticator class and authenticators."""
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Optional
@@ -55,6 +56,7 @@ class UserAuthenticator:
                 be used to authenticate the user. This way, the authenticator
                 can be changed at runtime.
         """
+        self._logger = logging.getLogger(f'UserAuthenticator-{id(self)}')
         self._authenticator: Authenticator = authenticator
         self._authenticator.set_user_authenticator(self)
 
@@ -107,8 +109,11 @@ class UserAuthenticator:
         # authenticated. This way, we can be sure that the user has the
         # permission to create the token and that the token is created for the
         # correct user.
+        user = self.authenticate()
         with self.my_data_object.get_context(  # type: ignore
-                user=self.authenticate()) as context:
+                user=user) as context:
+            self._logger.debug('Creating API token for user %s',
+                               user.username)
             context.api_tokens.create(new_api_token)
         return token
 

@@ -1,5 +1,5 @@
 """APITokenAuthorizer class and Authorizers."""
-
+import logging
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -51,6 +51,7 @@ class APITokenAuthorizer:
             api_token: The API token to authorize with.
             authorizer: The authorizer to use.
         """
+        self._logger = logging.getLogger(f'APITokenAuthorizer-{id(self)}')
         self._api_token_str = api_token
         self._authorizer: Optional[Authorizer] = None
 
@@ -58,6 +59,7 @@ class APITokenAuthorizer:
         if authorizer:
             self._authorizer = authorizer
             self._authorizer.set_api_token_authorizer(self)
+            self._logger.debug('Authorizer "%s" is set', authorizer)
 
         # Caches
         self._user: Optional[User] = None

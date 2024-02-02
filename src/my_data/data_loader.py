@@ -1,6 +1,6 @@
 """Module with the DataLoader class and specific Data Sources."""
-
 import json
+import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
@@ -104,12 +104,16 @@ class DataLoader:
             my_data_object: the MyData object.
             data_source: the DataSource object to use to load data.
         """
+        self._logger = logging.getLogger(f'DataLoader-{id(self)}')
+        self._logger.info('DataLoader object created')
         self._my_data_object = my_data_object
         self._data_loader = data_source
 
     def load(self) -> None:
         """Load the data in the database."""
+        self._logger.debug('Retrieving data')
         data = self._data_loader.load()
+        self._logger.debug('Items to load: %s', len(data))
         with Session(self._my_data_object.database_engine) as session:
             session.add_all(data)
             session.commit()
