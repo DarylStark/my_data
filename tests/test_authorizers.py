@@ -387,3 +387,39 @@ def test_api_token_authorizer_is_long_lived_invalid_token(
         api_token=api_token,
         authorizer=ShortLivedTokenAuthorizer())
     assert authorizer.is_long_lived_token is True
+
+
+@pytest.mark.parametrize("api_token", [
+    'MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL',
+    None
+])
+def test_disabled_token(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_enabled property.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token)
+    assert authorizer.is_enabled is False
+
+
+@pytest.mark.parametrize("api_token", [
+    'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED',
+    None
+])
+def test_expired_token(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test checking is_not_expired property.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token)
+    assert authorizer.is_not_expired is False

@@ -1,4 +1,5 @@
 """APITokenAuthorizer class and Authorizers."""
+from datetime import datetime
 import logging
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -222,6 +223,39 @@ class APITokenAuthorizer:
             return False
         return self.api_token.api_client_id is None
 
+    @property
+    def is_not_expired(self) -> bool:
+        """Check if the token is not expired.
+
+        Returns:
+            False if the token is expired, True otherwise.
+        """
+        if self.api_token:
+            return self.api_token.expires > datetime.utcnow()
+        return False
+
+    @property
+    def is_enabled(self) -> bool:
+        """Check if the token is enabled.
+
+        Returns:
+            True if the token is enabled, False otherwise.
+        """
+        if self.api_token:
+            return self.api_token.enabled
+        return False
+
+    @property
+    def is_valid_token(self) -> bool:
+        """Check if the token is valid.
+
+        Returns:
+            True if the token is valid, False otherwise.
+        """
+        return (self.is_valid_user and
+                self.is_not_expired and
+                self.is_enabled)
+
 
 class Authorizer(ABC):
     """Base class for authorizers."""
@@ -279,7 +313,7 @@ class InvalidTokenAuthorizer(Authorizer):
             AuthorizationFailed: when the user it logged on.
         """
         if (self._api_token_authorizer and
-                self._api_token_authorizer.user is not None):
+                self._api_token_authorizer.is_valid_user):
             raise AuthorizationFailed
 
 
@@ -301,7 +335,7 @@ class ValidTokenAuthorizer(Authorizer):
             AuthorizationFailed: when the user it not logged on.
         """
         if (not self._api_token_authorizer or
-                self._api_token_authorizer.user is None):
+                not self._api_token_authorizer.is_valid_token):
             raise AuthorizationFailed
 
 
