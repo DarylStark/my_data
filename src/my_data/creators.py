@@ -52,6 +52,11 @@ class Creator(DataManipulator[T]):
             raise PermissionDeniedException(
                 'User must be a normal user or a root user to create data.')
 
+        self._logger.debug(
+            'User "%s" is creating data for model "%s".',
+            self._context_data.user,
+            self._database_model)
+
         if not self.is_authorized():
             raise PermissionDeniedException(
                 'Not allowed to create this kind of object within the ' +

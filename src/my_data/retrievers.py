@@ -91,6 +91,11 @@ class Retriever(DataManipulator[T]):
         if start is not None and max_items is not None:
             sql_query = sql_query.offset(start).limit(max_items)
 
+        self._logger.debug(
+            'User "%s" is retrieving data for model "%s".',
+            self._context_data.user,
+            self._database_model)
+
         resources = self._context_data.db_session.exec(sql_query).all()
 
         # Return the given resources

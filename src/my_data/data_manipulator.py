@@ -3,7 +3,7 @@
 This module contains the DataManipulator class. This class is used as baseclass
 for other DataManipulator classes.
 """
-
+import logging
 from typing import Generic, Type, TypeVar
 
 from my_model.user_scoped_models import UserScopedModel
@@ -42,6 +42,7 @@ class DataManipulator(Generic[T]):
             database_engine: the SQLalchemy engine to use.
             context_data: specifies in what context to use the manipulator.
         """
+        self._logger = logging.getLogger(f'DataManipulator-{id(self)}')
         self._database_model = database_model
         self._database_engine = database_engine
         self._context_data = context_data

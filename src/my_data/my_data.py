@@ -4,6 +4,7 @@ This module contains the class `MyData`, which is the most important class for
 the complete project.
 """
 
+import logging
 from typing import Any
 
 from my_model.user_scoped_models import User, UserRole
@@ -36,6 +37,8 @@ class MyData:
         The initiator sets all values to `None`. We can later override these
         values with the `configure` method.
         """
+        self._logger = logging.getLogger(f'MyData-{id(self)}')
+        self._logger.info('MyData object created')
         self.database_engine: Engine | None = None
         self._database_str: str | None = None
         self._database_args: dict[str, Any] | None = None
@@ -55,6 +58,7 @@ class MyData:
         """
         self._database_str = db_connection_str
         self._database_args = database_args
+        self._logger.info('MyData object configured')
 
     def create_engine(self, force: bool = False) -> None:
         """Create the database connection.
@@ -73,6 +77,8 @@ class MyData:
         """
         # Stop if there is already a database engine
         if self.database_engine is not None and not force:
+            self._logger.debug('Database engine nog created beacause it ' +
+                               'already exists and force is not set to True')
             return
 
         # Check if the database connection is set
@@ -90,6 +96,7 @@ class MyData:
         # Create the database engine
         try:
             self.database_engine = create_engine(**database_args)
+            self._logger.info('Database engine created')
         except OperationalError as sa_error:  # pragma: no cover
             raise DatabaseConnectionException(
                 'Couldn\'t connect to database') from sa_error
@@ -110,6 +117,7 @@ class MyData:
             if drop_tables:
                 SQLModel.metadata.drop_all(self.database_engine)
             SQLModel.metadata.create_all(self.database_engine)
+            self._logger.info('Database tables created')
 
     def get_context(self, user: User) -> Context:
         """Get a Context object for this database.

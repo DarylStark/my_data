@@ -3,7 +3,6 @@
 This module contains the updator classes. These classes are used to update data
 in the database. The ResourceManager uses these classes.
 """
-
 from typing import TypeVar
 
 from my_model.my_model import MyModel
@@ -39,6 +38,10 @@ class Updater(DataManipulator[T]):
         Returns:
             A list with the updated data models.
         """
+        self._logger.debug(
+            'User "%s" is updating data for model "%s".',
+            self._context_data.user,
+            self._database_model)
         if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
             raise PermissionDeniedException(  # pragma: no cover
                 'User must be a normal user or a root user to update data.')

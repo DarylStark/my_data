@@ -42,6 +42,11 @@ class Deleter(DataManipulator[T]):
         if not isinstance(models, list):
             models = [models]  # pragma: no cover
 
+        self._logger.debug(
+            'User "%s" is deleting data for model "%s".',
+            self._context_data.user,
+            self._database_model)
+
         # Delete the resources
         for model in models:
             self._context_data.db_session.delete(model)

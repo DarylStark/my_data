@@ -3,6 +3,7 @@
 Contains the ResourceManager class that is used by a Context to create a
 ResourceManager for specific resources.
 """
+import logging
 from abc import ABC, abstractmethod
 from typing import Generic, Type, TypeVar
 
@@ -61,6 +62,8 @@ class ResourceManager(Generic[T]):
             updater: the class for the Updater.
             deleter: the class for the Deleter.
         """
+        self._logger = logging.getLogger(f'ResourceManager-{id(self)}')
+        self._logger.info('ResourceManager object created')
         self._database_model: Type[T] = database_model
         self._database_engine: Engine = database_engine
         self._context_data: ContextData = context_data
