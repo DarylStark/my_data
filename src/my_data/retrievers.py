@@ -12,8 +12,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import select
 
 from .data_manipulator import DataManipulator
-from .exceptions import (BaseClassCallException, PermissionDeniedException,
-                         WrongDataManipulatorException)
+from .exceptions import BaseClassCallException, WrongDataManipulatorException
 
 T = TypeVar('T', bound=MyModel)
 
@@ -56,19 +55,11 @@ class Retriever(DataManipulator[T]):
             start: the index of the first item to retrieve.
             max_items: the maximum number of items to retrieve.
 
-        Raises:
-            PermissionDeniedException: when this user type is not allowed to
-                retrieve data this way.
-
         Returns:
             A list with retrieved data. If no data was found, a empty list is
             returned. If only one item is found, a list with one element is
             returned.
         """
-        if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
-            raise PermissionDeniedException(
-                'User must be a normal user or a root user to retrieve data.')
-
         # Retrieve the resources
         sql_query = select(self._database_model)
 

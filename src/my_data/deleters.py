@@ -30,15 +30,7 @@ class Deleter(DataManipulator[T]):
 
         Args:
             models: the models to delete.
-
-        Raises:
-            PermissionDeniedException: when this user type is not allowed to
-                delete data this way.
         """
-        if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
-            raise PermissionDeniedException(  # pragma: no cover
-                'User must be a normal user or a root user to delete data.')
-
         if not isinstance(models, list):
             models = [models]  # pragma: no cover
 
