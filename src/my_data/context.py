@@ -135,7 +135,7 @@ class UserContext(Context):
         Returns:
             This own class.
         """
-        self.__enter__()
+        super().__enter__()
         return self
 
 
@@ -228,5 +228,5 @@ class ServiceContext(UserContext):
         Returns:
             This own class.
         """
-        self.__enter__()
+        super().__enter__()
         return self
