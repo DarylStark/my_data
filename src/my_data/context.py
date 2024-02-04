@@ -126,6 +126,18 @@ class UserContext(Context):
             database_engine=database_engine,
             context_data=self._context_data).create()
 
+    def __enter__(self) -> 'UserContext':
+        """Start a Python context manager for a UserContext.
+
+        The start of a Context Manager. Should be used with the Python `with`
+        statement.
+
+        Returns:
+            This own class.
+        """
+        self.__enter__()
+        return self
+
 
 class ServiceContext(UserContext):
     """Context for service users.
@@ -206,3 +218,15 @@ class ServiceContext(UserContext):
         """
         self._logger.debug('Retrieving API token object by API token')
         return self.get_api_token_object_by_api_token(api_token).user
+
+    def __enter__(self) -> 'ServiceContext':
+        """Start a Python context manager for a ServiceContext.
+
+        The start of a Context Manager. Should be used with the Python `with`
+        statement.
+
+        Returns:
+            This own class.
+        """
+        self.__enter__()
+        return self
