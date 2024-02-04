@@ -48,10 +48,6 @@ class Creator(DataManipulator[T]):
         Returns:
             A list with the created data models.
         """
-        if self._context_data.user.role not in (UserRole.USER, UserRole.ROOT):
-            raise PermissionDeniedException(
-                'User must be a normal user or a root user to create data.')
-
         self._logger.debug(
             'User "%s" is creating data for model "%s".',
             self._context_data.user,

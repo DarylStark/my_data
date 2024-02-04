@@ -130,6 +130,8 @@ class MyData:
                 that is created for the Context object.
 
         Raises:
+            PermissionDeniedException: method is called with a user that does
+                not have the correct role.
             DatabaseNotConfiguredException: method is called before configuring
                 the database.
 
@@ -138,7 +140,9 @@ class MyData:
         """
         self.create_engine()
 
-        # TODO: check if the given user is a normal user.
+        if user.role not in (UserRole.USER, UserRole.ROOT):
+            raise PermissionDeniedException(
+                'User does not have the correct role')
 
         if not self.database_engine:  # pragma: no cover
             raise DatabaseNotConfiguredException(
@@ -172,8 +176,6 @@ class MyData:
             The created Context object.
         """
         self.create_engine()
-
-        # TODO: check if the given user is a service user.
 
         if not self.database_engine:  # pragma: no cover
             raise DatabaseNotConfiguredException(

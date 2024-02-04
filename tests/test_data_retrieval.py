@@ -44,22 +44,6 @@ def test_data_retrieval_all_users_as_root(
         assert users[index].username == username
 
 
-def test_data_retrieval_all_users_as_service_user(
-        my_data: MyData, service_user: User) -> None:
-    """Test User retrieval as a SERVICE user.
-
-    Retrieves Users from the database as a service user. This should fail since
-    service users are not allowed to retrieve data.
-
-    Args:
-        my_data: a instance to a MyData object.
-        service_user: the service user for the context.
-    """
-    with my_data.get_context(user=service_user) as context:
-        with raises(PermissionDeniedException):
-            _ = context.users.retrieve()
-
-
 @pytest.mark.parametrize(
     'index, username',
     [
@@ -275,24 +259,6 @@ def test_data_retrieval_all_tags_as_normal_user_2_paginated(
         assert tags[0].title == title
 
 
-def test_data_retrieval_tags_as_service_user(
-        my_data: MyData,
-        service_user: User) -> None:
-    """Test Tag retrieveal as a SERVICE user.
-
-    Retrieves tags as a SERVICE user. Should always fail cause the service
-    user cannot retrieve user specific models.
-
-    Args:
-        my_data: a instance of a MyData object.
-        service_user: the root user for the context.
-    """
-    with my_data.get_context(user=service_user) as context:
-        with raises(PermissionDeniedException):
-            # Get a tag
-            _ = context.tags.retrieve()
-
-
 def test_data_retrieval_filtered_tags_as_normal_user_1(
         my_data: MyData, normal_user_1: User) -> None:
     """Test Tag retrieval as a USER user with a filter.
@@ -423,24 +389,6 @@ def test_data_retrieval_all_api_clients_as_normal_user_2(
         assert api_clients[index].app_publisher == app_publisher
 
 
-def test_data_retrieval_all_api_clients_as_service_user(
-        my_data: MyData,
-        service_user: User) -> None:
-    """Test API client retrieveal as a SERVICE user.
-
-    Retrieves API clients as a SERVICE user. Should always fail cause the
-    service user cannot retrieve user specific models.
-
-    Args:
-        my_data: a instance of a MyData object.
-        service_user: the root user for the context.
-    """
-    with my_data.get_context(user=service_user) as context:
-        with raises(PermissionDeniedException):
-            # Get API clients
-            _ = context.api_clients.retrieve()
-
-
 @pytest.mark.parametrize(
     'index, title',
     [
@@ -532,23 +480,6 @@ def test_data_retrieval_all_api_tokens_as_normal_user_2(
         assert api_tokens[index].title == title
 
 
-def test_data_retrieval_all_api_tokens_as_service_user(
-        my_data: MyData,
-        service_user: User) -> None:
-    """Test API token retrieveal as a SERVICE user.
-
-    Retrieves API tokens as a SERVICE user. Should fail since Service users are
-    not allowed to retrieve objects.
-
-    Args:
-        my_data: a instance of a MyData object.
-        service_user: the root user for the context.
-    """
-    with my_data.get_context(user=service_user) as context:
-        with raises(PermissionDeniedException):
-            _ = context.api_tokens.retrieve()
-
-
 @pytest.mark.parametrize(
     'index, setting',
     [
@@ -637,21 +568,3 @@ def test_data_retrieval_all_user_settings_as_normal_user_2(
         user_settings = context.user_settings.retrieve()
         assert len(user_settings) == 3
         assert user_settings[index].setting == setting
-
-
-def test_data_retrieval_all_user_settings_as_service_user(
-        my_data: MyData,
-        service_user: User) -> None:
-    """Test User Settingretrieveal as a SERVICE user.
-
-    Retrieves User Settings as a SERVICE user. Should always fail cause the
-    service user cannot retrieve user specific models.
-
-    Args:
-        my_data: a instance of a MyData object.
-        service_user: the root user for the context.
-    """
-    with my_data.get_context(user=service_user) as context:
-        with raises(PermissionDeniedException):
-            # Get User Settings
-            _ = context.user_settings.retrieve()
