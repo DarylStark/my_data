@@ -1,4 +1,22 @@
 {
+    "api_scopes": [
+        {
+            "module": "users",
+            "subject": "create"
+        },
+        {
+            "module": "users",
+            "subject": "retrieve"
+        },
+        {
+            "module": "users",
+            "subject": "update"
+        },
+        {
+            "module": "users",
+            "subject": "delete"
+        }
+    ],
     "users": [
         {
             "id": 1,

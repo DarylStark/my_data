@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Type
 
 from my_model.my_model import MyModel
+from my_model.global_models import APIScope
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
                                          UserSetting)
 from sqlmodel import Session
@@ -41,7 +42,7 @@ class JSONDataSource(DataSource):
         Returns:
             A list with loaded data.
         """
-        users_to_add: list[MyModel] = []
+        resources_to_add: list[MyModel] = []
 
         # Dict with userscoped resources as found in the JSON file.
         user_scoped_resources: dict[str, Type[MyModel]] = {
@@ -54,6 +55,12 @@ class JSONDataSource(DataSource):
         # Load the JSON data
         with open(self._json_filename, 'r', encoding='utf-8') as json_file:
             json_data = json.load(json_file)
+
+        # Create the objects for API scopes
+        for api_scope in json_data['api_scopes']:
+            # Create the API scope object
+            api_scope_object = APIScope(**api_scope)
+            resources_to_add.append(api_scope_object)
 
         # Create the objects for users
         for user in json_data['users']:
@@ -79,9 +86,9 @@ class JSONDataSource(DataSource):
                     ])
 
             # Add it to the list
-            users_to_add.append(user_object)
+            resources_to_add.append(user_object)
 
-        return users_to_add
+        return resources_to_add
 
 
 class DataLoader:
