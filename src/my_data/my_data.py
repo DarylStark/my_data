@@ -12,7 +12,7 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, and_, create_engine, select
 
-from .context import Context
+from .context import UserContext, ServiceContext
 from .context_data import ContextData
 from .exceptions import (DatabaseConnectionException,
                          DatabaseNotConfiguredException,
@@ -119,7 +119,7 @@ class MyData:
             SQLModel.metadata.create_all(self.database_engine)
             self._logger.info('Database tables created')
 
-    def get_context(self, user: User) -> Context:
+    def get_context(self, user: User) -> UserContext:
         """Get a Context object for this database.
 
         Method to create a Context object and return it. The returned Context
@@ -138,11 +138,13 @@ class MyData:
         """
         self.create_engine()
 
+        # TODO: check if the given user is a normal user.
+
         if not self.database_engine:  # pragma: no cover
             raise DatabaseNotConfiguredException(
                 'Database is not configured yet')
 
-        return Context(
+        return UserContext(
             database_engine=self.database_engine,
             context_data=ContextData(
                 database_engine=self.database_engine,
@@ -150,7 +152,7 @@ class MyData:
         )
 
     def get_context_for_service_user(
-            self, username: str, password: str) -> Context:
+            self, username: str, password: str) -> ServiceContext:
         """Get a Context object for the database as a service user.
 
         Method to create a Context object for a service user. The context can
@@ -170,6 +172,8 @@ class MyData:
             The created Context object.
         """
         self.create_engine()
+
+        # TODO: check if the given user is a service user.
 
         if not self.database_engine:  # pragma: no cover
             raise DatabaseNotConfiguredException(
@@ -193,7 +197,7 @@ class MyData:
                 raise PermissionDeniedException(
                     f'Password for Service account "{username}" is incorrect')
 
-            return Context(
+            return ServiceContext(
                 database_engine=self.database_engine,
                 context_data=ContextData(
                     database_engine=self.database_engine,

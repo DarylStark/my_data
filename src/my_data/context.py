@@ -1,6 +1,12 @@
-"""Module for the Context class.
+"""Module for the Context classes.
 
-This module contains the Context class.
+This module contains the Context classes for the application. There are two
+types of context classes; one for normal users (root and normal users) and one
+for service users. The Context classes are used to create objects to interact
+with the database in a context-based way. A Context uses a ContextData object,
+which contains the data for the context (like a User to work with). The Context
+makes sure that every manipulation of the database is done with the permissions
+of the Context.s
 """
 import logging
 from types import TracebackType
@@ -25,6 +31,10 @@ class Context:
     that every manipulation of the database is done with the permissions of the
     Context.
 
+    This class is the baseclass for Contexts. We can create different type of
+    Contexts using this baseclass. For example, we can create a Context for
+    normal users and a Context for service users.
+
     Attributes:
         database_engine: the SQLalchemy engine to use.
         _context_data: specifies in what context to use Context.
@@ -46,29 +56,6 @@ class Context:
         self._logger = logging.getLogger(f'Context-{id(self)}')
         self.database_engine = database_engine
         self._context_data = context_data
-
-        # Exposure of Resource Managers to manage specific resources in the
-        # data model.
-        self.users = UserResourceManagerFactory(
-            database_model=User,
-            database_engine=database_engine,
-            context_data=self._context_data).create()
-        self.tags = UserScopedResourceManagerFactory(
-            database_model=Tag,
-            database_engine=database_engine,
-            context_data=self._context_data).create()
-        self.api_clients = UserScopedResourceManagerFactory(
-            database_model=APIClient,
-            database_engine=database_engine,
-            context_data=self._context_data).create()
-        self.api_tokens = UserScopedResourceManagerFactory(
-            database_model=APIToken,
-            database_engine=database_engine,
-            context_data=self._context_data).create()
-        self.user_settings = UserScopedResourceManagerFactory(
-            database_model=UserSetting,
-            database_engine=database_engine,
-            context_data=self._context_data).create()
 
     def __enter__(self) -> 'Context':
         """Start a Python context manager.
@@ -103,6 +90,49 @@ class Context:
         self._context_data.close_session()
         return exception_type is None
 
+
+class UserContext(Context):
+    """Context for normal users.
+
+    This context exposes the Resource Managers to manage specific resources in
+    the data model.
+    """
+
+    def __init__(self,
+                 database_engine: Engine,
+                 context_data: ContextData) -> None:
+        super().__init__(database_engine, context_data)
+
+        # Exposure of Resource Managers to manage specific resources in the
+        # data model.
+        self.users = UserResourceManagerFactory(
+            database_model=User,
+            database_engine=database_engine,
+            context_data=self._context_data).create()
+        self.tags = UserScopedResourceManagerFactory(
+            database_model=Tag,
+            database_engine=database_engine,
+            context_data=self._context_data).create()
+        self.api_clients = UserScopedResourceManagerFactory(
+            database_model=APIClient,
+            database_engine=database_engine,
+            context_data=self._context_data).create()
+        self.api_tokens = UserScopedResourceManagerFactory(
+            database_model=APIToken,
+            database_engine=database_engine,
+            context_data=self._context_data).create()
+        self.user_settings = UserScopedResourceManagerFactory(
+            database_model=UserSetting,
+            database_engine=database_engine,
+            context_data=self._context_data).create()
+
+
+class ServiceContext(UserContext):
+    """Context for service users.
+
+    This context exposes the methods that only Service users can use.
+    """
+
     def get_user_account_by_username(self, username: str) -> User:
         """Get a User account using a service account.
 
@@ -120,9 +150,6 @@ class Context:
         Returns:
             A User object for the correct user.
         """
-        if self._context_data.user.role != UserRole.SERVICE:
-            raise PermissionDeniedException('Should be ran as a service user')
-
         self._logger.debug('Retrieving user account by username: %s', username)
 
         sql_query = select(User).where(User.username == username)
@@ -151,9 +178,6 @@ class Context:
         Returns:
             A APIToken object for the API token.
         """
-        if self._context_data.user.role != UserRole.SERVICE:
-            raise PermissionDeniedException('Should be ran as a service user')
-
         self._logger.debug('Retrieving API token object by API token')
 
         sql_query = select(APIToken).where(APIToken.token == api_token)
@@ -180,7 +204,5 @@ class Context:
         Returns:
             A User object for the correct user.
         """
-        if self._context_data.user.role != UserRole.SERVICE:
-            raise PermissionDeniedException('Should be ran as a service user')
         self._logger.debug('Retrieving API token object by API token')
         return self.get_api_token_object_by_api_token(api_token).user
