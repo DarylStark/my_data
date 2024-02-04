@@ -448,13 +448,13 @@ files = [
 
 [[package]]
 name = "ds-my-model"
-version = "1.3.1"
+version = "1.3.2"
 description = "The data model for the My project"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ds_my_model-1.3.1-py3-none-any.whl", hash = "sha256:38115a13efd74a2e6ffdecbd0646ebeda7154e938169ba5812620ddd0768a239"},
-    {file = "ds_my_model-1.3.1.tar.gz", hash = "sha256:7f0cd78f6928c61412c11b75d2a494fc363477511bff3c98f2caf8248c888dbc"},
+    {file = "ds_my_model-1.3.2-py3-none-any.whl", hash = "sha256:415dc094b0072a97a27c08276e363338d7ae3b6bc28e841f9ae820bd58953c84"},
+    {file = "ds_my_model-1.3.2.tar.gz", hash = "sha256:06a82cb8c523a85cb17f19cf473088c229c1af2ed6f6daccd59241260677f8ed"},
 ]
 
 [package.dependencies]
@@ -1666,4 +1666,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "03d2936583994a9109cd5433ca42b5e70410f1fbf62fd062ae31106869b7dfdf"
+content-hash = "d10b0622e50e19052943345aed6c2e6cceb328acb53ddab2105168af4bc7511d"
