@@ -12,12 +12,12 @@ import logging
 from types import TracebackType
 
 from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         UserRole, UserSetting)
+                                         UserSetting)
 from sqlalchemy.future import Engine
 from sqlmodel import select
 
 from .context_data import ContextData
-from .exceptions import PermissionDeniedException, UnknownUserAccountException
+from .exceptions import UnknownUserAccountException
 from .resource_manager import (UserResourceManagerFactory,
                                UserScopedResourceManagerFactory)
 
@@ -45,9 +45,9 @@ class Context:
                  context_data: ContextData) -> None:
         """Set the default values and create the needed DataManipulators.
 
-        The initializer set the values and creates the needed DataManipulator
-        objects. These objects are the objects that are used to manipulate the
-        data in the database, like users and tags.
+        The initializer sets the values for the database engine and the context
+        data. If a subclass of Context is created, the subclass should call
+        this initializer and add additional attributes to the subclass.
 
         Args:
             database_engine: a database engine to work with.
@@ -101,6 +101,16 @@ class UserContext(Context):
     def __init__(self,
                  database_engine: Engine,
                  context_data: ContextData) -> None:
+        """Init the UserContext.
+
+        The initializer set the values and creates the needed DataManipulator
+        objects. These objects are the objects that are used to manipulate the
+        data in the database, like users and tags.
+
+        Args:
+            database_engine: a database engine to work with.
+            context_data: the context data for this context.
+        """
         super().__init__(database_engine, context_data)
 
         # Exposure of Resource Managers to manage specific resources in the
@@ -155,8 +165,6 @@ class ServiceContext(UserContext):
             username: the username for the user.
 
         Raises:
-            PermissionDeniedException: user in the context is not a Service
-                user.
             UnknownUserAccountException: the user is not found.
 
         Returns:
@@ -183,8 +191,6 @@ class ServiceContext(UserContext):
             api_token: the API token for the user.
 
         Raises:
-            PermissionDeniedException: user in the context is not a Service
-                user.
             UnknownUserAccountException: the user is not found.
 
         Returns:
@@ -208,10 +214,6 @@ class ServiceContext(UserContext):
 
         Args:
             api_token: the API token for the user.
-
-        Raises:
-            PermissionDeniedException: user in the context is not a Service
-                user.
 
         Returns:
             A User object for the correct user.

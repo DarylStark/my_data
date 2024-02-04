@@ -6,12 +6,10 @@ This module contains unit tests that retrieve data from the database.
 
 import pytest
 from my_model.user_scoped_models import Tag, User, APIToken
-from pytest import raises
 from sqlmodel import or_
 from sqlmodel.sql.expression import desc
 
 from my_data import MyData
-from my_data.exceptions import PermissionDeniedException
 
 
 @pytest.mark.parametrize(
