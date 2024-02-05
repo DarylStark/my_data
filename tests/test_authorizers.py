@@ -5,7 +5,8 @@ import pytest
 from my_model import UserRole
 
 from my_data import MyData
-from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,
+from my_data.authorizer import (APIScopeAuthorizer, APITokenAuthorizer,
+                                InvalidTokenAuthorizer,
                                 ShortLivedTokenAuthorizer,
                                 ValidTokenAuthorizer)
 from my_data.exceptions import (APITokenAuthorizerAlreadySetException,
@@ -423,3 +424,26 @@ def test_expired_token(
     authorizer = APITokenAuthorizer(
         api_token=api_token)
     assert authorizer.is_not_expired is False
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE',
+])
+def test_api_scope_authorizer_short_lived(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test the API scope authorizer on short lived tokens.
+
+    Should always be a success if the token is correct since short lived tokens
+    don't work with API scopes.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=APIScopeAuthorizer(
+            allowed_scopes=['users.retrieve', 'users.create']
+        ))
+    authorizer.authorize()

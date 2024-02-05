@@ -1,20 +1,29 @@
 {
     "api_scopes": [
         {
+            "id": 1,
             "module": "users",
             "subject": "create"
         },
         {
+            "id": 2,
             "module": "users",
             "subject": "retrieve"
         },
         {
+            "id": 3,
             "module": "users",
             "subject": "update"
         },
         {
+            "id": 4,
             "module": "users",
             "subject": "delete"
+        },
+        {
+            "id": 5,
+            "module": "users",
+            "subject": "updatepw"
         }
     ],
     "users": [
@@ -173,6 +182,7 @@
             ],
             "_api_tokens": [
                 {
+                    "id": 10,
                     "title": "normal_user_2_api_token_1",
                     "token": "aRlIytpyz61JX2TvczLxJZUsRzk578pE",
                     "expires": "2099-12-31T23:59:59Z"
@@ -209,6 +219,16 @@
             "email": "service.user@example.com",
             "role": 2,
             "_password": "service_password"
+        }
+    ],
+    "api_token_scopes": [
+        {
+            "api_token_id": 10,
+            "api_scope_id": 1
+        },
+        {
+            "api_token_id": 10,
+            "api_scope_id": 2
         }
     ]
 }
