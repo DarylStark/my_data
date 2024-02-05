@@ -3,7 +3,7 @@
 # pylint: disable=unused-argument
 
 import pytest
-from my_model.user_scoped_models import APIToken, User
+from my_model import APIToken, User
 
 from my_data import MyData
 from my_data.authenticator import CredentialsAuthenticator, UserAuthenticator

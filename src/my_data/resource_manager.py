@@ -7,7 +7,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Generic, Type, TypeVar
 
-from my_model.my_model import MyModel
+from my_model import MyModel
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 

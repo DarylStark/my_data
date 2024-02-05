@@ -1,7 +1,7 @@
 """Tests for the MyData object."""
 
 import pytest
-from my_model.user_scoped_models import User
+from my_model import User
 
 from my_data.exceptions import (DatabaseNotConfiguredException,
                                 PermissionDeniedException)

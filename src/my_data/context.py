@@ -11,8 +11,7 @@ of the Context.s
 import logging
 from types import TracebackType
 
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         UserSetting)
+from my_model import APIClient, APIToken, Tag, User, UserSetting
 from sqlalchemy.future import Engine
 from sqlmodel import select
 

@@ -2,7 +2,7 @@
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 import pytest
-from my_model.user_scoped_models import UserRole
+from my_model import UserRole
 
 from my_data import MyData
 from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,

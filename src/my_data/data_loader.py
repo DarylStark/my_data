@@ -4,10 +4,8 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
-from my_model.my_model import MyModel
-from my_model.global_models import APIScope
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         UserSetting)
+from my_model import (APIClient, APIScope, APIToken, MyModel, Tag, User,
+                      UserSetting)
 from sqlmodel import Session
 
 from my_data.my_data import MyData
