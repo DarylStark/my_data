@@ -113,7 +113,7 @@ class APITokenAuthorizer:
             try:
                 token = context.get_api_token_object_by_api_token(
                     api_token=self._api_token_str)
-                # We have to load the scopes because they are laze loaded. We
+                # We have to load the scopes because they are laz loaded. We
                 # don't save the scopes to somewhere else, because they are
                 # already in the APIToken object.
                 _ = token.token_scopes
@@ -377,11 +377,14 @@ class ShortLivedTokenAuthorizer(ValidTokenAuthorizer):
 class APIScopeAuthorizer(ValidTokenAuthorizer):
     """Authorization for logged on users with API scope.
 
-    This authorizer will fail if the given API scope it not valid or a long
-    lived token without any of the given scopes.
+    This authorizer will fail if the given API scope is not given to the long
+    lived token. It will always pass on short lived tokens, except when the
+    argument 'allow_short_lived' is set to False.
     """
 
-    def __init__(self, required_scopes: list[str] | str) -> None:
+    def __init__(self,
+                 required_scopes: list[str] | str,
+                 allow_short_lived: bool = True) -> None:
         """Set the allowed scopes.
 
         Args:
@@ -390,6 +393,7 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
         """
         super().__init__()
         self._required_scopes = required_scopes
+        self._allow_short_lived = allow_short_lived
 
     def authorize(self) -> None:
         """Fails if the user is not logged on with the given API scope.
@@ -404,11 +408,14 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
         super().authorize()
         if self._api_token_authorizer:
             api_token = self._api_token_authorizer.api_token
-            if api_token:
+            if api_token and self._api_token_authorizer.is_long_lived_token:
                 scopes = [scope.full_scope_name
                           for scope in api_token.token_scopes]
                 for allowed_scope in self._required_scopes:
                     if allowed_scope not in scopes:
                         raise AuthorizationFailed
                 return
+            elif api_token and self._api_token_authorizer.is_short_lived_token:
+                if self._allow_short_lived:
+                    return
         raise AuthorizationFailed
