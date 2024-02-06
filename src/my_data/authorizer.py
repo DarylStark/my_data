@@ -381,15 +381,15 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
     lived token without any of the given scopes.
     """
 
-    def __init__(self, allowed_scopes: list[str] | str) -> None:
+    def __init__(self, required_scopes: list[str] | str) -> None:
         """Set the allowed scopes.
 
         Args:
-            allowed_scopes: the allowed scopes. The API token has to be given
-                all of these scopes.
+            required_scopes: the required scopes. The API token has to be given
+                all of these scopes to pass the authorization.
         """
         super().__init__()
-        self._allowed_scopes = allowed_scopes
+        self._required_scopes = required_scopes
 
     def authorize(self) -> None:
         """Fails if the user is not logged on with the given API scope.
@@ -407,7 +407,7 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
             if api_token:
                 scopes = [scope.full_scope_name
                           for scope in api_token.token_scopes]
-                for allowed_scope in self._allowed_scopes:
+                for allowed_scope in self._required_scopes:
                     if allowed_scope not in scopes:
                         raise AuthorizationFailed
                 return

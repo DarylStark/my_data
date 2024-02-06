@@ -444,6 +444,6 @@ def test_api_scope_authorizer_short_lived(
     authorizer = APITokenAuthorizer(
         api_token=api_token,
         authorizer=APIScopeAuthorizer(
-            allowed_scopes=['users.retrieve', 'users.create']
+            required_scopes=['users.retrieve', 'users.create']
         ))
     authorizer.authorize()
