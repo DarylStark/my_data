@@ -7,7 +7,7 @@ the complete project.
 import logging
 from typing import Any
 
-from my_model.user_scoped_models import User, UserRole
+from my_model import User, UserRole
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, and_, create_engine, select

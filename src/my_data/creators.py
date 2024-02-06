@@ -5,8 +5,7 @@ in the database. The ResourceManager uses these classes.
 """
 from typing import TypeVar
 
-from my_model.my_model import MyModel
-from my_model.user_scoped_models import User, UserRole, UserScopedModel
+from my_model import MyModel, User, UserRole, UserScopedModel
 
 from .data_manipulator import DataManipulator
 from .exceptions import (BaseClassCallException, PermissionDeniedException,

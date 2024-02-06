@@ -4,7 +4,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from my_model.user_scoped_models import APIToken, User, UserRole
+from my_model import APIToken, User, UserRole
 
 from my_data import MyData
 from my_data.exceptions import UnknownUserAccountException
@@ -113,6 +113,10 @@ class APITokenAuthorizer:
             try:
                 token = context.get_api_token_object_by_api_token(
                     api_token=self._api_token_str)
+                # We have to load the scopes because they are laz loaded. We
+                # don't save the scopes to somewhere else, because they are
+                # already in the APIToken object.
+                _ = token.token_scopes
             except UnknownUserAccountException:
                 pass
             else:
@@ -368,3 +372,54 @@ class ShortLivedTokenAuthorizer(ValidTokenAuthorizer):
         if (not self._api_token_authorizer or
                 not self._api_token_authorizer.is_short_lived_token):
             raise AuthorizationFailed
+
+
+class APIScopeAuthorizer(ValidTokenAuthorizer):
+    """Authorization for logged on users with API scope.
+
+    This authorizer will fail if the given API scope is not given to the long
+    lived token. It will always pass on short lived tokens, except when the
+    argument 'allow_short_lived' is set to False.
+    """
+
+    def __init__(self,
+                 required_scopes: list[str] | str,
+                 allow_short_lived: bool = True) -> None:
+        """Set the allowed scopes.
+
+        Args:
+            required_scopes: the required scopes. The API token has to be given
+                all of these scopes to pass the authorization.
+            allow_short_lived: specifies if short lived tokens are allowed. If
+                this is set to False, short lived tokens will fail the
+                authorization. Defaults to True.
+        """
+        super().__init__()
+        self._required_scopes = required_scopes
+        self._allow_short_lived = allow_short_lived
+
+    def authorize(self) -> None:
+        """Fails if the user is not logged on with the given API scope.
+
+        If the user is not logged on with the given API scope, a exception
+        will be raised.
+
+        Raises:
+            AuthorizationFailed: when the user is not logged on with the
+                given API scope.
+        """
+        super().authorize()
+        if self._api_token_authorizer:
+            api_token = self._api_token_authorizer.api_token
+            if api_token:
+                if self._api_token_authorizer.is_long_lived_token:
+                    scopes = [scope.full_scope_name
+                              for scope in api_token.token_scopes]
+                    for allowed_scope in self._required_scopes:
+                        if allowed_scope not in scopes:
+                            raise AuthorizationFailed
+                    return
+                if self._api_token_authorizer.is_short_lived_token:
+                    if self._allow_short_lived:
+                        return
+        raise AuthorizationFailed

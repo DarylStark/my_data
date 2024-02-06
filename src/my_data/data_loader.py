@@ -4,11 +4,9 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
-from my_model.my_model import MyModel
-from my_model.global_models import APIScope
-from my_model.user_scoped_models import (APIClient, APIToken, Tag, User,
-                                         UserSetting)
-from sqlmodel import Session
+from my_model import (APIClient, APIScope, APIToken, APITokenScope, MyModel,
+                      Tag, User, UserSetting)
+from sqlmodel import SQLModel, Session
 
 from my_data.my_data import MyData
 
@@ -17,7 +15,7 @@ class DataSource(ABC):
     """Abstract class for a data loader source."""
 
     @abstractmethod
-    def load(self) -> list[MyModel]:
+    def load(self) -> list[SQLModel]:
         """Load the data from the source and return a list with loaded data.
 
         Returns:
@@ -36,13 +34,13 @@ class JSONDataSource(DataSource):
         """
         self._json_filename = json_filename
 
-    def load(self) -> list[MyModel]:
+    def load(self) -> list[SQLModel]:
         """Load the data from a JSON file and return a list with loaded data.
 
         Returns:
             A list with loaded data.
         """
-        resources_to_add: list[MyModel] = []
+        resources_to_add: list[SQLModel] = []
 
         # Dict with userscoped resources as found in the JSON file.
         user_scoped_resources: dict[str, Type[MyModel]] = {
@@ -87,6 +85,12 @@ class JSONDataSource(DataSource):
 
             # Add it to the list
             resources_to_add.append(user_object)
+
+        # Create the objects for APITokenScopes
+        for api_token_scope in json_data['api_token_scopes']:
+            # Create the API scope object
+            api_token_scope_object = APITokenScope(**api_token_scope)
+            resources_to_add.append(api_token_scope_object)
 
         return resources_to_add
 

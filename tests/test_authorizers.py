@@ -2,10 +2,11 @@
 # pylint: disable=protected-access
 # pylint: disable=unused-argument
 import pytest
-from my_model.user_scoped_models import UserRole
+from my_model import UserRole
 
 from my_data import MyData
-from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,
+from my_data.authorizer import (APIScopeAuthorizer, APITokenAuthorizer,
+                                InvalidTokenAuthorizer,
                                 ShortLivedTokenAuthorizer,
                                 ValidTokenAuthorizer)
 from my_data.exceptions import (APITokenAuthorizerAlreadySetException,
@@ -423,3 +424,124 @@ def test_expired_token(
     authorizer = APITokenAuthorizer(
         api_token=api_token)
     assert authorizer.is_not_expired is False
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE',
+])
+def test_api_scope_authorizer_short_lived(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test the API scope authorizer on short lived tokens.
+
+    Should always be a success if the token is correct since short lived tokens
+    don't work with API scopes and we don't specify that short lived tokens
+    should fail.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=APIScopeAuthorizer(
+            required_scopes=['users.retrieve', 'users.create']
+        ))
+    authorizer.authorize()
+
+
+@pytest.mark.parametrize("api_token", [
+    '2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv',
+])
+def test_api_scope_authorizer_long_lived(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test the scope authorizer on long lived tokens with the needed scopes.
+
+    Should be successful since the given long lived tokens have the needed
+    scopes.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=APIScopeAuthorizer(
+            required_scopes=['users.retrieve', 'users.create']
+        ))
+    authorizer.authorize()
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE',
+])
+def test_api_scope_authorizer_short_lived_not_allowed(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test the API scope authorizer on short lived tokens without permissions.
+
+    Should fail since we are telling the authorizer to fail for short lived
+    tokens.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=APIScopeAuthorizer(
+            required_scopes=['users.retrieve', 'users.create'],
+            allow_short_lived=False
+        ))
+    with pytest.raises(AuthorizationFailed):
+        authorizer.authorize()
+
+
+@pytest.mark.parametrize("api_token", [
+    'BynORM5FVkt07BuQSA09lQUIrgCgOqEv',
+])
+def test_api_scope_authorizer_long_lived_not_allowed(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test the scope authorizer on long lived tokens without needed scopes.
+
+    Should fail since the given long lived tokens don't have the needed scopes.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=APIScopeAuthorizer(
+            required_scopes=['users.retrieve', 'users.create']
+        ))
+    with pytest.raises(AuthorizationFailed):
+        authorizer.authorize()
+
+
+@pytest.mark.parametrize("api_token", [
+    'BynORM5FVkt07BuQSA09lQUIrgCgOqEv',
+])
+def test_api_scope_authorizer_long_lived_partially_not_allowed(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test the scope authorizer on long lived tokens without needed scopes.
+
+    Should fail since the given long lived tokens don't have the needed scopes.
+    The difference with `test_api_scope_authorizer_long_lived_not_allowed` is
+    that we test here if the auhorizer fails when only one of the scopes is
+    missing.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        api_token=api_token,
+        authorizer=APIScopeAuthorizer(
+            required_scopes=['users.retrieve', 'users.delete']
+        ))
+    with pytest.raises(AuthorizationFailed):
+        authorizer.authorize()

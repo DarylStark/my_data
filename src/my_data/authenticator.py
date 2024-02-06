@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Optional
 
-from my_model.user_scoped_models import APIToken, User, UserRole
+from my_model import APIToken, User, UserRole
 
 from my_data.my_data import MyData
 

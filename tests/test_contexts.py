@@ -1,7 +1,7 @@
 """Unit tests for Context objects."""
 
 import pytest
-from my_model.user_scoped_models import User
+from my_model import User
 
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedException

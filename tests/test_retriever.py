@@ -1,7 +1,7 @@
 """Module with tests for the Retriever classes."""
 
 import pytest
-from my_model.user_scoped_models import Tag, User
+from my_model import Tag, User
 
 from my_data.context_data import ContextData
 from my_data.exceptions import (BaseClassCallException,
