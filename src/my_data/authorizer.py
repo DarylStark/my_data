@@ -390,6 +390,9 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
         Args:
             required_scopes: the required scopes. The API token has to be given
                 all of these scopes to pass the authorization.
+            allow_short_lived: specifies if short lived tokens are allowed. If
+                this is set to False, short lived tokens will fail the
+                authorization. Defaults to True.
         """
         super().__init__()
         self._required_scopes = required_scopes
@@ -408,14 +411,15 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
         super().authorize()
         if self._api_token_authorizer:
             api_token = self._api_token_authorizer.api_token
-            if api_token and self._api_token_authorizer.is_long_lived_token:
-                scopes = [scope.full_scope_name
-                          for scope in api_token.token_scopes]
-                for allowed_scope in self._required_scopes:
-                    if allowed_scope not in scopes:
-                        raise AuthorizationFailed
-                return
-            elif api_token and self._api_token_authorizer.is_short_lived_token:
-                if self._allow_short_lived:
+            if api_token:
+                if self._api_token_authorizer.is_long_lived_token:
+                    scopes = [scope.full_scope_name
+                              for scope in api_token.token_scopes]
+                    for allowed_scope in self._required_scopes:
+                        if allowed_scope not in scopes:
+                            raise AuthorizationFailed
                     return
+                if self._api_token_authorizer.is_short_lived_token:
+                    if self._allow_short_lived:
+                        return
         raise AuthorizationFailed
