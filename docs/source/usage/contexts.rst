@@ -53,9 +53,36 @@ To create a ``UserContext`` object, you can use the ``get_context`` method of th
 
 **For example:**
 
-
 .. code-block:: python
     
     with mydata.get_context(user=user) as user_context:
         # Get all tags for the given user
         tags = user_context.tags.retrieve()
+
+Creating data
+#############
+
+To create data, you use the ``create`` method of any of the given ``ResourceManager`` objects. This method returns a list of the new objects that is created in the database. The ``create`` method only takes the object that should be created as a parameter.
+
+TODO: Add example
+
+Retriving data
+##############
+
+To retrieve data, you use the ``retrieve`` method of any of the ``ResourceManager`` objects. This method returns a list of objects that are retrieved from the database. The ``retrieve`` method has a few parameters that can be used to filter and sort the data that is retrieved. These parameters are:
+
+-   ``filter``: this parameter is used to filter the data that is retrieved. The given filter is a SQLalchemy type filter.
+-   ``sort``: this parameter is used to sort the data that is retrieved. The given ``sort`` is a SQLalchemy type ``order_by``.
+-   ``start`` and ``max_items``: these parameters are used to paginate the data that is retrieved. The given ``start`` is the index of the first item to retrieve and the given ``max_items`` is the maximum amount of items to retrieve.
+
+TODO: Add example
+
+Updating data
+#############
+
+TODO: Add example
+
+Deleting data
+#############
+
+TODO: Add example
