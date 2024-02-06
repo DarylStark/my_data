@@ -64,25 +64,119 @@ Creating data
 
 To create data, you use the ``create`` method of any of the given ``ResourceManager`` objects. This method returns a list of the new objects that is created in the database. The ``create`` method only takes the object that should be created as a parameter.
 
-TODO: Add example
+**Example:**
 
-Retriving data
-##############
+.. code-block:: python
+
+    from my_model import Tag
+
+    tag1 = Tag(name='tag1')
+    tag2 = Tag(name='tag2')
+    tag3 = Tag(name='tag3')
+    tag4 = Tag(name='tag4')
+
+    with mydata.get_context(user=user) as user_context:
+        # Create the tags usin a list
+        created_tags = user_context.tags.create([tag1, tag2, tag3])
+
+        # Create one tag only
+        created_tag = user_context.tags.create(tag4)
+
+You can either give a list of resources to create, or just one single resource. Either way, the ``create`` method returns always a list of the created resources.
+
+Retrieving data
+###############
 
 To retrieve data, you use the ``retrieve`` method of any of the ``ResourceManager`` objects. This method returns a list of objects that are retrieved from the database. The ``retrieve`` method has a few parameters that can be used to filter and sort the data that is retrieved. These parameters are:
 
--   ``filter``: this parameter is used to filter the data that is retrieved. The given filter is a SQLalchemy type filter.
+-   ``flt``: this parameter is used to filter the data that is retrieved. The given filter is a SQLalchemy type filter.
 -   ``sort``: this parameter is used to sort the data that is retrieved. The given ``sort`` is a SQLalchemy type ``order_by``.
 -   ``start`` and ``max_items``: these parameters are used to paginate the data that is retrieved. The given ``start`` is the index of the first item to retrieve and the given ``max_items`` is the maximum amount of items to retrieve.
 
-TODO: Add example
+**Example:**
+
+.. code-block:: python
+
+    from my_model import Tag
+
+    with mydata.get_context(user=user) as user_context:
+        # Retrieve all tags for a user
+        all_tags = user_context.tags.retrieve()
+
+        # Retrieve all tags with the word 'work' in it
+        work_tags = user_context.tags.retrieve(
+            flt=Tag.title.like('%work%')
+        )
+
+        # Retrieve all tags for the user, 10 per time, second page
+        second_page_tags = user_context.tags.retrieve(start=10, max_items=10)
+
+        # Retrieve all tags for the user, sorted by name
+        sorted_tags = user_context.tags.retrieve(sort=Tag.title)
+
+The ``retrieve`` method returns always a list of the retrieved resources, even when only one resource is retrieved.
+
+When you have a resource that has references to other data, such as ``APIScope``'s in a ``APIToken`` object, it is possible that the refered data is not loaded initially. This is because the library uses *lazy loading*. This means that the data is only loaded when it is accessed. To load this data to be able to use it after the context is closed, you have to access it within the Context:
+
+.. code-block:: python
+
+    with mydata.get_context(user=user) as user_context:
+        first_token = user_context.api_tokens.retrieve()[0]
+
+        # The `token_scopes` attribute is not loaded yet because of lazy loading, so we
+        # have to access it to load it. We don't save it anywhere, but by accessing it,
+        # the data is loaded and saved in the `first_token` object. This data is now
+        # available after the context is closed.
+        _ = first_token.token_scopes
+        
 
 Updating data
 #############
 
-TODO: Add example
+To update data, you use the ``update`` method of any of the ``ResourceManager`` objects. This method returns a list of the updated objects that are updated in the database. The ``update`` method only takes the objects that should be updated as a parameter. You can either give the object that should be updated, or a list of objects that should be updated.
+
+**Example:**
+
+.. code-block:: python
+
+    from my_model import Tag
+
+    with mydata.get_context(user=user) as user_context:
+        # Retrieve a tag
+        tag = user_context.tags.retrieve(flt=Tag.title == 'tag1')[0]
+
+        # Update the tag
+        tag.title = 'new title'
+        updated_tag = user_context.tags.update(tag)
+
+        # Update the tag using a list
+        tag1 = user_context.tags.retrieve(flt=Tag.title == 'tag1')[0]
+        tag2 = user_context.tags.retrieve(flt=Tag.title == 'tag2')[0]
+        tag3 = user_context.tags.retrieve(flt=Tag.title == 'tag3')[0]
+        updated_tags = user_context.tags.update([tag1, tag2, tag3])
+
+The ``update`` method returns always a list of the updated resources, even when only one resource is updated.
 
 Deleting data
 #############
 
-TODO: Add example
+To delete data, you use the ``delete`` method of any of the ``ResourceManager`` objects. This method doesn't return anything, since the resources are deleted. You can either give the object that should be deleted, or a list of objects that should be deleted.
+
+**Example:**
+
+.. code-block:: python
+
+    from my_model import Tag
+
+    with mydata.get_context(user=user) as user_context:
+        # Retrieve a tag
+        tag = user_context.tags.retrieve(flt=Tag.title == 'tag1')[0]
+
+        # Delete the tag
+        user_context.tags.delete(tag)
+
+        # Delete the tag using a list
+        tag1 = user_context.tags.retrieve(flt=Tag.title == 'tag1')[0]
+        tag2 = user_context.tags.retrieve(flt=Tag.title == 'tag2')[0]
+        tag3 = user_context.tags.retrieve(flt=Tag.title == 'tag3')[0]
+        user_context.tags.delete([tag1, tag2, tag3])
