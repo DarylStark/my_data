@@ -8,6 +8,7 @@ from typing import TypeVar
 
 from my_model import MyModel, User, UserRole, UserScopedModel
 from sqlalchemy.sql.elements import ColumnElement
+from sqlalchemy.sql.expression import func
 from sqlmodel import select
 
 from .data_manipulator import DataManipulator
@@ -90,6 +91,48 @@ class Retriever(DataManipulator[T]):
 
         # Return the given resources
         return list(resources)
+
+    def count(self,
+              flt: list[ColumnElement[bool]
+                        ] | ColumnElement[bool] | None = None) -> int:
+        """Retrieve the number of records in the given query.
+
+        Returns the count of records in the given query. This method can be
+        used to retrieve the number of records in a query, without retrieving
+        the actual records.
+
+        Args:
+            flt: a SQLalchemy filter to filter the retrieved data. Can be a
+                list of filters, or a single filter.
+            sort: the SQLmodel field to sort on.
+
+        Returns:
+            The number of records in the given query.
+        """
+        # Retrieve the resources
+        sql_query = select(func.count()).select_from(self._database_model)
+
+        # Filter on the context-based filters
+        for filter_item in self.get_context_filters():
+            sql_query = sql_query.where(filter_item)
+
+        if isinstance(flt, ColumnElement):
+            flt = [flt]
+
+        # Add the filters from the command line
+        if flt:
+            for filter_item in flt:
+                sql_query = sql_query.where(filter_item)
+
+        self._logger.debug(
+            'User "%s" is retrieving datacount for model "%s".',
+            self._context_data.user,
+            self._database_model)
+
+        resources = self._context_data.db_session.exec(sql_query).first()
+
+        # Return the given resources
+        return resources if resources else 0
 
 
 class UserScopedRetriever(Retriever[T]):
