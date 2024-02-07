@@ -11,7 +11,7 @@ First, we have to create the database connection. To do this, we import the ``My
 .. code-block:: python
 
     from typing import Optional
-    from my_model import User
+    from my_model import Tag
     from my_data import MyData
     from my_data.authorization import APITokenAuthorizer
     from my_data.authenticator import UserAuthenticator, CredentialsAuthenticator
@@ -74,62 +74,141 @@ Then, we can add a endpoint to authenticate a user. Firstwe check if the user is
 Endpoints to manage data
 ------------------------
 
-Now we can add endpoints to manage the data. We use the ``APITokenAuthorizer`` to authorize the user. If the user is not authorized, a ``AuthorizationError`` is raised. If the user is authorized, the endpoint is executed and we can retrieve the data from the database.
+Now we can add endpoints to manage the data. We use the ``APITokenAuthorizer`` to authorize the user. If the user is not authorized, a ``AuthorizationError`` is raised. If the user is authorized, the endpoint is executed and we can retrieve the data from the database. We also specify that short lived tokens are allowed.
+
+Creating tags
+~~~~~~~~~~~~~
+
+First, we add an endpoint to create a tag. We use the ``APITokenAuthorizer`` to authorize the user. The given token needs to have the ``tags.create`` scope. If the user is authorized, we create the tag and return it.
 
 .. code-block:: python
 
-    @api_library.endpoint('/users', methods=['GET'])
-    def get_users(
-        username: Optional[str] = None, api_token: Optional[str] = None):
-        """Endpoint to retrieve all users the user is allowed to see.
+    @api_library.endpoint('/tags', methods=['POST'])
+    def create_tag(
+        title: str, api_token: Optional[str] = None):
+        """Endpoint to create a tag.
         
         Args:
-            username: filter on username.
+            title: the title of the tag to create.
             api_token: a API token, if the user gave one.
         """
-        # Authorize the user
+        # Authorize the user. The given token needs to have the 'tags.create' scope.
         authorizer = APITokenAuthorizer(
             api_token=api_token,
             authorizer=APIScopeAuthorizer(
-                required_scopes=['users.retrieve'],
+                required_scopes=['tags.create'],
                 allow_short_lived=True
             ))
         authorizer.authorize()
         
-        # Retrieve the data
+        # Create the tag
         with mydata.get_context(user=authorizer.user) as context:
-            flt = None
-            if username:
-                flt = User.username == username
-            users = context.users.retrieve(flt=flt)
+            tag = context.tags.create(title=title)
         
-        # Return the retrieved data
-        return users
-    
-    @api_library.endpoint('/users', methods=['DELETE'])
-    def delete_user(
-        username: str, api_token: Optional[str] = None):
-        """Endpoint to delete a user.
+        # Return the created tag
+        return tag
+
+Retrieving tags
+~~~~~~~~~~~~~~~
+
+Then, we add an endpoint to retrieve all tags for the user. We use the ``APITokenAuthorizer`` to authorize the user. The given token needs to have the ``tags.retrieve`` scope. If the user is authorized, we retrieve the data from the database and return it.
+
+.. code-block:: python
+
+    @api_library.endpoint('/tags', methods=['GET'])
+    def retrieve_tags(
+        title: Optional[str] = None, api_token: Optional[str] = None):
+        """Endpoint to retrieve all tags for the user.
         
         Args:
-            username: the username to delete
+            title: filter on title.
             api_token: a API token, if the user gave one.
         """
-        # Authorize the user
+        # Authorize the user. The given token needs to have the 'tags.retrieve' scope.
         authorizer = APITokenAuthorizer(
             api_token=api_token,
             authorizer=APIScopeAuthorizer(
-                required_scopes=['users.delete'],
+                required_scopes=['tags.retrieve'],
+                allow_short_lived=True
+            ))
+        authorizer.authorize()
+        
+        # Retrieve the data from the database
+        with mydata.get_context(user=authorizer.user) as context:
+            flt = None
+            if title:
+                flt = Tag.title == title
+            tags = context.tags.retrieve(flt=flt)
+        
+        # Return the retrieved data
+        return tags
+
+Updating tags
+~~~~~~~~~~~~~
+
+Then, we add an endpoint to update a tag. We use the ``APITokenAuthorizer`` to authorize the user. The given token needs to have the ``tags.update`` scope. If the user is authorized, we update the tag and return it.
+
+.. code-block:: python
+    
+    @api_library.endpoint('/tags', methods=['PUT'])
+    def update_tag(
+        title: str, new_title: str, api_token: Optional[str] = None):
+        """Endpoint to update a tag.
+        
+        Args:
+            title: the title of the tag to update.
+            new_title: the new title for the tag.
+            api_token: a API token, if the user gave one.
+        """
+        # Authorize the user. The given token needs to have the 'tags.update' scope.
+        authorizer = APITokenAuthorizer(
+            api_token=api_token,
+            authorizer=APIScopeAuthorizer(
+                required_scopes=['tags.update'],
+                allow_short_lived=True
+            ))
+        authorizer.authorize()
+        
+        # Retrieve the data and update it
+        with mydata.get_context(user=authorizer.user) as context:
+            tags = context.tags.retrieve(flt=Tag.title == title)
+            for tag in tags:
+                tag.title = new_title
+            tags = context.tags.update(tags)
+        
+        # Return the updated tag
+        return tags
+
+Deleting tags
+~~~~~~~~~~~~~
+
+Finally, we add an endpoint to delete a tag. We use the ``APITokenAuthorizer`` to authorize the user. The given token needs to have the ``tags.delete`` scope. If the user is authorized, we delete the tag and return a dictionary to indicate that the tag is deleted.
+
+.. code-block:: python
+    
+    @api_library.endpoint('/tags', methods=['DELETE'])
+    def delete_tag(
+        title: str, api_token: Optional[str] = None):
+        """Endpoint to delete a tag.
+        
+        Args:
+            title: the title of the tag to delete.
+            api_token: a API token, if the user gave one.
+        """
+        # Authorize the user. The given token needs to have the 'tags.delete' scope.
+        authorizer = APITokenAuthorizer(
+            api_token=api_token,
+            authorizer=APIScopeAuthorizer(
+                required_scopes=['tags.delete'],
                 allow_short_lived=True
             ))
         authorizer.authorize()
         
         # Retrieve the data and delete it
         with mydata.get_context(user=authorizer.user) as context:
-            users = context.users.retrieve(flt=User.username == username)
-            context.users.delete(users)
+            tags = context.tags.retrieve(flt=Tag.title == title)
+            context.tags.delete(tags)
         
-        # Return the retrieved data
-        return users
+        # Return a dictionary to indicate that the tag is deleted.
+        return {'deleted': True}
 
-It is easy to add new endpoints to create or update users from this point on.
