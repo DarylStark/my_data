@@ -46,9 +46,11 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    :maxdepth: 2
 
    api_documentation/authenticator
+   api_documentation/authorizer
    api_documentation/context
    api_documentation/context_data
    api_documentation/creators
+   api_documentation/data_loader
    api_documentation/data_manipulator
    api_documentation/deleters
    api_documentation/exceptions
