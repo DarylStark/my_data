@@ -59,6 +59,17 @@ To create a ``UserContext`` object, you can use the ``get_context`` method of th
         # Get all tags for the given user
         tags = user_context.tags.retrieve()
 
+``ResourceManager``'s' in a ``UserContext``
+##########################################
+
+The following ``ResourceManagers`` are available in a ``UserContext``:
+
+-   ``api_client``: this ``ResourceManager`` is used to manipulate ``APIClient`` objects.
+-   ``api_tokens``: this ``ResourceManager`` is used to manipulate ``APIToken`` objects.
+-   ``tags``: this ``ResourceManager`` is used to manipulate ``Tag`` objects.
+-   ``user_settings``: this ``ResourceManager`` is used to manipulate ``UserSetting`` objects.
+-   ``users``: this ``ResourceManager`` is used to manipulate ``User`` objects.
+
 Creating data
 #############
 
