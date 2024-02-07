@@ -36,7 +36,7 @@ First, we have to create the database connection. To do this, we import the ``My
 Add a authentication endpoint
 -----------------------------
 
-Then, we can add a endpoint to authenticate a user. Firstwe check if the user is not logged on yet. We use the ``UserAuthenticator`` to authenticate the user and create a API token. The API token is returned to the user. If the authentication fails, a ``AuthenticationError`` is raised.
+Then, we can add a endpoint to authenticate a user. First, we check if the user is not logged on yet. We use the ``UserAuthenticator`` to authenticate the user and create a API token. The API token is returned to the user. If the authentication fails, a ``AuthenticationError`` is raised.
 
 .. code-block:: python
 
