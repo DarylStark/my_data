@@ -84,7 +84,7 @@ Here's an example of a database string that connects to a PostgreSQL database na
     
     postgresql://myusername:mypassword@myserver/mydatabase
 
-If you want to create the connection using the ``pg8000 ``, you can use the following database string:
+If you want to create the connection using the ``pg8000`` driver, you can use the following database string:
 
 .. code-block::
     
