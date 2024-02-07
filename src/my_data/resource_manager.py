@@ -134,7 +134,8 @@ class ResourceManager(Generic[T]):
 
     def count(
             self,
-            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None) -> int:
+            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None
+    ) -> int:
         """Retrieve the number of records for a given query.
 
         Returns the count of records in the given query. This method can be

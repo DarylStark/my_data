@@ -10,11 +10,13 @@ from my_model import MyModel, User, UserRole, UserScopedModel
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.expression import func
 from sqlmodel import select
+from sqlmodel.sql.expression import SelectOfScalar
 
 from .data_manipulator import DataManipulator
 from .exceptions import BaseClassCallException, WrongDataManipulatorException
 
 T = TypeVar('T', bound=MyModel)
+SelectT = TypeVar('SelectT')
 
 
 class Retriever(DataManipulator[T]):
@@ -35,6 +37,26 @@ class Retriever(DataManipulator[T]):
             BaseClassCallException: BaseClass method is used.
         """
         raise BaseClassCallException('Method not implemented in baseclass')
+
+    def _add_filters_to_query(
+        self,
+        sql_query: SelectOfScalar[SelectT],
+        flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None
+    ) -> SelectOfScalar[SelectT]:
+
+        # Filter on the context-based filters
+        for filter_item in self.get_context_filters():
+            sql_query = sql_query.where(filter_item)
+
+        if isinstance(flt, ColumnElement):
+            flt = [flt]
+
+        # Add the filters from the command line
+        if flt:
+            for filter_item in flt:
+                sql_query = sql_query.where(filter_item)
+
+        return sql_query
 
     def retrieve(
             self,
@@ -63,17 +85,8 @@ class Retriever(DataManipulator[T]):
         # Retrieve the resources
         sql_query = select(self._database_model)
 
-        # Filter on the context-based filters
-        for filter_item in self.get_context_filters():
-            sql_query = sql_query.where(filter_item)
-
-        if isinstance(flt, ColumnElement):
-            flt = [flt]
-
-        # Add the filters from the command line
-        if flt:
-            for filter_item in flt:
-                sql_query = sql_query.where(filter_item)
+        # Add the filters
+        sql_query = self._add_filters_to_query(sql_query, flt)
 
         # Sort the resources
         sql_query = sql_query.order_by(sort)
@@ -93,8 +106,8 @@ class Retriever(DataManipulator[T]):
         return list(resources)
 
     def count(self,
-              flt: list[ColumnElement[bool]
-                        ] | ColumnElement[bool] | None = None) -> int:
+              flt: list[ColumnElement[bool]] |
+              ColumnElement[bool] | None = None) -> int:
         """Retrieve the number of records in the given query.
 
         Returns the count of records in the given query. This method can be
@@ -104,25 +117,17 @@ class Retriever(DataManipulator[T]):
         Args:
             flt: a SQLalchemy filter to filter the retrieved data. Can be a
                 list of filters, or a single filter.
-            sort: the SQLmodel field to sort on.
 
         Returns:
             The number of records in the given query.
         """
         # Retrieve the resources
-        sql_query = select(func.count()).select_from(self._database_model)
+        sql_query = select(
+            func.count()  # pylint: disable=not-callable
+        ).select_from(self._database_model)
 
-        # Filter on the context-based filters
-        for filter_item in self.get_context_filters():
-            sql_query = sql_query.where(filter_item)
-
-        if isinstance(flt, ColumnElement):
-            flt = [flt]
-
-        # Add the filters from the command line
-        if flt:
-            for filter_item in flt:
-                sql_query = sql_query.where(filter_item)
+        # Add the filters
+        sql_query = self._add_filters_to_query(sql_query, flt)
 
         self._logger.debug(
             'User "%s" is retrieving datacount for model "%s".',
