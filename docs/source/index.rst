@@ -9,7 +9,7 @@ Welcome to my-data's documentation!
 The ``my-data`` Python library provides the API to save persistent data for the **My Project**. All services in the **My Project** that need to save data needs to use this library to do so. The data is saved in a SQL database using the ``SQLModel`` package. By using the ``my-model`` library, this library makes sure data is saved in a consistent matter.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Library usage:
    :numbered:
 
@@ -17,8 +17,20 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    usage/overview
    usage/setup
    usage/contexts
-   usage/service_users
    usage/authentication
+   usage/authorization
+
+.. toctree::
+   :caption: Examples
+   :maxdepth: 2
+
+   examples/rest_api_service_example
+
+.. toctree::
+   :caption: Useful information
+   :maxdepth: 2
+
+   useful_information/database_string_examples
 
 .. toctree::
    :caption: Developing
@@ -33,11 +45,12 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    :hidden:
    :maxdepth: 2
 
-   api_documentation/class_diagram
    api_documentation/authenticator
+   api_documentation/authorizer
    api_documentation/context
    api_documentation/context_data
    api_documentation/creators
+   api_documentation/data_loader
    api_documentation/data_manipulator
    api_documentation/deleters
    api_documentation/exceptions
