@@ -132,6 +132,25 @@ class ResourceManager(Generic[T]):
             start=start,
             max_items=max_items)
 
+    def count(
+            self,
+            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None
+    ) -> int:
+        """Retrieve the number of records for a given query.
+
+        Returns the count of records in the given query. This method can be
+        used to retrieve the number of records in a query, without retrieving
+        the actual records.
+
+        Args:
+            flt: SQLModel type filters to filter this resource.
+
+        Returns:
+            The number of records in the given query.
+        """
+        # Get the count of the DB objects
+        return self.retriever.count(flt=flt)
+
     def update(self, models: list[T] | T) -> list[T]:
         """Update resources.
 

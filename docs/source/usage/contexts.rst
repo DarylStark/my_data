@@ -128,7 +128,30 @@ When you have a resource that has references to other data, such as ``APIScope``
         # the data is loaded and saved in the `first_token` object. This data is now
         # available after the context is closed.
         _ = first_token.token_scopes
-        
+
+Counting data
+#############
+
+Besides of the ``retrieve`` method, the ``ResourceManager`` objects also have a ``count`` method. This method returns the number of records for a specific filter. The ``count`` method takes only a ``flt`` parameter to specify what filter to add to the counting.
+
+**Example:**
+
+.. code-block:: python
+
+    from my_model import Tag
+
+    with mydata.get_context(user=user) as user_context:
+        # Retrieve the number of all tags
+        all_tags_count = user_context.tags.count()
+
+        # Count all tags with the word 'work' in it
+        work_tags_count = user_context.tags.count(
+            flt=Tag.title.like('%work%')
+        )
+
+.. tip::
+    
+    Using this method is much more efficient then retrieving all records and counting them in Python. Especially when you want to use pagination, it is recommended to use the ``count`` method to get the total amount of records. This way, you can calculate the amount of pages and the amount of records per page.
 
 Updating data
 #############

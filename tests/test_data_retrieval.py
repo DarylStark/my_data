@@ -566,3 +566,35 @@ def test_data_retrieval_all_user_settings_as_normal_user_2(
         user_settings = context.user_settings.retrieve()
         assert len(user_settings) == 3
         assert user_settings[index].setting == setting
+
+
+def test_data_count_retrieval_all_tags_as_normal_user_1(
+        my_data: MyData,
+        normal_user_1: User) -> None:
+    """Test Tag count retrieval as a USER user.
+
+    Checks how many tags are in the database as a normal user.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_1: the second normal user.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        tag_count = context.tags.count()
+        assert tag_count == 3
+
+
+def test_data_count_retrieval_all_tags_as_normal_user_2(
+        my_data: MyData,
+        normal_user_2: User) -> None:
+    """Test Tag count retrieval as a USER user.
+
+    Checks how many tags are in the database as a normal user.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the second normal user.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        tag_count = context.tags.count()
+        assert tag_count == 3
