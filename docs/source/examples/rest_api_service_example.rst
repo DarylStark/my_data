@@ -11,7 +11,7 @@ First, we have to create the database connection. To do this, we import the ``My
 .. code-block:: python
 
     from typing import Optional
-    from my_model import Tag
+    from my_model import Tag, APIToken
     from my_data import MyData
     from my_data.authorization import APITokenAuthorizer
     from my_data.authenticator import UserAuthenticator, CredentialsAuthenticator
@@ -70,6 +70,33 @@ Then, we can add a endpoint to authenticate a user. Firstwe check if the user is
 
         # Return the given token
         return {'token': token_str}
+
+Add a endpoint to logoff the current user
+-----------------------------------------
+
+Then, we add an endpoint to logoff the current user. We use the ``APITokenAuthorizer`` to authorize the user with a ``ShortLivedTokenAuthorizer``. This authorizer will only authorize succesfully if the user is using a short lived token. If the user is authorized, we logoff the user and return a dictionary to indicate that the user is logged off.
+
+.. code-block:: python
+
+    @api_library.endpoint('/logoff', methods=['POST'])
+    def logoff(api_token: Optional[str] = None):
+        """Endpoint to logoff the current user.
+        
+        Args:
+            api_token: a API token, if the user gave one.
+        """
+        # Authorize the user. The given token needs to be a short lived token.
+        authorizer = APITokenAuthorizer(
+            api_token=api_token,
+            authorizer=ShortLivedTokenAuthorizer())
+        authorizer.authorize()
+
+        # Logoff the user
+        with mydata.get_context(user=authorizer.user) as context:
+            context.api_tokens.delete(APIToken.token=api_token)
+
+        # Return a dictionary to indicate that the user is logged off.
+        return {'logged_off': True}
 
 Endpoints to manage data
 ------------------------
