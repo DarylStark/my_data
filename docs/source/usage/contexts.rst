@@ -13,7 +13,13 @@ The ``MyData`` object has two methods to create these kind of contexts:
 
 Both types of context can and should be used as a Python Context Manager. This means that you can use the ``with`` statement to create a context and automatically close it when you are done. This is the recommended way to use contexts.
 
-The given details for the ``Context`` are placed in a object that is initialized from the ``ContextData`` class.
+The given details for the ``Context`` are placed in a object that is initialized from the ``ContextData`` class. This includes the ``Session`` object that is used to interact with the database. The ``Session`` object is used to create, retrieve, update and delete data in the database. The ``Session`` object is also used to commit and rollback transactions.
+
+To make this implicit for the user, three methods are added to a ``Context``:
+
+-   ``abort_session``: this method is used to rollback the transaction in the database.
+-   ``commit_session``: this method is used to commit the transaction in the database.
+-   ``close_session``: this method is used to close the transation in the database.
 
 Using a ``ServiceContext`` object
 ---------------------------------
@@ -60,7 +66,7 @@ To create a ``UserContext`` object, you can use the ``get_context`` method of th
         tags = user_context.tags.retrieve()
 
 ``ResourceManager``'s' in a ``UserContext``
-##########################################
+###########################################
 
 The following ``ResourceManagers`` are available in a ``UserContext``:
 
