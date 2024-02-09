@@ -590,3 +590,27 @@ def test_data_creation_user_settings_as_service_account(
     with raises(PermissionDeniedException):
         with my_data.get_context(user=service_user) as context:
             context.user_settings.create(test_user_settings)
+
+
+def test_data_creation_users_as_normal_user_1_and_aborting_it(
+        my_data: MyData,
+        normal_user_1: User) -> None:
+    """Test User creation as a USER user and abort the change.
+
+    Creates a tag as a normal user and avort the change. The created tag should
+    no be in the database after the abort.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        context.tags.create(Tag(title='test_creation_tag_1_abort'))
+        context.abort_session()
+
+    with my_data.get_context(user=normal_user_1) as context:
+        # Check if they exist
+        created_tags = context.tags.retrieve(
+            Tag.title == 'test_creation_tag_1_abort')  # type: ignore
+
+        assert len(created_tags) == 0
