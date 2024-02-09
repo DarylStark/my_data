@@ -264,7 +264,7 @@ class ServiceContext(UserContext):
             subject: filter on the subject.
 
         Returns:
-            A list of scopes for the subject.
+            A list of retrieved APIScope objects.
         """
         self._logger.debug('Retrieving all API scopes')
 
