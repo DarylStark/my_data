@@ -11,8 +11,9 @@ of the Context.s
 import logging
 from types import TracebackType
 
-from my_model import APIClient, APIToken, Tag, User, UserSetting
+from my_model import APIClient, APIScope, APIToken, Tag, User, UserSetting
 from sqlalchemy.future import Engine
+from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import select
 
 from .context_data import ContextData
@@ -249,6 +250,45 @@ class ServiceContext(UserContext):
         """
         self._logger.debug('Retrieving API token object by API token')
         return self.get_api_token_object_by_api_token(api_token).user
+
+    def get_api_scopes(self,
+                       module: str | None = None,
+                       subject: str | None = None) -> list[APIScope]:
+        """Get the API scopes from the database.
+
+        Retrieves the API scopes from the database. Can be filtered with
+        the `title` and `subject` arguments.
+
+        Args:
+            module: filter on the module.
+            subject: filter on the subject.
+
+        Returns:
+            A list of scopes for the subject.
+        """
+        self._logger.debug('Retrieving all API scopes')
+
+        flt: list[ColumnElement[bool]] = []
+        if module:
+            flt.append(APIScope.module == module)  # type: ignore
+        if subject:
+            flt.append(APIScope.subject == subject)  # type: ignore
+
+        # Create the query
+        sql_query = select(APIScope)
+
+        # Add the filters
+        for filter_item in flt:
+            sql_query = sql_query.where(filter_item)
+
+        # Execute the query
+        api_scopes: list[APIScope] = []
+        if self._context_data.db_session:
+            api_scopes = list(
+                self._context_data.db_session.exec(sql_query).all())
+
+        # Return the items
+        return api_scopes
 
     def __enter__(self) -> 'ServiceContext':
         """Start a Python context manager for a ServiceContext.
