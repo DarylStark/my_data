@@ -24,6 +24,22 @@
             "id": 5,
             "module": "users",
             "subject": "updatepw"
+        },
+        {
+            "module": "tags",
+            "subject": "create"
+        },
+        {
+            "module": "tags",
+            "subject": "retrieve"
+        },
+        {
+            "module": "tags",
+            "subject": "update"
+        },
+        {
+            "module": "tags",
+            "subject": "delete"
         }
     ],
     "users": [

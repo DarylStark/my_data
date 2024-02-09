@@ -24,11 +24,13 @@ To make this implicit for the user, three methods are added to a ``Context``:
 Using a ``ServiceContext`` object
 ---------------------------------
 
-the ``ServiceContext`` should be used by a service, like a REST API, to get a specific ``User`` or ``APIToken`` object. The ``ServiceContext`` object exposes three methods that can be used to retrieve specific information:
+the ``ServiceContext`` should be used by a service, like a REST API, to get a specific ``User`` or ``APIToken`` object. The ``ServiceContext`` object exposes four methods that can be used to retrieve specific information:
 
 -   ``get_user_account_by_username``: this method retrieves a ``User`` object from the database by giving a username.
 -   ``get_user_account_by_api_token``: this method retrieves a ``User`` object from the database by giving a API token.
 -   ``get_api_token_object_by_api_token``: this method retrieves a ``APIToken`` object from the database by giving a API token.
+-   ``get_api_token_object_by_api_token``: this method retrieves a ``APIToken`` object from the database by giving a API token.
+-   ``get_api_scopes``: this method returns all ``APIScope`` objects that are available in the database.
 
 These methods can be used to get a specific user. The given user can in turn be used to create a ``UserContext``. To create a ``ServiceContext`` you use the ``get_context_for_service_user`` method of the ``MyData`` object.
 

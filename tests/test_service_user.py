@@ -4,6 +4,7 @@ This module tests the things a Service user needs to do, like retrieving
 User objects or API tokens.
 """
 from pytest import raises
+import pytest
 
 from my_data.exceptions import UnknownUserAccountException
 from my_data.my_data import MyData
@@ -115,3 +116,107 @@ def test_retrieving_token_objects_by_api_token_wrong_token(
         with raises(UnknownUserAccountException):
             context.get_api_token_object_by_api_token(
                 'wrong_token')
+
+
+def test_retrieving_api_scopes(my_data: MyData) -> None:
+    """Unit test to retrieve a APIScope objects.
+
+    This unit test tries to log in with a Service user and retrieve a APIScope
+    objects.
+
+    Args:
+        my_data: a instance of a MyData object.
+    """
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        scopes = context.get_api_scopes()
+        assert scopes is not None
+        assert len(scopes) == 9
+
+
+@pytest.mark.parametrize('module', [
+    "users"
+])
+def test_retrieving_api_scopes_filtered_on_module(
+        my_data: MyData,
+        module: str) -> None:
+    """Unit test to retrieve a APIScope objects filtered on module.
+
+    This unit test tries to log in with a Service user and retrieve a APIScope
+    objects.
+
+    Args:
+        my_data: a instance of a MyData object.
+        module: the module to filter on.
+    """
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        scopes = context.get_api_scopes(module=module)
+        assert scopes is not None
+        assert len(scopes) == 5
+
+
+@pytest.mark.parametrize('subject, count', [
+    ['create', 2],
+    ['retrieve', 2],
+    ['update', 2],
+    ['delete', 2],
+    ['updatepw', 1],
+])
+def test_retrieving_api_scopes_filtered_on_subject(
+        my_data: MyData,
+        subject: str,
+        count: int) -> None:
+    """Unit test to retrieve a APIScope objects filtered on subject.
+
+    This unit test tries to log in with a Service user and retrieve a APIScope
+    objects.
+
+    Args:
+        my_data: a instance of a MyData object.
+        subject: the subject to filter on.
+        count: the number of objects to expect.
+    """
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        scopes = context.get_api_scopes(subject=subject)
+        assert scopes is not None
+        assert len(scopes) == count
+
+
+@pytest.mark.parametrize('module, subject', [
+    ("users", "create"),
+    ("users", "retrieve"),
+    ("users", "update"),
+    ("users", "delete"),
+    ("users", "updatepw"),
+    ("tags", "create"),
+    ("tags", "retrieve"),
+    ("tags", "update"),
+    ("tags", "delete"),
+])
+def test_retrieving_api_scopes_filtered_on_module_and_subject(
+        my_data: MyData,
+        module: str,
+        subject: str) -> None:
+    """Unit test to retrieve a APIScope objects filtered on module and subject.
+
+    This unit test tries to log in with a Service user and retrieve a APIScope
+    objects.
+
+    Args:
+        my_data: a instance of a MyData object.
+        module: the module to filter on.
+        subject: the subject to filter on.
+    """
+    with my_data.get_context_for_service_user(
+            username='service.user',
+            password='service_password') as context:
+        scopes = context.get_api_scopes(
+            module=module,
+            subject=subject)
+        assert scopes is not None
+        assert len(scopes) == 1
