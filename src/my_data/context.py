@@ -86,8 +86,38 @@ class Context:
             False if there are unhandled exceptions, True if there are none.
         """
         self._logger.debug('Context object as context manager closed')
-        self._context_data.close_session()
+        self.commit_session()
+        self.close_session()
         return exception_type is None
+
+    def commit_session(self) -> None:
+        """Commit the database session.
+
+        Method to commit the changes in the session. This should be done when
+        the Context is ready with this ContextData object. This is either done
+        in the closure of the Python Context Manager, or when the user chooses
+        to close it.
+        """
+        self._context_data.commit_session()
+
+    def close_session(self) -> None:
+        """Close the database session.
+
+        Method to close the session. This should be done when the Context is
+        ready with this ContextData object. This is either done in the closure
+        of the Python Context Manager, or when the user chooses to close it.
+        """
+        self._context_data.close_session()
+
+    def abort_session(self) -> None:
+        """Abort the database session.
+
+        Method to abort the changes in the session. This is not done
+        automatically and should be invoked by the user when he made changes
+        that should be aborted before commited. After the abort, the session
+        is _not_ closed; the user has to do that himself.
+        """
+        self._context_data.abort_session()
 
 
 class UserContext(Context):

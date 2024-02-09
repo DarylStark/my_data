@@ -32,12 +32,31 @@ class ContextData:
         self.user: User = user
         self.db_session = Session(database_engine, expire_on_commit=False)
 
-    def close_session(self) -> None:
-        """Commit and closes the database sessions.
+    def commit_session(self) -> None:
+        """Commit the database session.
 
-        Method to commit the changes in the session and close the session. This
-        should be done when the Context is ready with this ContextData object.
+        Method to commit the changes in the session. This should be done when
+        the Context is ready with this ContextData object.
         """
         if self.db_session:
             self.db_session.commit()
+
+    def close_session(self) -> None:
+        """Commit and closes the database sessions.
+
+        Method to cclose the session. This should be done when the Context is
+        ready with this ContextData object.
+        """
+        if self.db_session:
             self.db_session.close()
+
+    def abort_session(self) -> None:
+        """Abort the database session.
+
+        Method to abort the changes in the session. This is not done
+        automatically and should be invoked by the user when he made changes
+        that should be aborted before commited. After the abort, the session
+        is _not_ closed; the user has to do that himself.
+        """
+        if self.db_session:
+            self.db_session.rollback()
