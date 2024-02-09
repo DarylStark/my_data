@@ -42,10 +42,14 @@ class MyData:
         self.database_engine: Engine | None = None
         self._database_str: str | None = None
         self._database_args: dict[str, Any] | None = None
+        self._service_username: str | None = None
+        self._service_password: str | None = None
 
     def configure(self,
                   db_connection_str: str,
-                  database_args: dict[str, Any] | None = None) -> None:
+                  database_args: dict[str, Any] | None = None,
+                  service_username: str | None = None,
+                  service_password: str | None = None) -> None:
         """Set the database configuration.
 
         The database configuration is used when the database connection has to
@@ -55,9 +59,13 @@ class MyData:
             db_connection_str: the database connection string for the
                 SQLmodel model.
             database_args: a dict with extra configuration for SQLmodel.
+            service_username: the username of a service user to use.
+            service_password: the password of a service user to use.
         """
         self._database_str = db_connection_str
         self._database_args = database_args
+        self._service_username = service_username
+        self._service_password = service_password
         self._logger.info('MyData object configured')
 
     def create_engine(self, force: bool = False) -> None:

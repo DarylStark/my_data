@@ -38,7 +38,9 @@ def my_data() -> MyData:
         db_connection_str='sqlite:///:memory:',
         database_args={
             'echo': True
-        }
+        },
+        service_username='service.user',
+        service_password='service_password'
     )
 
     # Create the engine and the tables
