@@ -148,7 +148,7 @@ def test_retrieving_api_scopes_filtered_on_module(
 
     Args:
         my_data: a instance of a MyData object.
-        module: the module to filter on
+        module: the module to filter on.
     """
     with my_data.get_context_for_service_user(
             username='service.user',
@@ -209,7 +209,8 @@ def test_retrieving_api_scopes_filtered_on_module_and_subject(
 
     Args:
         my_data: a instance of a MyData object.
-        subject: the subject to filter on
+        module: the module to filter on.
+        subject: the subject to filter on.
     """
     with my_data.get_context_for_service_user(
             username='service.user',
