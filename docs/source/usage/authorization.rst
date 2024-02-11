@@ -8,20 +8,9 @@ For services, users should authorize based on other information. One way to auth
 -   A short lived ``APIToken``. These tokens can do anything that the user is allowed to do.
 -   A long lived ``APIToken``. These tokens can only do what the user is allowed to do and are controlled further by setting specific ``APIScopes``.
 
-These objects are used by services that expose a API.
+To authorize users for these kind of authorization, you can use the ``APITokenAuthorizer`` class.
 
-To authorize users for these kind of authorization, you can use the ``APITokenAuthorizer`` class. Before you can use the ``APITokenAuthorizer`` class, you need to configure it. This is done by calling the ``configure`` method of the ``APITokenAuthorizer`` class:
-
-.. code-block:: python
-
-    from authorization import APITokenAuthorizer
-
-    APITokenAuthorizer.configure(
-        mydata=mydata,
-        service_username='service_user',
-        service_password='service_password')
-
-After this, you can initiate objects from the ``APITokenAuthorizer`` class and use them to authorize users. When creating a object from the ``APITokenAuthorizer`` class, you can specify a ``Authorizer`` object that does the actual authorization. By doing this, you can choose which ``Authorizer`` to use duing runtime. After that, you can use the ``authorize`` method to authorize the user. This method will raise a ``AuthorizationError`` if the user is not authorized.
+You can initiate objects from the ``APITokenAuthorizer`` class and use them to authorize users. When creating a object from the ``APITokenAuthorizer`` class, you can specify a ``Authorizer`` object that does the actual authorization. By doing this, you can choose which ``Authorizer`` to use duing runtime. After that, you can use the ``authorize`` method to authorize the user. This method will raise a ``AuthorizationError`` if the user is not authorized.
 
 In this package, there are four authorizers available:
 
@@ -37,6 +26,7 @@ To use the ``APIScopeAuthorizer``, for example, you use the following code:
     from mytest.authorization import APITokenAuthorizer, APIScopeAuthorizer
 
     authorizer = APITokenAuthorizer(
+        my_data_object=my_data,
         api_token=api_token,
         authorizer=APIScopeAuthorizer(
             required_scopes=['users.retrieve', 'users.create'],

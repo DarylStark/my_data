@@ -14,10 +14,12 @@ The main class for the library is the ``MyData`` class. This class should be ini
         db_connection_str='sqlite:////home/user/my-data.db',
         database_args={
             'echo': True
-        }
+        },
+        service_user='service.user',
+        service_password='service.pass'
     )
 
-This will create a ``MyData`` object that uses a local SQLite database file located at ``/home/user/my-data.db``. The database will be configured to echo all SQL commands to the console.
+This will create a ``MyData`` object that uses a local SQLite database file located at ``/home/user/my-data.db``. The database will be configured to echo all SQL commands to the console. It also sets the Service User and Service Password for the tasks related to service users. These credentials are not checked now; they are checked when the service user is used.
 
 Creating tables
 ---------------

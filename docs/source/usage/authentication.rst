@@ -3,20 +3,7 @@ Authentication
 
 The library contains a class to authenticate users. This class can be used by the application to authenticate users. The class is called ``UserAuthenticator`` and uses a *strategy* pattern to authenticate users. This means that the way authentication is done, can be changed during runtime. If you want to create a own authenticator to use with this class, you can do so by creating a class that inherits from the ``Authenticator`` class.
 
-When creating a instance of the ``UserAuthenticator`` class, you have to pass a instance of a class that inherits from the ``Authenticator`` class. This instance will be used to authenticate users. Right now, one authenticator is created. This authenticator, named ``CredentialsAuthenticator`` should be used to authenticate users based on their credentials in the database. These credentials are a *username*, *password* and optionally and *second factor*.
-
-Before using the ``UserAuthenticator``, you have to configure the class with the class method ``configure``. You have to specify the ``MyData`` object to use and the credentials for a valid service user:
-
-.. code-block:: python
-
-    from authenticator import UserAuthenticator
-
-    UserAuthenticator.configure(
-        mydata=mydata,
-        service_username='service_user',
-        service_password='service_password')
-
-If you want to use the ``CredentialsAuthenticator`` to authenticate users, you have to pass a instance of the ``CredentialsAuthenticator`` class to the constructor of the ``UserAuthenticator``. This instance will be used to retrieve the user from the database.
+When creating a instance of the ``UserAuthenticator`` class, you have to pass a instance of the ``MyData`` class and instance of a class that inherits from the ``Authenticator`` class. This instance will be used to authenticate users. Right now, one authenticator is created. This authenticator, named ``CredentialsAuthenticator`` should be used to authenticate users based on their credentials in the database. These credentials are a *username*, *password* and optionally and *second factor*.
 
 **For example:**
 
@@ -28,7 +15,9 @@ If you want to use the ``CredentialsAuthenticator`` to authenticate users, you h
         username='user',
         password='password',
         second_factor='123456')
-    user_authenticator = UserAuthenticator(authenticator)
+    user_authenticator = UserAuthenticator(
+        my_data,
+        authenticator)
     user = user_authenticator.authenticate()
 
 If the authentication is a success, the ``user`` object will now be the object for the user that is given. If the authentication is not a success, a ``AuthenticationError`` will be raised.
@@ -47,7 +36,9 @@ You can also use the ``UserAuthenticator`` class to create short lived API Token
         username='user',
         password='password',
         second_factor='123456')
-    user_authenticator = UserAuthenticator(authenticator)
+    user_authenticator = UserAuthenticator(
+        my_data,
+        authenticator)
     token_str = user_authenticator.create_api_token(
         session_timeout_in_seconds=3600,   # token will be valid for 1 hour
         title='my interactive token')

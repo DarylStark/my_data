@@ -9,7 +9,7 @@ A context specifies a environment to work in. It also defines a *transaction* in
 The ``MyData`` object has two methods to create these kind of contexts:
 
 -   ``get_context``: this method creates a ``UserContext`` object for a specific user. You can use this to manipulate data for a specific user.
--   ``get_context_for_service_user``: this method creates a ``ServiceContext`` object for a specific service user. You can use this to retrieve ``User`` objects from a username or a API token.
+-   ``get_context_for_service_user``: this method creates a ``ServiceContext`` object for a the configured service user. You can use this to retrieve ``User`` objects from a username or a API token.
 
 Both types of context can and should be used as a Python Context Manager. This means that you can use the ``with`` statement to create a context and automatically close it when you are done. This is the recommended way to use contexts.
 
@@ -29,7 +29,6 @@ the ``ServiceContext`` should be used by a service, like a REST API, to get a sp
 -   ``get_user_account_by_username``: this method retrieves a ``User`` object from the database by giving a username.
 -   ``get_user_account_by_api_token``: this method retrieves a ``User`` object from the database by giving a API token.
 -   ``get_api_token_object_by_api_token``: this method retrieves a ``APIToken`` object from the database by giving a API token.
--   ``get_api_token_object_by_api_token``: this method retrieves a ``APIToken`` object from the database by giving a API token.
 -   ``get_api_scopes``: this method returns all ``APIScope`` objects that are available in the database.
 
 These methods can be used to get a specific user. The given user can in turn be used to create a ``UserContext``. To create a ``ServiceContext`` you use the ``get_context_for_service_user`` method of the ``MyData`` object.
@@ -38,9 +37,7 @@ These methods can be used to get a specific user. The given user can in turn be 
 
 .. code-block:: python
     
-    with mydata.get_context_for_service_user(
-        username='service.user',
-        password='password') as service_context:
+    with mydata.get_context_for_service_user() as service_context:
         user = service_context.get_user_account_by_username('username')
 
 You now have a ``User`` object that can be used to create a ``UserContext``.
