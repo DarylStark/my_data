@@ -6,7 +6,7 @@ from typing import Optional
 
 from my_model import APIToken, User, UserRole
 
-from my_data.my_data import MyData
+from .my_data import MyData
 
 from .exceptions import (AuthenticationFailed,
                          AuthenticatorNotConfiguredException,
@@ -15,43 +15,16 @@ from .exceptions import (AuthenticationFailed,
 
 
 class UserAuthenticator:
-    """Authenticator for users.
-
-    This class has three  class attributes:
-    - my_data_object: the MyData object to use.
-    - service_username: the username for the service user.
-    - service_password: the password for the service user.
-
-    These values can be set with the class method `configure`.
-    """
-
-    my_data_object: MyData | None = None
-    service_username: str | None = None
-    service_password: str | None = None
-
-    @classmethod
-    def configure(
-            cls,
-            my_data_object: MyData,
-            service_username: str,
-            service_password: str) -> None:
-        """Configure the class.
-
-        Args:
-            my_data_object: the MyData object to use.
-            service_username: the username for the service user.
-            service_password: the password for the service user.
-        """
-        cls.my_data_object = my_data_object
-        cls.service_username = service_username
-        cls.service_password = service_password
+    """Authenticator for users."""
 
     def __init__(
             self,
+            my_data_object: MyData,
             authenticator: 'Authenticator') -> None:
         """Initialize the user authenticator.
 
         Args:
+            my_data_object: the MyData object to use.
             authenticator: the authenticator to use. This authenticator will
                 be used to authenticate the user. This way, the authenticator
                 can be changed at runtime.
@@ -59,6 +32,7 @@ class UserAuthenticator:
         self._logger = logging.getLogger(f'UserAuthenticator-{id(self)}')
         self._authenticator: Authenticator = authenticator
         self._authenticator.set_user_authenticator(self)
+        self.my_data_object: 'MyData' = my_data_object
 
     def authenticate(self) -> User:
         """Authenticate the user.
@@ -86,17 +60,7 @@ class UserAuthenticator:
 
         Returns:
             The created API token.
-
-        Raises:
-            AuthenticatorNotConfiguredException: when the authenticator is not
-                configured.
         """
-        if not all([self.my_data_object,
-                   self.service_username,
-                   self.service_password]):
-            raise AuthenticatorNotConfiguredException(
-                'Authenticator is not configured.')
-
         # Create token object with random token
         new_api_token = APIToken(
             api_client_id=None,
@@ -110,22 +74,11 @@ class UserAuthenticator:
         # permission to create the token and that the token is created for the
         # correct user.
         user = self.authenticate()
-        with self.my_data_object.get_context(  # type: ignore
-                user=user) as context:
+        with self.my_data_object.get_context(user=user) as context:
             self._logger.debug('Creating API token for user %s',
                                user.username)
             context.api_tokens.create(new_api_token)
         return token
-
-    def is_valid(self) -> bool:
-        """Check if the authenticator is valid.
-
-        Returns:
-            True if the authenticator is valid, False otherwise.
-        """
-        return all([self.my_data_object,
-                    self.service_username,
-                    self.service_password])
 
 
 class Authenticator(ABC):
@@ -155,15 +108,14 @@ class Authenticator(ABC):
                 'Authenticator is already set.')
         self._user_authenticator = user_authenticator
 
-    def _raise_for_invalid_my_data(self) -> None:
+    def _raise_for_invalid_authenticator(self) -> None:
         """Raise an exception when the authenticator is not configured.
 
         Raises:
             AuthenticatorNotConfiguredException: when the authenticator is not
                 configured.
         """
-        if (not self._user_authenticator or
-                not self._user_authenticator.is_valid()):
+        if not self._user_authenticator:
             raise AuthenticatorNotConfiguredException(
                 'Authenticator is not configured.')
 
@@ -220,14 +172,10 @@ class CredentialsAuthenticator(Authenticator):
         Raises:
             AuthenticationFailed: when the authentication fails.
         """
-        self._raise_for_invalid_my_data()
+        self._raise_for_invalid_authenticator()
         my_data = self._user_authenticator.my_data_object  # type:ignore
-        svc_username = self._user_authenticator.service_username  # type:ignore
-        svc_password = self._user_authenticator.service_password  # type:ignore
 
-        with my_data.get_context_for_service_user(  # type:ignore
-                username=svc_username,  # type:ignore
-                password=svc_password) as context:  # type:ignore
+        with my_data.get_context_for_service_user() as context:  # type: ignore
             try:
                 user = context.get_user_account_by_username(
                     username=self._username)

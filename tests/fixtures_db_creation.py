@@ -9,8 +9,6 @@ import os
 from pytest import fixture
 
 from my_data import MyData
-from my_data.authenticator import UserAuthenticator
-from my_data.authorizer import APITokenAuthorizer
 from my_data.data_loader import DataLoader, JSONDataSource
 
 
@@ -38,7 +36,9 @@ def my_data() -> MyData:
         db_connection_str='sqlite:///:memory:',
         database_args={
             'echo': True
-        }
+        },
+        service_username='service.user',
+        service_password='service_password'
     )
 
     # Create the engine and the tables
@@ -51,20 +51,6 @@ def my_data() -> MyData:
         data_source=JSONDataSource(
             test_filename()))
     loader.load()
-
-    # Configure the Authenticator to use this database
-    UserAuthenticator.configure(
-        my_data_object=my_data,
-        service_username='service.user',
-        service_password='service_password'
-    )
-
-    # Configure the Authorizer to use this database
-    APITokenAuthorizer.configure(
-        my_data_object=my_data,
-        service_username='service.user',
-        service_password='service_password'
-    )
 
     # Return the created object
     return my_data

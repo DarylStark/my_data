@@ -12,6 +12,10 @@ class DatabaseNotConfiguredException(MyDataException):
     """Raised when the database is not configured."""
 
 
+class ServiceUserNotConfiguredException(MyDataException):
+    """Raised when the service user is not configured."""
+
+
 class DatabaseConnectionException(MyDataException):
     """Error that happends when the database string is not correct."""
 

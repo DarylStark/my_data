@@ -6,7 +6,7 @@ This page describes a small example on how to use this library to create a REST 
 Create the database connection
 ------------------------------
 
-First, we have to create the database connection. To do this, we import the ``MyData`` class, initiate and configure it. We also configure the ``UserAuthenticator`` and ``APITokenAuhtorizer`` classes.
+First, we have to create the database connection. To do this, we import the ``MyData`` class, initiate and configure it.
 
 .. code-block:: python
 
@@ -18,20 +18,10 @@ First, we have to create the database connection. To do this, we import the ``My
 
     mydata = MyData()
     mydata.config(
-        db_url='sqlite:///mydata.db'
+        db_url='sqlite:///mydata.db',
+        service_username='rest_api_service',
+        service_password='rest_api_password'
     )
-
-    # Configure UserAuthenticator
-    UserAuthenticator.configure(
-        mydata=mydata,
-        service_username='rest_api_service',
-        service_password='rest_api_password')
-    
-    # Configure APITokenAuthorizer
-    APITokenAuthorizer.configure(
-        mydata=mydata,
-        service_username='rest_api_service',
-        service_password='rest_api_password')
 
 Add a authentication endpoint
 -----------------------------
@@ -53,6 +43,7 @@ Then, we can add a endpoint to authenticate a user. First, we check if the user 
         """
         # Make sure the user is not logged on yet
         authorizer = APITokenAuthorizer(
+            my_data_object=mydata,
             api_token=api_token,
             authorizer=InvalidTokenAuthorizer())
         authorizer.authorize()
@@ -87,6 +78,7 @@ Then, we add an endpoint to logoff the current user. We use the ``APITokenAuthor
         """
         # Authorize the user. The given token needs to be a short lived token.
         authorizer = APITokenAuthorizer(
+            my_data_object=mydata,
             api_token=api_token,
             authorizer=ShortLivedTokenAuthorizer())
         authorizer.authorize()
@@ -121,6 +113,7 @@ First, we add an endpoint to create a tag. We use the ``APITokenAuthorizer`` to 
         """
         # Authorize the user. The given token needs to have the 'tags.create' scope.
         authorizer = APITokenAuthorizer(
+            my_data_object=mydata,
             api_token=api_token,
             authorizer=APIScopeAuthorizer(
                 required_scopes=['tags.create'],
@@ -153,6 +146,7 @@ Then, we add an endpoint to retrieve all tags for the user. We use the ``APIToke
         """
         # Authorize the user. The given token needs to have the 'tags.retrieve' scope.
         authorizer = APITokenAuthorizer(
+            my_data_object=mydata,
             api_token=api_token,
             authorizer=APIScopeAuthorizer(
                 required_scopes=['tags.retrieve'],
@@ -189,6 +183,7 @@ Then, we add an endpoint to update a tag. We use the ``APITokenAuthorizer`` to a
         """
         # Authorize the user. The given token needs to have the 'tags.update' scope.
         authorizer = APITokenAuthorizer(
+            my_data_object=mydata,
             api_token=api_token,
             authorizer=APIScopeAuthorizer(
                 required_scopes=['tags.update'],
@@ -224,6 +219,7 @@ Finally, we add an endpoint to delete a tag. We use the ``APITokenAuthorizer`` t
         """
         # Authorize the user. The given token needs to have the 'tags.delete' scope.
         authorizer = APITokenAuthorizer(
+            my_data_object=mydata,
             api_token=api_token,
             authorizer=APIScopeAuthorizer(
                 required_scopes=['tags.delete'],
