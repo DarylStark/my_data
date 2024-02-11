@@ -9,8 +9,6 @@ import os
 from pytest import fixture
 
 from my_data import MyData
-from my_data.authenticator import UserAuthenticator
-from my_data.authorizer import APITokenAuthorizer
 from my_data.data_loader import DataLoader, JSONDataSource
 
 

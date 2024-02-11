@@ -4,7 +4,10 @@ import pytest
 from my_model import User
 
 from my_data import MyData
-from my_data.exceptions import PermissionDeniedException, ServiceUserNotConfiguredException, DatabaseNotConfiguredException
+from my_data.exceptions import (PermissionDeniedException,
+                                ServiceUserNotConfiguredException)
+
+# pylint: disable=protected-access
 
 
 def test_creating_user_context_with_service_account(

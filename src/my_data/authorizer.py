@@ -29,13 +29,14 @@ class APITokenAuthorizer:
         """Initialize the API token authorizer.
 
         Args:
+            my_data_object: The MyData object to use.
             api_token: The API token to authorize with.
             authorizer: The authorizer to use.
         """
         self._logger = logging.getLogger(f'APITokenAuthorizer-{id(self)}')
-        self._my_data_object = my_data_object
         self._api_token_str = api_token
         self._authorizer: Optional[Authorizer] = None
+        self.my_data_object = my_data_object
 
         # Set objects if authorizer is given
         if authorizer:
@@ -56,7 +57,7 @@ class APITokenAuthorizer:
         if not self._api_token_str:
             return None
 
-        my_data = self._my_data_object
+        my_data = self.my_data_object
 
         # Log in with a service user to retrieve the user.
         with my_data.get_context_for_service_user() as context:
@@ -79,7 +80,7 @@ class APITokenAuthorizer:
         if not self._api_token_str:
             return None
 
-        my_data = self._my_data_object
+        my_data = self.my_data_object
 
         # Log in with a service user to retrieve the user.
         with my_data.get_context_for_service_user() as context:

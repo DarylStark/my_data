@@ -19,19 +19,20 @@ class UserAuthenticator:
 
     def __init__(
             self,
-            my_data_object: 'my_data.MyData',
+            my_data_object: MyData,
             authenticator: 'Authenticator') -> None:
         """Initialize the user authenticator.
 
         Args:
+            my_data_object: the MyData object to use.
             authenticator: the authenticator to use. This authenticator will
                 be used to authenticate the user. This way, the authenticator
                 can be changed at runtime.
         """
         self._logger = logging.getLogger(f'UserAuthenticator-{id(self)}')
         self._authenticator: Authenticator = authenticator
-        self._my_data_object: 'MyData' = my_data_object
         self._authenticator.set_user_authenticator(self)
+        self.my_data_object: 'MyData' = my_data_object
 
     def authenticate(self) -> User:
         """Authenticate the user.
@@ -59,10 +60,6 @@ class UserAuthenticator:
 
         Returns:
             The created API token.
-
-        Raises:
-            AuthenticatorNotConfiguredException: when the authenticator is not
-                configured.
         """
         # Create token object with random token
         new_api_token = APIToken(
@@ -77,7 +74,7 @@ class UserAuthenticator:
         # permission to create the token and that the token is created for the
         # correct user.
         user = self.authenticate()
-        with self._my_data_object.get_context(user=user) as context:
+        with self.my_data_object.get_context(user=user) as context:
             self._logger.debug('Creating API token for user %s',
                                user.username)
             context.api_tokens.create(new_api_token)
@@ -111,7 +108,7 @@ class Authenticator(ABC):
                 'Authenticator is already set.')
         self._user_authenticator = user_authenticator
 
-    def _raise_for_invalid_my_data(self) -> None:
+    def _raise_for_invalid_authenticator(self) -> None:
         """Raise an exception when the authenticator is not configured.
 
         Raises:
@@ -175,8 +172,8 @@ class CredentialsAuthenticator(Authenticator):
         Raises:
             AuthenticationFailed: when the authentication fails.
         """
-        self._raise_for_invalid_my_data()
-        my_data = self._user_authenticator._my_data_object  # type:ignore
+        self._raise_for_invalid_authenticator()
+        my_data = self._user_authenticator.my_data_object  # type:ignore
 
         with my_data.get_context_for_service_user() as context:  # type: ignore
             try:

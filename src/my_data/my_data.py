@@ -79,8 +79,6 @@ class MyData:
         raise an exception.
 
         Raises:
-            DatabaseNotConfiguredException: when the database is not configured
-                yet.
             ServiceUserNotConfiguredException: when the service user is not
                 configured yet.
             PermissionDeniedException: when the credentials are incorrect.
