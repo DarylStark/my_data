@@ -12,11 +12,12 @@ from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, SQLModel, and_, create_engine, select
 
-from .context import UserContext, ServiceContext
+from .context import ServiceContext, UserContext
 from .context_data import ContextData
 from .exceptions import (DatabaseConnectionException,
                          DatabaseNotConfiguredException,
-                         PermissionDeniedException, ServiceUserNotConfiguredException)
+                         PermissionDeniedException,
+                         ServiceUserNotConfiguredException)
 
 
 class MyData:
