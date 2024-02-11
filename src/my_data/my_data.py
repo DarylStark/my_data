@@ -5,7 +5,7 @@ the complete project.
 """
 
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from my_model import User, UserRole
 from sqlalchemy.exc import OperationalError
@@ -16,7 +16,7 @@ from .context import UserContext, ServiceContext
 from .context_data import ContextData
 from .exceptions import (DatabaseConnectionException,
                          DatabaseNotConfiguredException,
-                         PermissionDeniedException)
+                         PermissionDeniedException, ServiceUserNotConfiguredException)
 
 
 class MyData:
@@ -44,6 +44,7 @@ class MyData:
         self._database_args: dict[str, Any] | None = None
         self._service_username: str | None = None
         self._service_password: str | None = None
+        self._service_user_account: Optional[User] = None
 
     def configure(self,
                   db_connection_str: str,
@@ -66,7 +67,60 @@ class MyData:
         self._database_args = database_args
         self._service_username = service_username
         self._service_password = service_password
+
+        # Logging
         self._logger.info('MyData object configured')
+
+    def _validate_service_user(self,) -> User:
+        """Validate the service user.
+
+        Method to check if the service user is configured. If not, it will
+        raise an exception.
+
+        Raises:
+            DatabaseNotConfiguredException: when the database is not configured
+                yet.
+            ServiceUserNotConfiguredException: when the service user is not
+                configured yet.
+            PermissionDeniedException: when the credentials are incorrect.
+
+        Returns:
+            The User object for the Service User.
+        """
+        self.create_engine()
+
+        if not self._service_username or not self._service_password:
+            raise ServiceUserNotConfiguredException(
+                'Service user is not configured yet')
+
+        if not self._service_user_account:
+            with Session(self.database_engine) as session:
+                sql_query = select(User)
+                sql_query = sql_query.where(
+                    and_(User.username == self._service_username,
+                         User.role == UserRole.SERVICE))
+                users = session.exec(sql_query).all()
+
+            # Check the amount of users we got
+            if len(users) != 1:
+                raise PermissionDeniedException(
+                    f'Service account "{self._service_username}" does ' +
+                    'not exist')
+
+            # Check if the provided credentials are correct
+            user = users[0]
+            if not user.verify_credentials(
+                    username=self._service_username,
+                    password=self._service_password):
+                raise PermissionDeniedException(
+                    'Password for Service account ' +
+                    f'"{self._service_username}" is incorrect')
+
+            self._logger.info('Service user "%s" vaild',
+                              self._service_username)
+            self._service_user_account = user
+
+        return self._service_user_account
 
     def create_engine(self, force: bool = False) -> None:
         """Create the database connection.
@@ -163,53 +217,30 @@ class MyData:
                 user=user)
         )
 
-    def get_context_for_service_user(
-            self, username: str, password: str) -> ServiceContext:
+    def get_context_for_service_user(self) -> ServiceContext:
         """Get a Context object for the database as a service user.
 
         Method to create a Context object for a service user. The context can
         be used to do the things a service user needs to do, like retrieving
         user objects or API token objects.
 
-        Args:
-            username: the username for the service user.
-            password: the password for the service user.
-
         Raises:
             DatabaseNotConfiguredException: method is called before configuring
                 the database.
-            PermissionDeniedException: when the credentials are incorrect.
 
         Returns:
             The created Context object.
         """
         self.create_engine()
-
-        if not self.database_engine:  # pragma: no cover
-            raise DatabaseNotConfiguredException(
+        if not self.database_engine:
+            raise DatabaseNotConfiguredException(  # pragma: no cover
                 'Database is not configured yet')
 
-        with Session(self.database_engine) as session:
-            sql_query = select(User)
-            sql_query = sql_query.where(
-                and_(User.username == username,
-                     User.role == UserRole.SERVICE))
-            users = session.exec(sql_query).all()
+        service_user = self._validate_service_user()
 
-            # Check the amount of users we got
-            if len(users) != 1:
-                raise PermissionDeniedException(
-                    f'Service account "{username}" does not exist')
-
-            # Check if the provided credentials are correct
-            user = users[0]
-            if not user.verify_credentials(username, password):
-                raise PermissionDeniedException(
-                    f'Password for Service account "{username}" is incorrect')
-
-            return ServiceContext(
+        return ServiceContext(
+            database_engine=self.database_engine,
+            context_data=ContextData(
                 database_engine=self.database_engine,
-                context_data=ContextData(
-                    database_engine=self.database_engine,
-                    user=user)
-            )
+                user=service_user)
+        )

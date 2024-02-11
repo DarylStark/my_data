@@ -222,12 +222,8 @@ class CredentialsAuthenticator(Authenticator):
         """
         self._raise_for_invalid_my_data()
         my_data = self._user_authenticator.my_data_object  # type:ignore
-        svc_username = self._user_authenticator.service_username  # type:ignore
-        svc_password = self._user_authenticator.service_password  # type:ignore
 
-        with my_data.get_context_for_service_user(  # type:ignore
-                username=svc_username,  # type:ignore
-                password=svc_password) as context:  # type:ignore
+        with my_data.get_context_for_service_user() as context:  # type: ignore
             try:
                 user = context.get_user_account_by_username(
                     username=self._username)

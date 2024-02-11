@@ -42,34 +42,4 @@ def test_creating_svc_context_empty_engine(service_user: User) -> None:
     """
     my_data = MyData()
     with pytest.raises(DatabaseNotConfiguredException):
-        _ = my_data.get_context_for_service_user(
-            username=service_user.username,
-            password='test')
-
-
-def test_creating_svc_context_wrong_svc_username(my_data: MyData) -> None:
-    """Test creating a service context with a wrong username.
-
-    Args:
-        my_data: a configured MyData object.
-
-    Should result in a PermissionDeniedException error.
-    """
-    with pytest.raises(PermissionDeniedException):
-        _ = my_data.get_context_for_service_user(
-            username='wrong_service_user',
-            password='test')
-
-
-def test_creating_svc_context_wrong_svc_password(my_data: MyData) -> None:
-    """Test creating a service context with a wrong password.
-
-    Args:
-        my_data: a configured MyData object.
-
-    Should result in a PermissionDeniedException error.
-    """
-    with pytest.raises(PermissionDeniedException):
-        _ = my_data.get_context_for_service_user(
-            username='service.user',
-            password='test')
+        _ = my_data.get_context_for_service_user()

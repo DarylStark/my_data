@@ -20,9 +20,7 @@ def test_retrieving_user_objects_by_username(my_data: MyData) -> None:
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         user = context.get_user_account_by_username('normal.user.1')
         assert user is not None
         assert user.username == 'normal.user.1'
@@ -39,9 +37,7 @@ def test_retrieving_user_objects_by_username_wrong_user(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         with raises(UnknownUserAccountException):
             context.get_user_account_by_username('wrong.user.1')
 
@@ -55,9 +51,7 @@ def test_retrieving_user_objects_by_api_token(my_data: MyData) -> None:
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         user = context.get_user_account_by_api_token(
             'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
         assert user is not None
@@ -74,9 +68,7 @@ def test_retrieving_user_objects_by_api_token_wrong_token(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         with raises(UnknownUserAccountException):
             context.get_user_account_by_api_token(
                 'wrong_token')
@@ -91,9 +83,7 @@ def test_retrieving_token_objects_by_api_token(my_data: MyData) -> None:
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         token = context.get_api_token_object_by_api_token(
             'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
         assert token is not None
@@ -110,9 +100,7 @@ def test_retrieving_token_objects_by_api_token_wrong_token(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         with raises(UnknownUserAccountException):
             context.get_api_token_object_by_api_token(
                 'wrong_token')
@@ -127,9 +115,7 @@ def test_retrieving_api_scopes(my_data: MyData) -> None:
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         scopes = context.get_api_scopes()
         assert scopes is not None
         assert len(scopes) == 9
@@ -150,9 +136,7 @@ def test_retrieving_api_scopes_filtered_on_module(
         my_data: a instance of a MyData object.
         module: the module to filter on.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         scopes = context.get_api_scopes(module=module)
         assert scopes is not None
         assert len(scopes) == 5
@@ -179,9 +163,7 @@ def test_retrieving_api_scopes_filtered_on_subject(
         subject: the subject to filter on.
         count: the number of objects to expect.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         scopes = context.get_api_scopes(subject=subject)
         assert scopes is not None
         assert len(scopes) == count
@@ -212,9 +194,7 @@ def test_retrieving_api_scopes_filtered_on_module_and_subject(
         module: the module to filter on.
         subject: the subject to filter on.
     """
-    with my_data.get_context_for_service_user(
-            username='service.user',
-            password='service_password') as context:
+    with my_data.get_context_for_service_user() as context:
         scopes = context.get_api_scopes(
             module=module,
             subject=subject)

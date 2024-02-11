@@ -76,13 +76,9 @@ class APITokenAuthorizer:
             return None
 
         my_data = self.my_data_object
-        service_password = self.service_password
-        service_user = self.service_username
 
         # Log in with a service user to retrieve the user.
-        with my_data.get_context_for_service_user(
-                username=service_user,
-                password=service_password) as context:
+        with my_data.get_context_for_service_user() as context:
             try:
                 user = context.get_user_account_by_api_token(
                     api_token=self._api_token_str)
@@ -103,13 +99,9 @@ class APITokenAuthorizer:
             return None
 
         my_data = self.my_data_object
-        service_password = self.service_password
-        service_user = self.service_username
 
         # Log in with a service user to retrieve the user.
-        with my_data.get_context_for_service_user(
-                username=service_user,
-                password=service_password) as context:
+        with my_data.get_context_for_service_user() as context:
             try:
                 token = context.get_api_token_object_by_api_token(
                     api_token=self._api_token_str)
