@@ -54,12 +54,5 @@ def my_data() -> MyData:
             test_filename()))
     loader.load()
 
-    # Configure the Authorizer to use this database
-    APITokenAuthorizer.configure(
-        my_data_object=my_data,
-        service_username='service.user',
-        service_password='service_password'
-    )
-
     # Return the created object
     return my_data

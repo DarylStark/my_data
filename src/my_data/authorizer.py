@@ -21,29 +21,9 @@ class APITokenAuthorizer:
     done.
     """
 
-    my_data_object: MyData = MyData()
-    service_username: str = 'service_user'
-    service_password: str = 'xxx'
-
-    @classmethod
-    def configure(
-            cls,
-            my_data_object: MyData,
-            service_username: str,
-            service_password: str) -> None:
-        """Configure the class.
-
-        Args:
-            my_data_object: the MyData object to use.
-            service_username: the username for the service user.
-            service_password: the password for the service user.
-        """
-        cls.my_data_object = my_data_object
-        cls.service_username = service_username
-        cls.service_password = service_password
-
     def __init__(
             self,
+            my_data_object: MyData,
             api_token: str | None = None,
             authorizer: 'Authorizer | None' = None):
         """Initialize the API token authorizer.
@@ -53,6 +33,7 @@ class APITokenAuthorizer:
             authorizer: The authorizer to use.
         """
         self._logger = logging.getLogger(f'APITokenAuthorizer-{id(self)}')
+        self._my_data_object = my_data_object
         self._api_token_str = api_token
         self._authorizer: Optional[Authorizer] = None
 
@@ -75,7 +56,7 @@ class APITokenAuthorizer:
         if not self._api_token_str:
             return None
 
-        my_data = self.my_data_object
+        my_data = self._my_data_object
 
         # Log in with a service user to retrieve the user.
         with my_data.get_context_for_service_user() as context:
@@ -98,7 +79,7 @@ class APITokenAuthorizer:
         if not self._api_token_str:
             return None
 
-        my_data = self.my_data_object
+        my_data = self._my_data_object
 
         # Log in with a service user to retrieve the user.
         with my_data.get_context_for_service_user() as context:
