@@ -27,6 +27,7 @@ def test_creating_user_authenticator(my_data: MyData) -> None:
         second_factor=None
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
 
     assert credentials_authenticator._user_authenticator is user_authenticator
@@ -46,6 +47,7 @@ def test_setting_authenticator_again(my_data: MyData) -> None:
         second_factor=None
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
 
     with pytest.raises(UserAuthenticatorAlreadySetException):
@@ -79,6 +81,7 @@ def test_credentials_authenticator_valid_credentials(
         second_factor=second_factor
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
     user = user_authenticator.authenticate()
 
@@ -109,6 +112,7 @@ def test_credentials_authenticator_wrong_username(
         second_factor=None
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
 
     with pytest.raises(AuthenticationFailed):
@@ -138,6 +142,7 @@ def test_credentials_authenticator_wrong_password(
         second_factor=None
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
 
     with pytest.raises(AuthenticationFailed):
@@ -165,6 +170,7 @@ def test_credentials_authenticator_service_user(
         second_factor=None
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
 
     with pytest.raises(AuthenticationFailed):
@@ -186,6 +192,7 @@ def test_creating_api_token(
         second_factor=None
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
     user_authenticator.create_api_token(
         session_timeout_in_seconds=3600,
@@ -211,38 +218,6 @@ def test_credentials_authenticating_with_invalid_authenticator() -> None:
         authenticator.authenticate()
 
 
-def test_creating_api_token_invalid_user_authenticator() -> None:
-    """Test creating a API token with a invalid UserAuthenticator.
-
-    Should raise an error.
-    """
-    # Old data
-    old_my_data_object = UserAuthenticator.my_data_object
-    old_service_username = UserAuthenticator.service_username
-    old_service_password = UserAuthenticator.service_password
-
-    # Set invalid data
-    UserAuthenticator.my_data_object = None
-    UserAuthenticator.service_username = None
-    UserAuthenticator.service_password = None
-
-    authenticator = CredentialsAuthenticator(
-        username='service_user',
-        password='service_pass',
-        second_factor=None
-    )
-    user_authenticator = UserAuthenticator(authenticator=authenticator)
-    with pytest.raises(AuthenticatorNotConfiguredException):
-        user_authenticator.create_api_token(
-            session_timeout_in_seconds=3600,
-            title='test')
-
-    # Restore old data
-    UserAuthenticator.my_data_object = old_my_data_object
-    UserAuthenticator.service_username = old_service_username
-    UserAuthenticator.service_password = old_service_password
-
-
 def test_credentials_authenticator_valid_credentials_with_2fa(
     my_data: MyData,
     normal_user_2: User
@@ -261,6 +236,7 @@ def test_credentials_authenticator_valid_credentials_with_2fa(
         second_factor='123456'
     )
     user_authenticator = UserAuthenticator(
+        my_data_object=my_data,
         authenticator=credentials_authenticator)
     with pytest.raises(AuthenticationFailed):
         _ = user_authenticator.authenticate()
