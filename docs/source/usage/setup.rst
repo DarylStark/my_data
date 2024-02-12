@@ -24,7 +24,7 @@ This will create a ``MyData`` object that uses a local SQLite database file loca
 Creating tables
 ---------------
 
-After you configured the object, you can optionally create the tables. This is only usefull when creating a new database. To create the needed tables, you can use the ``create_db_tables``` method. The first and only argument of this method specifies if existing tables should be dropped and recreated. By default, this is set to ``False``.
+After you configured the object, you can optionally create the tables. This is usefull when creating a new database. To create the needed tables, you can use the ``create_db_tables``` method of the ``MyDataTableCreator`` class. The first and only argument of this method specifies if existing tables should be dropped and recreated. By default, this is set to ``False``.
 
 .. warning::
 
@@ -33,8 +33,9 @@ After you configured the object, you can optionally create the tables. This is o
 To create the tables, you use the following code:
 
 .. code-block:: python
-
-    my_data.create_db_tables(drop_tables=False)
+    
+    my_data_creator = MyDataTableCreator(my_data_object=my_data)
+    my_data_creator.create_db_tables(drop_tables=False)
 
 Creating initialization data
 ----------------------------

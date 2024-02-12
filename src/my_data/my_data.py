@@ -10,7 +10,7 @@ from typing import Any, Optional
 from my_model import User, UserRole
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
-from sqlmodel import Session, SQLModel, and_, create_engine, select
+from sqlmodel import Session, and_, create_engine, select
 
 from .context import ServiceContext, UserContext
 from .context_data import ContextData
@@ -21,15 +21,20 @@ from .exceptions import (DatabaseConnectionException,
 
 
 class MyData:
-    """Main class for the library.
+    """Base class for the MyData objects.
 
-    This class creates the database connection and has a method to expose a
-    context.
+    This class creates the database engine and keeps the connection alive. It
+    serves as the base class for other classes that need to interact with the
+    database.
 
     Attributes:
         database_engine: the SQLmodel Engine.
         _database_str: the database connection string.
         _database_args: the arguments for the SQLalchemy connection.
+        _service_username: the username of the service user.
+        _service_password: the password of the service user.
+        _service_user_account: the User object for the service user. This is
+            lazy loaded, so it is only loaded when it is needed.
     """
 
     def __init__(self) -> None:
@@ -161,24 +166,6 @@ class MyData:
         except OperationalError as sa_error:  # pragma: no cover
             raise DatabaseConnectionException(
                 'Couldn\'t connect to database') from sa_error
-
-    def create_db_tables(self, drop_tables: bool = False) -> None:
-        """Create the defined models as tables.
-
-        Method to create all tables that are defined in models.
-
-        Args:
-            drop_tables: determines if tables should be dropped prior to
-                creating them. SQLalchemy will only drop the tables it
-                knows about.
-        """
-        self.create_engine()
-
-        if self.database_engine:
-            if drop_tables:
-                SQLModel.metadata.drop_all(self.database_engine)
-            SQLModel.metadata.create_all(self.database_engine)
-            self._logger.info('Database tables created')
 
     def get_context(self, user: User) -> UserContext:
         """Get a Context object for this database.
