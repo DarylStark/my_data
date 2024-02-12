@@ -33,6 +33,14 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    useful_information/database_string_examples
 
 .. toctree::
+   :caption: Model
+   :maxdepth: 2
+
+   model/index
+   model/global
+   model/user_scoped
+
+.. toctree::
    :caption: Developing
    :hidden:
    :maxdepth: 2
@@ -41,23 +49,31 @@ The ``my-data`` Python library provides the API to save persistent data for the 
    developing/development
 
 .. toctree::
-   :caption: API documentation
+   :caption: My Data - API documentation
    :hidden:
    :maxdepth: 2
 
-   api_documentation/authenticator
-   api_documentation/authorizer
-   api_documentation/context
-   api_documentation/context_data
-   api_documentation/creators
-   api_documentation/data_loader
-   api_documentation/data_manipulator
-   api_documentation/deleters
-   api_documentation/exceptions
-   api_documentation/my_data
-   api_documentation/resource_manager
-   api_documentation/retrievers
-   api_documentation/updaters
+   api_documentation/my_data/authenticator
+   api_documentation/my_data/authorizer
+   api_documentation/my_data/context
+   api_documentation/my_data/context_data
+   api_documentation/my_data/creators
+   api_documentation/my_data/data_loader
+   api_documentation/my_data/data_manipulator
+   api_documentation/my_data/deleters
+   api_documentation/my_data/exceptions
+   api_documentation/my_data/my_data
+   api_documentation/my_data/my_data_table_creator
+   api_documentation/my_data/resource_manager
+   api_documentation/my_data/retrievers
+   api_documentation/my_data/updaters
+
+.. toctree::
+   :caption: My Model - API documentation
+   :hidden:
+   :maxdepth: 2
+
+   api_documentation/my_model/model
 
 Indices and tables
 ==================
