@@ -61,5 +61,5 @@ push = false
 "src/my_model/__init__.py" = ["{version}"]
 
 [tool.pytest.ini_options]
-addopts = ['--cov=my_data', '--cov-report=html', '--cov-report=lcov']
+addopts = ['--cov=my_data', '--cov=my_model', '--cov-report=html', '--cov-report=lcov']
 
