@@ -10,6 +10,7 @@ from pytest import fixture
 
 from my_data import MyData
 from my_data.data_loader import DataLoader, JSONDataSource
+from my_data.my_data_table_creator import MyDataTableCreator
 
 
 def test_filename() -> str:
@@ -41,9 +42,12 @@ def my_data() -> MyData:
         service_password='service_password'
     )
 
-    # Create the engine and the tables
+    # Create the engine
     my_data.create_engine()
-    my_data.create_db_tables(drop_tables=True)
+
+    # Create the tables
+    my_data_table_creator = MyDataTableCreator(my_data_object=my_data)
+    my_data_table_creator.create_db_tables(drop_tables=True)
 
     # Create testdata
     loader = DataLoader(
