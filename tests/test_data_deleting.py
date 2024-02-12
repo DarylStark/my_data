@@ -3,11 +3,11 @@
 This module contains unit tests that delete data from the database. After the
 deletion, it checks if the data has been deleted.
 """
-from my_model import APIClient, APIToken, Tag, User, UserSetting
 from pytest import raises
 
 from my_data.exceptions import PermissionDeniedException
 from my_data.my_data import MyData
+from my_model import APIClient, APIToken, Tag, User, UserSetting
 
 
 def test_data_deleting_own_user_as_root(

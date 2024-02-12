@@ -24,22 +24,23 @@ files = [
 
 [[package]]
 name = "argon2-cffi"
-version = "21.3.0"
-description = "The secure Argon2 password hashing algorithm."
+version = "23.1.0"
+description = "Argon2 for Python"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "argon2-cffi-21.3.0.tar.gz", hash = "sha256:d384164d944190a7dd7ef22c6aa3ff197da12962bd04b17f64d4e93d934dba5b"},
-    {file = "argon2_cffi-21.3.0-py3-none-any.whl", hash = "sha256:8c976986f2c5c0e5000919e6de187906cfd81fb1c72bf9d88c01177e77da7f80"},
+    {file = "argon2_cffi-23.1.0-py3-none-any.whl", hash = "sha256:c670642b78ba29641818ab2e68bd4e6a78ba53b7eff7b4c3815ae16abf91c7ea"},
+    {file = "argon2_cffi-23.1.0.tar.gz", hash = "sha256:879c3e79a2729ce768ebb7d36d4609e3a78a4ca2ec3a9f12286ca057e3d0db08"},
 ]
 
 [package.dependencies]
 argon2-cffi-bindings = "*"
 
 [package.extras]
-dev = ["cogapp", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "pre-commit", "pytest", "sphinx", "sphinx-notfound-page", "tomli"]
-docs = ["furo", "sphinx", "sphinx-notfound-page"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pytest"]
+dev = ["argon2-cffi[tests,typing]", "tox (>4)"]
+docs = ["furo", "myst-parser", "sphinx", "sphinx-copybutton", "sphinx-notfound-page"]
+tests = ["hypothesis", "pytest"]
+typing = ["mypy"]
 
 [[package]]
 name = "argon2-cffi-bindings"
@@ -445,24 +446,6 @@ files = [
     {file = "docutils-0.18.1-py2.py3-none-any.whl", hash = "sha256:23010f129180089fbcd3bc08cfefccb3b890b0050e1ca00c867036e9d161b98c"},
     {file = "docutils-0.18.1.tar.gz", hash = "sha256:679987caf361a7539d76e584cbeddc311e3aee937877c87346f31debc63e9d06"},
 ]
-
-[[package]]
-name = "ds-my-model"
-version = "1.3.3"
-description = "The data model for the My project"
-optional = false
-python-versions = ">=3.10,<4.0"
-files = [
-    {file = "ds_my_model-1.3.3-py3-none-any.whl", hash = "sha256:66ff733cf33ad4efa0d4ae76675421dffcbebbb87e291d817bf13571df1d2b3a"},
-    {file = "ds_my_model-1.3.3.tar.gz", hash = "sha256:6336daf997f25e280042b1e744fd39dbf50fe36e14e7b62aef4fcdfd291b9c6e"},
-]
-
-[package.dependencies]
-argon2-cffi = ">=21.3.0,<22.0.0"
-passlib = ">=1.7.4,<2.0.0"
-pydantic = ">=2.5.2,<3.0.0"
-pyotp = ">=2.8.0,<3.0.0"
-sqlmodel = ">=0.0.14,<0.0.15"
 
 [[package]]
 name = "exceptiongroup"
@@ -1666,4 +1649,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a42e9be6f0c8900775be401ed0de01a2754ee1e204c0a61123fbbecd184137e9"
+content-hash = "96c4ad1995efb4cbdf0e4dcd11494123c02e216d8c1d838ccd6423d323f04b3f"

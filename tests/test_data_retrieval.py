@@ -5,11 +5,11 @@ This module contains unit tests that retrieve data from the database.
 # pylint: disable=redefined-outer-name
 
 import pytest
-from my_model import Tag, User, APIToken
 from sqlmodel import or_
 from sqlmodel.sql.expression import desc
 
 from my_data import MyData
+from my_model import APIToken, Tag, User
 
 
 @pytest.mark.parametrize(

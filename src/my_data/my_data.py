@@ -7,10 +7,11 @@ the complete project.
 import logging
 from typing import Any, Optional
 
-from my_model import User, UserRole
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, and_, create_engine, select
+
+from my_model import User, UserRole
 
 from .context import ServiceContext, UserContext
 from .context_data import ContextData

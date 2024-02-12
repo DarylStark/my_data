@@ -6,11 +6,12 @@ data from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model import MyModel, User, UserRole, UserScopedModel
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.expression import func
 from sqlmodel import select
 from sqlmodel.sql.expression import SelectOfScalar
+
+from my_model import MyModel, User, UserRole, UserScopedModel
 
 from .data_manipulator import DataManipulator
 from .exceptions import BaseClassCallException, WrongDataManipulatorException
