@@ -58,6 +58,7 @@ push = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/my_data/__init__.py" = ["{version}"]
+"src/my_model/__init__.py" = ["{version}"]
 
 [tool.pytest.ini_options]
 addopts = ['--cov=my_data', '--cov-report=html', '--cov-report=lcov']
