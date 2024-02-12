@@ -4,11 +4,11 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
-from my_model import (APIClient, APIScope, APIToken, APITokenScope, MyModel,
-                      Tag, User, UserSetting)
-from sqlmodel import SQLModel, Session
+from sqlmodel import Session, SQLModel
 
 from my_data.my_data import MyData
+from my_model import (APIClient, APIScope, APIToken, APITokenScope, MyModel,
+                      Tag, User, UserSetting)
 
 
 class DataSource(ABC):

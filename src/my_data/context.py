@@ -11,10 +11,11 @@ of the Context.s
 import logging
 from types import TracebackType
 
-from my_model import APIClient, APIScope, APIToken, Tag, User, UserSetting
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import select
+
+from my_model import APIClient, APIScope, APIToken, Tag, User, UserSetting
 
 from .context_data import ContextData
 from .exceptions import UnknownUserAccountException

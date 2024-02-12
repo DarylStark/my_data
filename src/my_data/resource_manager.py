@@ -7,9 +7,10 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Generic, Type, TypeVar
 
-from my_model import MyModel
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
+
+from my_model import MyModel
 
 from .context_data import ContextData
 from .creators import Creator, UserCreator, UserScopedCreator

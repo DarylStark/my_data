@@ -6,8 +6,9 @@ for other DataManipulator classes.
 import logging
 from typing import Generic, Type, TypeVar
 
-from my_model import UserScopedModel
 from sqlalchemy.future import Engine
+
+from my_model import UserScopedModel
 
 from .context_data import ContextData
 from .exceptions import (PermissionDeniedException,

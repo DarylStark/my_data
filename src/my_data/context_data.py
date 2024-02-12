@@ -3,9 +3,10 @@
 This module contains the `ContextData` class that can be used to specify the
 context-variables in which a `Context` object should operate.
 """
-from my_model import User
 from sqlalchemy.future import Engine
 from sqlmodel import Session
+
+from my_model import User
 
 
 class ContextData:

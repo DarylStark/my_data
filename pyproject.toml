@@ -5,12 +5,17 @@ description = "The data methods for the My project"
 authors = ["Daryl Stark <daryl@dstark.nl>"]
 license = "MIT"
 readme = "README.md"
-packages = [{ include = "my_data", from = "src" }]
+packages = [
+    { include = "my_data", from = "src" },
+    { include = "my_model", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 sqlmodel = "^0.0.14"
-ds-my-model = "1.3.3"
+passlib = "^1.7.4"
+argon2-cffi = "^23.1.0"
+pyotp = "^2.9.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -53,6 +58,7 @@ push = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/my_data/__init__.py" = ["{version}"]
+"src/my_model/__init__.py" = ["{version}"]
 
 [tool.pytest.ini_options]
 addopts = ['--cov=my_data', '--cov-report=html', '--cov-report=lcov']
