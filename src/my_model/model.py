@@ -126,17 +126,20 @@ class User(MyModel, table=True):
                           max_length=128)
     username: str = Field(
         schema_extra={'pattern': r'^[a-zA-Z][a-zA-Z0-9_\.]+$'},
-        max_length=128)
+        max_length=128,
+        unique=True)
     email: str = Field(
         schema_extra={
             'pattern': r'^[a-z0-9_\-\.]+\@[a-z0-9_\-\.]+\.[a-z\.]+$'},
-        max_length=128)
+        max_length=128,
+        unique=True)
     role: UserRole = Field(default=UserRole.USER)
     password_hash: str | None = None
     password_date: datetime = Field(default_factory=datetime.utcnow)
     second_factor: None | str = Field(
         default=None,
-        schema_extra={'pattern': r'^[A-Z0-9]+$'}, max_length=64)
+        schema_extra={'pattern': r'^[A-Z0-9]+$'}, max_length=64,
+        unique=True)
 
     # Relationships
     api_clients: list['APIClient'] = Relationship(back_populates='user')
@@ -274,7 +277,8 @@ class TokenModel(UserScopedModel):
         default=None,
         min_length=32,
         max_length=32,
-        schema_extra={'pattern': r'^[a-zA-Z0-9]{32}$'}
+        schema_extra={'pattern': r'^[a-zA-Z0-9]{32}$'},
+        unique=True
     )
 
     @validate_call
