@@ -11,4 +11,4 @@ of SQLalchemy can be used, without having to use two seperate data schemas.
 
 from .model import *  # noqa: F401, F403
 
-__version__ = '1.2.0-dev'
+__version__ = '1.2.1-dev'
