@@ -45,8 +45,8 @@ def test_data_retrieval_all_users_as_root(
 @pytest.mark.parametrize(
     'index, username',
     [
-        (0, 'root'),
-        (1, 'normal.user.2')
+        (0, 'normal.user.2'),
+        (1, 'root')
     ]
 )
 def test_data_retrieval_filtered_users_as_root(
