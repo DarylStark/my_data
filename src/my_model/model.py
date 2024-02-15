@@ -217,7 +217,7 @@ class APITokenScope(SQLModel, table=True):
 
     api_token_id: int = Field(
         default=None, foreign_key='apitoken.id', primary_key=True)
-    api_scope_id: str = Field(
+    api_scope_id: int = Field(
         default=None, foreign_key="apiscope.id", primary_key=True)
 
 
