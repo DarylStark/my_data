@@ -85,7 +85,8 @@ class UserUpdater(Updater[T]):
                 not a User.
             PermissionDeniedException: when the model is not the same model as
                 set in the instance or when the model has a id set that is
-                different then the current user id in the context.
+                different then the current user id in the context. This will
+                also be raised when a user tries to update his own role.
 
         Returns:
             A list with the created data models.
@@ -108,5 +109,8 @@ class UserUpdater(Updater[T]):
                 if model.id != self._context_data.user.id:
                     raise PermissionDeniedException(
                         'User is not allowed to edit this user.')
+                if model.role != self._context_data.user.role:
+                    raise PermissionDeniedException(
+                        'User is not allowed to change his own role.')
 
         return super().update(models)
