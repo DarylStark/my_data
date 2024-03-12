@@ -3,14 +3,14 @@
 Contains the ResourceManager class that is used by a Context to create a
 ResourceManager for specific resources.
 """
+
 import logging
 from abc import ABC, abstractmethod
 from typing import Generic, Type, TypeVar
 
+from my_model import MyModel
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
-
-from my_model import MyModel
 
 from .context_data import ContextData
 from .creators import Creator, UserCreator, UserScopedCreator
@@ -42,14 +42,16 @@ class ResourceManager(Generic[T]):
             data.
     """
 
-    def __init__(self,
-                 database_model: Type[T],
-                 database_engine: Engine,
-                 context_data: ContextData,
-                 creator: Type[Creator[T]] = UserScopedCreator,
-                 retriever: Type[Retriever[T]] = UserScopedRetriever,
-                 updater: Type[Updater[T]] = UserScopedUpdater,
-                 deleter: Type[Deleter[T]] = UserScopedDeleter) -> None:
+    def __init__(
+        self,
+        database_model: Type[T],
+        database_engine: Engine,
+        context_data: ContextData,
+        creator: Type[Creator[T]] = UserScopedCreator,
+        retriever: Type[Retriever[T]] = UserScopedRetriever,
+        updater: Type[Updater[T]] = UserScopedUpdater,
+        deleter: Type[Deleter[T]] = UserScopedDeleter,
+    ) -> None:
         """Set attributes for the object.
 
         The initiator sets the attributes for the object.
@@ -72,22 +74,22 @@ class ResourceManager(Generic[T]):
         self.retriever: Retriever[T] = retriever(
             database_model=database_model,
             database_engine=database_engine,
-            context_data=context_data
+            context_data=context_data,
         )
         self.creator: Creator[T] = creator(
             database_model=database_model,
             database_engine=database_engine,
-            context_data=context_data
+            context_data=context_data,
         )
         self.updater: Updater[T] = updater(
             database_model=database_model,
             database_engine=database_engine,
-            context_data=context_data
+            context_data=context_data,
         )
         self.deleter: Deleter[T] = deleter(
             database_model=database_model,
             database_engine=database_engine,
-            context_data=context_data
+            context_data=context_data,
         )
 
     def create(self, models: list[T] | T) -> list[T]:
@@ -105,11 +107,12 @@ class ResourceManager(Generic[T]):
         return self.creator.create(models)
 
     def retrieve(
-            self,
-            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
-            sort: ColumnElement[T] | None = None,
-            start: int | None = None,
-            max_items: int | None = None) -> list[T]:
+        self,
+        flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
+        sort: ColumnElement[T] | None = None,
+        start: int | None = None,
+        max_items: int | None = None,
+    ) -> list[T]:
         """Retrieve resources for the specified object.
 
         Returns a list of resources for the specified model. It does this using
@@ -128,14 +131,12 @@ class ResourceManager(Generic[T]):
         """
         # Get all DB objects from the database
         return self.retriever.retrieve(
-            flt=flt,
-            sort=sort,
-            start=start,
-            max_items=max_items)
+            flt=flt, sort=sort, start=start, max_items=max_items
+        )
 
     def count(
-            self,
-            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None
+        self,
+        flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
     ) -> int:
         """Retrieve the number of records for a given query.
 
@@ -184,10 +185,12 @@ class ResourceManagerFactory(Generic[T], ABC):
     Abstract class for a factory that creates ResourceManagers.
     """
 
-    def __init__(self,
-                 database_model: Type[T],
-                 database_engine: Engine,
-                 context_data: ContextData) -> None:
+    def __init__(
+        self,
+        database_model: Type[T],
+        database_engine: Engine,
+        context_data: ContextData,
+    ) -> None:
         """Set attributes for the object.
 
         Args:
@@ -212,7 +215,7 @@ class ResourceManagerFactory(Generic[T], ABC):
             creator=self._create_creator(),
             retriever=self._create_retriever(),
             updater=self._create_updater(),
-            deleter=self._create_deleter()
+            deleter=self._create_deleter(),
         )
 
     @abstractmethod

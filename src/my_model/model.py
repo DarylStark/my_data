@@ -47,12 +47,10 @@ class MyModel(SQLModel):
     __pydantic_extra__ = None
 
     @validate_call
-    def get_random_string(self,
-                          min_length: int,
-                          max_length: int,
-                          include_punctation: bool = True) -> str:
-        """
-        Return a random generated string.
+    def get_random_string(
+        self, min_length: int, max_length: int, include_punctation: bool = True
+    ) -> str:
+        """Return a random generated string.
 
         Can be used to generate a random string for tokens, passwords or other
         secrets. The min_length and max_length arguments can be used to set the
@@ -78,8 +76,9 @@ class MyModel(SQLModel):
 
         # Create the random character string
         length = random.randint(min_length, max_length)
-        random_token_chars = [random.choice(characters)
-                              for i in range(0, length)]
+        random_token_chars = [
+            random.choice(characters) for i in range(0, length)
+        ]
         random_string = ''.join(random_token_chars)
 
         # Return the created string
@@ -122,24 +121,30 @@ class User(MyModel, table=True):
     """
 
     created: datetime = Field(default_factory=datetime.utcnow)
-    fullname: str = Field(schema_extra={'pattern': r'^[A-Za-z0-9\- ]+$'},
-                          max_length=128)
+    fullname: str = Field(
+        schema_extra={'pattern': r'^[A-Za-z0-9\- ]+$'}, max_length=128
+    )
     username: str = Field(
         schema_extra={'pattern': r'^[a-zA-Z][a-zA-Z0-9_\.]+$'},
         max_length=128,
-        unique=True)
+        unique=True,
+    )
     email: str = Field(
         schema_extra={
-            'pattern': r'^[a-z0-9_\-\.]+\@[a-z0-9_\-\.]+\.[a-z\.]+$'},
+            'pattern': r'^[a-z0-9_\-\.]+\@[a-z0-9_\-\.]+\.[a-z\.]+$'
+        },
         max_length=128,
-        unique=True)
+        unique=True,
+    )
     role: UserRole = Field(default=UserRole.USER)
     password_hash: str | None = None
     password_date: datetime = Field(default_factory=datetime.utcnow)
     second_factor: None | str = Field(
         default=None,
-        schema_extra={'pattern': r'^[A-Z0-9]+$'}, max_length=64,
-        unique=True)
+        schema_extra={'pattern': r'^[A-Z0-9]+$'},
+        max_length=64,
+        unique=True,
+    )
 
     # Relationships
     api_clients: list['APIClient'] = Relationship(back_populates='user')
@@ -174,10 +179,9 @@ class User(MyModel, table=True):
         self.second_factor = None
 
     @validate_call
-    def verify_credentials(self,
-                           username: str,
-                           password: str,
-                           second_factor: str | None = None) -> bool:
+    def verify_credentials(
+        self, username: str, password: str, second_factor: str | None = None
+    ) -> bool:
         """Verify the credentials for a user.
 
         Args:
@@ -193,16 +197,18 @@ class User(MyModel, table=True):
         hasher = PasswordHasher()
         try:
             if self.password_hash:
-                credentials = (username == self.username and
-                               hasher.verify(self.password_hash, password))
+                credentials = username == self.username and hasher.verify(
+                    self.password_hash, password
+                )
             else:
                 raise VerifyMismatchError
         except VerifyMismatchError:
             return False
 
         if self.second_factor:
-            return (credentials and
-                    second_factor == TOTP(self.second_factor).now())
+            return (
+                credentials and second_factor == TOTP(self.second_factor).now()
+            )
 
         return credentials
 
@@ -216,9 +222,11 @@ class APITokenScope(SQLModel, table=True):
     """
 
     api_token_id: int = Field(
-        default=None, foreign_key='apitoken.id', primary_key=True)
+        default=None, foreign_key='apitoken.id', primary_key=True
+    )
     api_scope_id: int = Field(
-        default=None, foreign_key="apiscope.id", primary_key=True)
+        default=None, foreign_key='apiscope.id', primary_key=True
+    )
 
 
 class APIScope(MyModel, table=True):
@@ -234,8 +242,8 @@ class APIScope(MyModel, table=True):
 
     # Relationships
     api_tokens: list['APIToken'] = Relationship(
-        back_populates='token_scopes',
-        link_model=APITokenScope)
+        back_populates='token_scopes', link_model=APITokenScope
+    )
 
     @property
     def full_scope_name(self) -> str:
@@ -278,7 +286,7 @@ class TokenModel(UserScopedModel):
         min_length=32,
         max_length=32,
         schema_extra={'pattern': r'^[a-zA-Z0-9]{32}$'},
-        unique=True
+        unique=True,
     )
 
     @validate_call
@@ -300,9 +308,8 @@ class TokenModel(UserScopedModel):
         if self.token is None or force:
             # Generate random token
             self.token = self.get_random_string(
-                min_length=32,
-                max_length=32,
-                include_punctation=False)
+                min_length=32, max_length=32, include_punctation=False
+            )
 
             return self.token
 
@@ -330,9 +337,8 @@ class APIClient(TokenModel, table=True):
     app_name: str = Field(max_length=64)
     app_publisher: str = Field(max_length=64)
     redirect_url: str | None = Field(
-        default=None,
-        schema_extra={'pattern': r'^https?://'},
-        max_length=1024)
+        default=None, schema_extra={'pattern': r'^https?://'}, max_length=1024
+    )
 
     # Relationships
     user: User = Relationship(back_populates='api_clients')
@@ -362,8 +368,8 @@ class APIToken(TokenModel, table=True):
     user: User = Relationship(back_populates='api_tokens')
     api_client: APIClient = Relationship(back_populates='api_tokens')
     token_scopes: list[APIScope] = Relationship(
-        back_populates='api_tokens',
-        link_model=APITokenScope)
+        back_populates='api_tokens', link_model=APITokenScope
+    )
 
 
 class Tag(UserScopedModel, table=True):
@@ -383,8 +389,11 @@ class Tag(UserScopedModel, table=True):
 
     title: str = Field(max_length=128)
     color: str | None = Field(
-        default=None, schema_extra={'pattern': r'^[a-fA-F0-9]{6}$'},
-        min_length=6, max_length=6)
+        default=None,
+        schema_extra={'pattern': r'^[a-fA-F0-9]{6}$'},
+        min_length=6,
+        max_length=6,
+    )
 
     # Relationships
     user: User = Relationship(back_populates='tags')

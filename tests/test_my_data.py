@@ -1,10 +1,9 @@
 """Tests for the MyData object."""
 
 import pytest
-from my_model import User
-
-from my_data.exceptions import DatabaseNotConfiguredException
+from my_data.exceptions import DatabaseNotConfiguredError
 from my_data.my_data import MyData
+from my_model import User
 
 
 def test_creating_empty_engine() -> None:
@@ -12,9 +11,8 @@ def test_creating_empty_engine() -> None:
 
     Should result in a DatabaseNotConfiguredException error.
     """
-
     my_data = MyData()
-    with pytest.raises(DatabaseNotConfiguredException):
+    with pytest.raises(DatabaseNotConfiguredError):
         my_data.create_engine()
 
 
@@ -27,7 +25,7 @@ def test_creating_context_empty_engine(root_user: User) -> None:
     Should result in a DatabaseNotConfiguredException error.
     """
     my_data = MyData()
-    with pytest.raises(DatabaseNotConfiguredException):
+    with pytest.raises(DatabaseNotConfiguredError):
         _ = my_data.get_context(root_user)
 
 
@@ -37,5 +35,5 @@ def test_creating_svc_context_empty_engine() -> None:
     Should result in a DatabaseNotConfiguredException error.
     """
     my_data = MyData()
-    with pytest.raises(DatabaseNotConfiguredException):
+    with pytest.raises(DatabaseNotConfiguredError):
         _ = my_data.get_context_for_service_user()

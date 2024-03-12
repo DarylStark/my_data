@@ -3,16 +3,18 @@
 This module contains the DataManipulator class. This class is used as baseclass
 for other DataManipulator classes.
 """
+
 import logging
 from typing import Generic, Type, TypeVar
 
+from my_model import UserScopedModel
 from sqlalchemy.future import Engine
 
-from my_model import UserScopedModel
-
 from .context_data import ContextData
-from .exceptions import (PermissionDeniedException,
-                         WrongDataManipulatorException)
+from .exceptions import (
+    PermissionDeniedError,
+    WrongDataManipulatorError,
+)
 
 T = TypeVar('T')
 
@@ -29,10 +31,12 @@ class DataManipulator(Generic[T]):
         _context_data: specifies in what context to use the manipulator.
     """
 
-    def __init__(self,
-                 database_model: Type[T],
-                 database_engine: Engine,
-                 context_data: ContextData) -> None:
+    def __init__(
+        self,
+        database_model: Type[T],
+        database_engine: Engine,
+        context_data: ContextData,
+    ) -> None:
         """Set attributes for the class.
 
         The initiator sets the attributes for the class to the values specified
@@ -86,8 +90,9 @@ class DataManipulator(Generic[T]):
         """
         # Check if it is a subtype of UserScopedModel
         if not issubclass(self._database_model, UserScopedModel):
-            raise WrongDataManipulatorException(  # pragma: no cover
-                f'The model "{self._database_model}" is not a UserScopedModel')
+            raise WrongDataManipulatorError(  # pragma: no cover
+                f'The model "{self._database_model}" is not a UserScopedModel'
+            )
 
         # Make sure the `models` are always a list
         models = self._convert_model_to_list(models)
@@ -95,12 +100,14 @@ class DataManipulator(Generic[T]):
         # Verify the model type and if the `user_id` field is set.
         for model in models:
             if not isinstance(model, self._database_model):
-                raise PermissionDeniedException(  # pragma: no cover
-                    f'Expected "{self._database_model}", got "{type(model)}".')
+                raise PermissionDeniedError(  # pragma: no cover
+                    f'Expected "{self._database_model}", got "{type(model)}".'
+                )
 
             if getattr(model, 'user_id', None) != self._context_data.user.id:
-                raise PermissionDeniedException(  # pragma: no cover
-                    'This user is not allowed to alter this resource')
+                raise PermissionDeniedError(  # pragma: no cover
+                    'This user is not allowed to alter this resource'
+                )
 
         return models
 

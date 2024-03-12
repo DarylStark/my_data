@@ -1,6 +1,9 @@
-import toml
+"""Version chek tool."""
+
 import re
 import sys
+
+import toml
 
 invalid_versions = [
     r'-?dev[0-9]*$',
@@ -18,7 +21,7 @@ def is_valid_version(version: str) -> bool:
     Returns:
         True if the version is correct, otherwise False.
     """
-    for invalid in invalid_versions:
+    for invalid in invalid_versions:  # noqa: SIM110
         if re.search(invalid, version):
             return False
     return True
@@ -43,8 +46,9 @@ if __name__ == '__main__':
             if not is_valid_version(str(version)):
                 error = True
                 print(
-                    f'Dependency "{dependency} {version}" in group ' +
-                    f'"{group_name}" has a invalid version!')
+                    f'Dependency "{dependency} {version}" in group '
+                    + f'"{group_name}" has a invalid version!'
+                )
 
     # Exit with a error code if there were errors
     sys.exit(0 if not error else 1)

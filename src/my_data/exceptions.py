@@ -4,61 +4,61 @@ Contains exceptions for `my-data`.
 """
 
 
-class MyDataException(Exception):
+class MyDataError(Exception):
     """Base exception for My-Data-exceptions."""
 
 
-class DatabaseNotConfiguredException(MyDataException):
+class DatabaseNotConfiguredError(MyDataError):
     """Raised when the database is not configured."""
 
 
-class ServiceUserNotConfiguredException(MyDataException):
+class ServiceUserNotConfiguredError(MyDataError):
     """Raised when the service user is not configured."""
 
 
-class DatabaseConnectionException(MyDataException):
+class DatabaseConnectionError(MyDataError):
     """Error that happends when the database string is not correct."""
 
 
-class BaseClassCallException(MyDataException):
+class BaseClassCallError(MyDataError):
     """The Base class is used for a method that should be overriden."""
 
 
-class WrongDataManipulatorException(MyDataException):
+class WrongDataManipulatorError(MyDataError):
     """Wrong DataManipulator for specified model."""
 
 
-class PermissionDeniedException(MyDataException):
+class PermissionDeniedError(MyDataError):
     """User tries to do something he is not allowed to do."""
 
 
-class UnknownUserAccountException(MyDataException):
+class UnknownUserAccountError(MyDataError):
     """Service user tries to retrieve a non-existing user account."""
 
 
-class AthenticatorExceptions(MyDataException):
+class AthenticatorError(MyDataError):
     """Base exception for authenticator exceptions."""
 
 
-class UserAuthenticatorAlreadySetException(AthenticatorExceptions):
+class UserAuthenticatorAlreadySetError(AthenticatorError):
     """Raised when the API token authenticator is already set."""
 
 
-class AuthenticatorNotConfiguredException(AthenticatorExceptions):
+class AuthenticatorNotConfiguredError(AthenticatorError):
     """Raised when the authenticator is not configured."""
 
 
-class AuthenticationFailed(AthenticatorExceptions):
+class AuthenticationFailedError(AthenticatorError):
     """Raised when the authentication fails."""
 
 
-class AuthorizerExceptions(MyDataException):
+class AuthorizerError(MyDataError):
     """Base exception for authorizer exceptions."""
 
 
-class APITokenAuthorizerAlreadySetException(AuthorizerExceptions):
+class APITokenAuthorizerAlreadySetError(AuthorizerError):
     """Raised when the API token authorizer is already set."""
 
 
-class AuthorizationFailed(AuthorizerExceptions):
+class AuthorizationFailedError(AuthorizerError):
     """Raised when the authorization fails."""

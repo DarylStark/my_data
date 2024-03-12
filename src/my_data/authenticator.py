@@ -1,4 +1,5 @@
 """Authenticator class and authenticators."""
+
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
@@ -6,21 +7,21 @@ from typing import Optional
 
 from my_model import APIToken, User, UserRole
 
+from .exceptions import (
+    AuthenticationFailedError,
+    AuthenticatorNotConfiguredError,
+    UnknownUserAccountError,
+    UserAuthenticatorAlreadySetError,
+)
 from .my_data import MyData
-
-from .exceptions import (AuthenticationFailed,
-                         AuthenticatorNotConfiguredException,
-                         UnknownUserAccountException,
-                         UserAuthenticatorAlreadySetException)
 
 
 class UserAuthenticator:
     """Authenticator for users."""
 
     def __init__(
-            self,
-            my_data_object: MyData,
-            authenticator: 'Authenticator') -> None:
+        self, my_data_object: MyData, authenticator: 'Authenticator'
+    ) -> None:
         """Initialize the user authenticator.
 
         Args:
@@ -46,9 +47,8 @@ class UserAuthenticator:
         return self._authenticator.authenticate()
 
     def create_api_token(
-            self,
-            session_timeout_in_seconds: int,
-            title: str) -> str:
+        self, session_timeout_in_seconds: int, title: str
+    ) -> str:
         """Create a API token for the authenticated user.
 
         Creates a API token for the authenticated user and returns the created
@@ -65,8 +65,9 @@ class UserAuthenticator:
         new_api_token = APIToken(
             api_client_id=None,
             title=title,
-            expires=datetime.now() + timedelta(
-                seconds=session_timeout_in_seconds))
+            expires=datetime.now()
+            + timedelta(seconds=session_timeout_in_seconds),
+        )
         token = new_api_token.set_random_token()
 
         # Create token in database from the context of the user that is
@@ -75,8 +76,7 @@ class UserAuthenticator:
         # correct user.
         user = self.authenticate()
         with self.my_data_object.get_context(user=user) as context:
-            self._logger.debug('Creating API token for user %s',
-                               user.username)
+            self._logger.debug('Creating API token for user %s', user.username)
             context.api_tokens.create(new_api_token)
         return token
 
@@ -84,8 +84,9 @@ class UserAuthenticator:
 class Authenticator(ABC):
     """Abstract base class for authenticators."""
 
-    def __init__(self,
-                 user_authenticator: Optional[UserAuthenticator] = None):
+    def __init__(
+        self, user_authenticator: Optional[UserAuthenticator] = None
+    ) -> None:
         """Initialize the authenticator.
 
         Args:
@@ -93,7 +94,9 @@ class Authenticator(ABC):
         """
         self._user_authenticator = user_authenticator
 
-    def set_user_authenticator(self, user_authenticator: UserAuthenticator):
+    def set_user_authenticator(
+        self, user_authenticator: UserAuthenticator
+    ) -> None:
         """Set the API authenticator.
 
         Args:
@@ -104,8 +107,9 @@ class Authenticator(ABC):
                 is already set.
         """
         if self._user_authenticator is not None:
-            raise UserAuthenticatorAlreadySetException(
-                'Authenticator is already set.')
+            raise UserAuthenticatorAlreadySetError(
+                'Authenticator is already set.'
+            )
         self._user_authenticator = user_authenticator
 
     def _raise_for_invalid_authenticator(self) -> None:
@@ -116,8 +120,9 @@ class Authenticator(ABC):
                 configured.
         """
         if not self._user_authenticator:
-            raise AuthenticatorNotConfiguredException(
-                'Authenticator is not configured.')
+            raise AuthenticatorNotConfiguredError(
+                'Authenticator is not configured.'
+            )
 
     @abstractmethod
     def authenticate(self) -> User:
@@ -141,7 +146,7 @@ class CredentialsAuthenticator(Authenticator):
         username: str,
         password: str,
         second_factor: Optional[str],
-        api_authenticator: Optional['UserAuthenticator'] = None
+        api_authenticator: Optional['UserAuthenticator'] = None,
     ) -> None:
         """Initialize the credentials authenticator.
 
@@ -178,21 +183,24 @@ class CredentialsAuthenticator(Authenticator):
         with my_data.get_context_for_service_user() as context:  # type: ignore
             try:
                 user = context.get_user_account_by_username(
-                    username=self._username)
+                    username=self._username
+                )
 
-                if (user.second_factor is None and
-                        self._second_factor is not None):
-                    raise UnknownUserAccountException
+                if (
+                    user.second_factor is None
+                    and self._second_factor is not None
+                ):
+                    raise UnknownUserAccountError
 
                 valid_credentials = user.verify_credentials(
                     username=self._username,
                     password=self._password,
-                    second_factor=self._second_factor)
+                    second_factor=self._second_factor,
+                )
 
-                if (valid_credentials and
-                        (user.role is not UserRole.SERVICE)):
+                if valid_credentials and (user.role is not UserRole.SERVICE):
                     return user
-            except UnknownUserAccountException:
+            except UnknownUserAccountError:
                 pass
 
-        raise AuthenticationFailed
+        raise AuthenticationFailedError

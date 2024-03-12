@@ -3,12 +3,15 @@
 This module contains the deleter classes. These classes are used to delete data
 from the database. The ResourceManager uses these classes.
 """
+
 from typing import TypeVar
 
 from my_model import MyModel, User, UserRole
 
-from my_data.exceptions import (PermissionDeniedException,
-                                WrongDataManipulatorException)
+from my_data.exceptions import (
+    PermissionDeniedError,
+    WrongDataManipulatorError,
+)
 
 from .data_manipulator import DataManipulator
 
@@ -36,7 +39,8 @@ class Deleter(DataManipulator[T]):
         self._logger.debug(
             'User "%s" is deleting data for model "%s".',
             self._context_data.user,
-            self._database_model)
+            self._database_model,
+        )
 
         # Delete the resources
         for model in models:
@@ -88,26 +92,26 @@ class UserDeleter(Deleter[T]):
                 when the user not allowed to remove this User.
         """
         if self._database_model is not User:
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a User')
+            raise WrongDataManipulatorError(
+                f'The model "{self._database_model}" is not a User'
+            )
 
         # Make sure the `models` are always a list
         if not isinstance(models, list):
             models = [models]
 
         if self._context_data.user.role == UserRole.USER:
-            raise PermissionDeniedException(
-                'A normal user cannot remove users')
+            raise PermissionDeniedError('A normal user cannot remove users')
 
         # Check for all models are a User model and if the `id` field is the
         # same as the current user if this user is a USER user.
         for model in models:
             if not isinstance(model, self._database_model):
-                raise PermissionDeniedException(  # pragma: no cover
-                    f'Expected "{self._database_model}", got "{type(model)}".')
+                raise PermissionDeniedError(  # pragma: no cover
+                    f'Expected "{self._database_model}", got "{type(model)}".'
+                )
 
             if self._context_data.user.id == model.id:
-                raise PermissionDeniedException(
-                    'Cannot remove the current user.')
+                raise PermissionDeniedError('Cannot remove the current user.')
 
         super().delete(models)

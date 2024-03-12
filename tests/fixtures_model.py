@@ -4,11 +4,11 @@ Cotnains fixtures to mimick users. The `get_user_with_username` method is used
 to get a specific user from the test database, as defined in the `MyData`
 instance from the module `fixtures_db_creation`.
 """
-from pytest import fixture
-from sqlmodel import Session, select
 
 from my_data.my_data import MyData
 from my_model import APIClient, APIToken, Tag, User, UserRole, UserSetting
+from pytest import fixture
+from sqlmodel import Session, select
 
 
 def get_user_with_username(my_data: MyData, username: str) -> User | None:
@@ -103,7 +103,7 @@ def test_root_user() -> User:
         fullname='Creation Test Root User',
         username='creation_test_root_user_1',
         email='creation_test_root_user_1@example.com',
-        role=UserRole.ROOT
+        role=UserRole.ROOT,
     )
 
 
@@ -121,7 +121,7 @@ def test_normal_user() -> User:
         fullname='Creation Test Normal User',
         username='creation_test_user_user_1',
         email='creation_test_user_user_1@example.com',
-        role=UserRole.USER
+        role=UserRole.USER,
     )
 
 
@@ -137,7 +137,7 @@ def test_tags() -> list[Tag]:
     return [
         Tag(title='test_creation_tag_1'),
         Tag(title='test_creation_tag_2'),
-        Tag(title='test_creation_tag_3')
+        Tag(title='test_creation_tag_3'),
     ]
 
 
@@ -155,7 +155,7 @@ def test_normal_user_to_delete() -> User:
         fullname='Deletion Test Normal User',
         username='deletion_test_user_user_1',
         email='deletion_test_user_user_1@example.com',
-        role=UserRole.USER
+        role=UserRole.USER,
     )
 
 
@@ -181,12 +181,18 @@ def test_api_clients() -> list[APIClient]:
         A list with API Clients to create.
     """
     return [
-        APIClient(app_name='test_creation_api_client_1',
-                  app_publisher='api_client_publisher'),
-        APIClient(app_name='test_creation_api_client_2',
-                  app_publisher='api_client_publisher'),
-        APIClient(app_name='test_creation_api_client_3',
-                  app_publisher='api_client_publisher')
+        APIClient(
+            app_name='test_creation_api_client_1',
+            app_publisher='api_client_publisher',
+        ),
+        APIClient(
+            app_name='test_creation_api_client_2',
+            app_publisher='api_client_publisher',
+        ),
+        APIClient(
+            app_name='test_creation_api_client_3',
+            app_publisher='api_client_publisher',
+        ),
     ]
 
 
@@ -199,8 +205,9 @@ def test_api_client_to_delete() -> APIClient:
     Returns:
         A model for a API Client.
     """
-    return APIClient(app_name='test_deletion_api_client_1',
-                     app_publisher='Testpublisher')
+    return APIClient(
+        app_name='test_deletion_api_client_1', app_publisher='Testpublisher'
+    )
 
 
 @fixture
@@ -215,7 +222,7 @@ def test_api_tokens() -> list[APIToken]:
     return [
         APIToken(title='test_creation_api_token_1'),
         APIToken(title='test_creation_api_token_2'),
-        APIToken(title='test_creation_api_token_3')
+        APIToken(title='test_creation_api_token_3'),
     ]
 
 
@@ -242,12 +249,18 @@ def test_user_settings() -> list[UserSetting]:
         A list with User Settings to create.
     """
     return [
-        UserSetting(setting='test_creation_user_setting_1',
-                    value='test_creation_user_value_1'),
-        UserSetting(setting='test_creation_user_setting_2',
-                    value='test_creation_user_value_2'),
-        UserSetting(setting='test_creation_user_setting_3',
-                    value='test_creation_user_value_3')
+        UserSetting(
+            setting='test_creation_user_setting_1',
+            value='test_creation_user_value_1',
+        ),
+        UserSetting(
+            setting='test_creation_user_setting_2',
+            value='test_creation_user_value_2',
+        ),
+        UserSetting(
+            setting='test_creation_user_setting_3',
+            value='test_creation_user_value_3',
+        ),
     ]
 
 
@@ -260,5 +273,7 @@ def test_user_setting_to_delete() -> UserSetting:
     Returns:
         A model for a User setting.
     """
-    return UserSetting(setting='test_deletion_user_setting_1',
-                       value='test_deletion_user_value_1')
+    return UserSetting(
+        setting='test_deletion_user_setting_1',
+        value='test_deletion_user_value_1',
+    )

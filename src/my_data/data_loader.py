@@ -1,14 +1,23 @@
 """Module with the DataLoader class and specific Data Sources."""
+
 import json
 import logging
 from abc import ABC, abstractmethod
 from typing import Type
 
+from my_model import (
+    APIClient,
+    APIScope,
+    APIToken,
+    APITokenScope,
+    MyModel,
+    Tag,
+    User,
+    UserSetting,
+)
 from sqlmodel import Session, SQLModel
 
 from my_data.my_data import MyData
-from my_model import (APIClient, APIScope, APIToken, APITokenScope, MyModel,
-                      Tag, User, UserSetting)
 
 
 class DataSource(ABC):
@@ -47,11 +56,11 @@ class JSONDataSource(DataSource):
             '_tags': Tag,
             '_api_clients': APIClient,
             '_api_tokens': APIToken,
-            '_user_settings': UserSetting
+            '_user_settings': UserSetting,
         }
 
         # Load the JSON data
-        with open(self._json_filename, 'r', encoding='utf-8') as json_file:
+        with open(self._json_filename, encoding='utf-8') as json_file:
             json_data = json.load(json_file)
 
         # Create the objects for API scopes
@@ -79,9 +88,11 @@ class JSONDataSource(DataSource):
             # Add the tags
             for field, object_type in user_scoped_resources.items():
                 if user.get(field):
-                    setattr(user_object, field[1:], [
-                        object_type(**tag) for tag in user[field]
-                    ])
+                    setattr(
+                        user_object,
+                        field[1:],
+                        [object_type(**tag) for tag in user[field]],
+                    )
 
             # Add it to the list
             resources_to_add.append(user_object)
@@ -103,9 +114,8 @@ class DataLoader:
     """
 
     def __init__(
-            self,
-            my_data_object: MyData,
-            data_source: DataSource) -> None:
+        self, my_data_object: MyData, data_source: DataSource
+    ) -> None:
         """Initialize the DataLoader object.
 
         Sets the MyData object and the DataLoaderSource object to use to load

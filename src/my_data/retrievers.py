@@ -6,15 +6,14 @@ data from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
+from my_model import MyModel, User, UserRole, UserScopedModel
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.expression import func
 from sqlmodel import select
 from sqlmodel.sql.expression import SelectOfScalar
 
-from my_model import MyModel, User, UserRole, UserScopedModel
-
 from .data_manipulator import DataManipulator
-from .exceptions import BaseClassCallException, WrongDataManipulatorException
+from .exceptions import BaseClassCallError, WrongDataManipulatorError
 
 T = TypeVar('T', bound=MyModel)
 SelectT = TypeVar('SelectT')
@@ -37,14 +36,13 @@ class Retriever(DataManipulator[T]):
         Raises:
             BaseClassCallException: BaseClass method is used.
         """
-        raise BaseClassCallException('Method not implemented in baseclass')
+        raise BaseClassCallError('Method not implemented in baseclass')
 
     def _add_filters_to_query(
         self,
         sql_query: SelectOfScalar[SelectT],
-        flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None
+        flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
     ) -> SelectOfScalar[SelectT]:
-
         # Filter on the context-based filters
         for filter_item in self.get_context_filters():
             sql_query = sql_query.where(filter_item)
@@ -60,11 +58,12 @@ class Retriever(DataManipulator[T]):
         return sql_query
 
     def retrieve(
-            self,
-            flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
-            sort: ColumnElement[T] | None = None,
-            start: int | None = None,
-            max_items: int | None = None) -> list[T]:
+        self,
+        flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
+        sort: ColumnElement[T] | None = None,
+        start: int | None = None,
+        max_items: int | None = None,
+    ) -> list[T]:
         """Retrieve data.
 
         The method to retrieve data from the database. Can only be done by
@@ -99,16 +98,18 @@ class Retriever(DataManipulator[T]):
         self._logger.debug(
             'User "%s" is retrieving data for model "%s".',
             self._context_data.user,
-            self._database_model)
+            self._database_model,
+        )
 
         resources = self._context_data.db_session.exec(sql_query).all()
 
         # Return the given resources
         return list(resources)
 
-    def count(self,
-              flt: list[ColumnElement[bool]] |
-              ColumnElement[bool] | None = None) -> int:
+    def count(
+        self,
+        flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
+    ) -> int:
         """Retrieve the number of records in the given query.
 
         Returns the count of records in the given query. This method can be
@@ -133,7 +134,8 @@ class Retriever(DataManipulator[T]):
         self._logger.debug(
             'User "%s" is retrieving datacount for model "%s".',
             self._context_data.user,
-            self._database_model)
+            self._database_model,
+        )
 
         resources = self._context_data.db_session.exec(sql_query).first()
 
@@ -166,10 +168,13 @@ class UserScopedRetriever(Retriever[T]):
             A list with the SQLalchmey filters.
         """
         if not issubclass(self._database_model, UserScopedModel):
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a UserScopedModel')
-        return [self._database_model.user_id  # type: ignore
-                == self._context_data.user.id]
+            raise WrongDataManipulatorError(
+                f'The model "{self._database_model}" is not a UserScopedModel'
+            )
+        return [
+            self._database_model.user_id  # type: ignore
+            == self._context_data.user.id
+        ]
 
 
 class UserRetriever(Retriever[T]):
@@ -196,8 +201,9 @@ class UserRetriever(Retriever[T]):
             A list with the SQLalchmey filters.
         """
         if self._database_model is not User:
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a User')
+            raise WrongDataManipulatorError(
+                f'The model "{self._database_model}" is not a User'
+            )
         if self._context_data.user.role == UserRole.USER:
             return [User.id == self._context_data.user.id]  # type: ignore
 

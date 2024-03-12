@@ -1,9 +1,9 @@
 """Tests for API Tokens."""
-# pylint: disable=redefined-outer-name
-from pytest import fixture, raises
-import pytest
 
+# pylint: disable=redefined-outer-name
+import pytest
 from my_model import APIToken
+from pytest import fixture, raises
 
 
 @fixture
@@ -19,15 +19,10 @@ def example_api_token() -> APIToken:
 
 @pytest.mark.parametrize(
     'token',
-    [
-        'abcdefghijklmnopqrstuvwxyz',
-        'xyz',
-        'qwertyuiopASDFGHJKLzxcvbnm--909'
-    ]
+    ['abcdefghijklmnopqrstuvwxyz', 'xyz', 'qwertyuiopASDFGHJKLzxcvbnm--909'],
 )
 def test_api_token_wrong_token_regex(
-    example_api_token: APIToken,
-    token: str
+    example_api_token: APIToken, token: str
 ) -> None:
     """Unit test to test invalid tokens.
 
@@ -35,19 +30,14 @@ def test_api_token_wrong_token_regex(
         example_api_token: a API token to test.
         token: the token to test.
     """
-
     # Invalid tokens
     with raises(ValueError):
         example_api_token.token = token
 
 
-@pytest.mark.parametrize(
-    'token',
-    ['qwertyuiopASDFGHJKLzxcvbnm009909']
-)
+@pytest.mark.parametrize('token', ['qwertyuiopASDFGHJKLzxcvbnm009909'])
 def test_api_token_token_regex(
-    example_api_token: APIToken,
-    token: str
+    example_api_token: APIToken, token: str
 ) -> None:
     """Unit test to test valid tokens.
 
@@ -55,7 +45,6 @@ def test_api_token_token_regex(
         example_api_token: a API token to test.
         token: the token to test.
     """
-
     # Valid tokens
     example_api_token.token = token
 
@@ -66,7 +55,6 @@ def test_api_token_random_token(example_api_token: APIToken) -> None:
     Args:
         example_api_token: a API token to test.
     """
-
     # Set a random token for the API Token
     token = example_api_token.set_random_token()
     assert token == example_api_token.token
@@ -78,7 +66,6 @@ def test_api_token_overwrite(example_api_token: APIToken) -> None:
     Args:
         example_api_token: a API token to test.
     """
-
     token = example_api_token.set_random_token()
     new_token = example_api_token.set_random_token(force=True)
     assert token != new_token
@@ -90,7 +77,6 @@ def test_api_token_not_overwrite(example_api_token: APIToken) -> None:
     Args:
         example_api_token: a API token to test.
     """
-
     _ = example_api_token.set_random_token()
     with raises(PermissionError):
         _ = example_api_token.set_random_token()

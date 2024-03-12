@@ -1,8 +1,8 @@
 """Tests for API scopes."""
-# pylint: disable=redefined-outer-name
-from pytest import fixture
 
+# pylint: disable=redefined-outer-name
 from my_model import APIScope
+from pytest import fixture
 
 
 @fixture
@@ -22,5 +22,4 @@ def test_api_scope_full_scope_name(example_api_scope: APIScope) -> None:
     Args:
         example_api_scope: a API scope.
     """
-
     assert example_api_scope.full_scope_name == 'mymodule.mysubject'

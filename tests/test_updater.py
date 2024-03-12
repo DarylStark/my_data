@@ -1,16 +1,16 @@
 """Module with tests for the Updater classes."""
 
 import pytest
-from my_model import Tag, User
-
 from my_data.context_data import ContextData
-from my_data.exceptions import WrongDataManipulatorException
+from my_data.exceptions import WrongDataManipulatorError
 from my_data.my_data import MyData
 from my_data.updaters import UserUpdater
+from my_model import Tag, User
 
 
 def test_usercreator_wrong_manipulator_exception(
-        my_data: MyData, root_user: User) -> None:
+    my_data: MyData, root_user: User
+) -> None:
     """Test if we get an exception when using a wrong model.
 
     Should raise a WrongDataManipulatorException.
@@ -23,8 +23,9 @@ def test_usercreator_wrong_manipulator_exception(
         updater = UserUpdater(
             database_model=Tag,
             database_engine=my_data.database_engine,
-            context_data=ContextData(my_data.database_engine, user=root_user))
-        with pytest.raises(WrongDataManipulatorException):
+            context_data=ContextData(my_data.database_engine, user=root_user),
+        )
+        with pytest.raises(WrongDataManipulatorError):
             updater.update(Tag(title='test'))
     else:
-        assert False, "MyData not configured"
+        assert False, 'MyData not configured'
