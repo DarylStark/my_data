@@ -111,12 +111,13 @@ class UserUpdater(Updater[T]):
                     f'Expected "{self._database_model}", got "{type(model)}".'
                 )
 
-            if (
-                self._context_data.user.role == UserRole.USER
-                and model.id != self._context_data.user.id
-            ):
-                raise PermissionDeniedError(
-                    'User is not allowed to edit this user.'
-                )
-
+            if self._context_data.user.role == UserRole.USER:
+                if model.id != self._context_data.user.id:
+                    raise PermissionDeniedError(
+                        'User is not allowed to edit this user.'
+                    )
+                if model.role != self._context_data.user.role:
+                    raise PermissionDeniedError(
+                        'User is not allowed to change his own role.'
+                    )
         return super().update(models)

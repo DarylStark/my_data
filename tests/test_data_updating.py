@@ -116,8 +116,8 @@ def test_data_updating_own_user_as_normal_user_1(
 
 
 def test_data_updating_own_user_as_normal_user_1_updating_role(
-        my_data: MyData,
-        normal_user_1: User) -> None:
+    my_data: MyData, normal_user_1: User
+) -> None:
     """Test updating the own user as a USER user and updating the role.
 
     Updates the current user as a normal user. We try to update the role of the
@@ -131,13 +131,14 @@ def test_data_updating_own_user_as_normal_user_1_updating_role(
     with my_data.get_context(user=normal_user_1) as context:
         # Get the root user
         user = context.users.retrieve(
-            User.username ==  # type:ignore
-            normal_user_1.username)[0]
+            User.username  # type:ignore
+            == normal_user_1.username
+        )[0]
 
         # Update the password
         user.role = UserRole.ROOT
 
-        with raises(PermissionDeniedException):
+        with raises(PermissionDeniedError):
             context.users.update(user)
 
         # Restore the role
