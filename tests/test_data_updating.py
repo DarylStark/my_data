@@ -6,7 +6,7 @@ update, it checks if the data has been updated.
 
 from my_data.exceptions import PermissionDeniedError
 from my_data.my_data import MyData
-from my_model import APIClient, APIToken, Tag, User, UserSetting
+from my_model import APIClient, APIToken, Tag, User, UserSetting, UserRole
 from pytest import raises
 
 
@@ -113,6 +113,35 @@ def test_data_updating_own_user_as_normal_user_1(
 
         # Check the password
         assert user.verify_credentials(normal_user_1.username, 'test')
+
+
+def test_data_updating_own_user_as_normal_user_1_updating_role(
+        my_data: MyData,
+        normal_user_1: User) -> None:
+    """Test updating the own user as a USER user and updating the role.
+
+    Updates the current user as a normal user. We try to update the role of the
+    user. This should not be possible since a normal user is not allowed to
+    update the role of his own account.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        # Get the root user
+        user = context.users.retrieve(
+            User.username ==  # type:ignore
+            normal_user_1.username)[0]
+
+        # Update the password
+        user.role = UserRole.ROOT
+
+        with raises(PermissionDeniedException):
+            context.users.update(user)
+
+        # Restore the role
+        user.role = UserRole.USER
 
 
 def test_data_updating_other_user_as_normal_user_1(

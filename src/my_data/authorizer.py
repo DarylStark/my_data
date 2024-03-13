@@ -380,7 +380,11 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
                 authorization. Defaults to True.
         """
         super().__init__()
-        self._required_scopes = required_scopes
+        self._required_scopes: list[str] = []
+        if isinstance(required_scopes, str):
+            self._required_scopes = [required_scopes]
+        else:
+            self._required_scopes = required_scopes
         self._allow_short_lived = allow_short_lived
 
     def authorize(self) -> None:

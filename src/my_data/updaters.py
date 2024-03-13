@@ -89,7 +89,8 @@ class UserUpdater(Updater[T]):
                 not a User.
             PermissionDeniedException: when the model is not the same model as
                 set in the instance or when the model has a id set that is
-                different then the current user id in the context.
+                different then the current user id in the context. This will
+                also be raised when a user tries to update his own role.
 
         Returns:
             A list with the created data models.

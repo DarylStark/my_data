@@ -189,7 +189,7 @@ class UserContext(Context):
         return self
 
 
-class ServiceContext(UserContext):
+class ServiceContext(Context):
     """Context for service users.
 
     This context exposes the methods that only Service users can use.

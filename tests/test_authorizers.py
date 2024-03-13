@@ -502,6 +502,34 @@ def test_api_scope_authorizer_long_lived(
         'aRlIytpyz61JX2TvczLxJZUsRzk578pE',
     ],
 )
+def test_api_scope_authorizer_long_lived_one_scope(
+        my_data: MyData,
+        api_token: str) -> None:
+    """Test the scope authorizer on long lived tokens with one needed scope.
+
+    Should be successful since the given long lived tokens has the needed
+    scope. We only test with one scope instead of two to make sure that that
+    works too.
+
+    We added this test after we found out that it didn't work when specifying
+    only one scope as string, instead of mulitple scopes as list.
+
+    Args:
+        my_data: a instance to a MyData object.
+        api_token: a API token to test.
+    """
+    authorizer = APITokenAuthorizer(
+        my_data_object=my_data,
+        api_token=api_token,
+        authorizer=APIScopeAuthorizer(
+            required_scopes='users.create'
+        ))
+    authorizer.authorize()
+
+
+@pytest.mark.parametrize("api_token", [
+    'aRlIytpyz61JX2TvczLxJZUsRzk578pE',
+])
 def test_api_scope_authorizer_short_lived_not_allowed(
     my_data: MyData, api_token: str
 ) -> None:
