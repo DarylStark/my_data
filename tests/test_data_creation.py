@@ -55,9 +55,11 @@ def test_data_creation_user_as_service_account(
         service_user: the service user.
         test_normal_user: a USER user to create.
     """
-    with raises(PermissionDeniedError):
-        with my_data.get_context(user=service_user) as context:
-            context.users.create(test_normal_user)
+    with (
+        raises(PermissionDeniedError),
+        my_data.get_context(user=service_user) as context,
+    ):
+        context.users.create(test_normal_user)
 
 
 def test_data_creation_users_as_normal_user_1(
@@ -73,9 +75,11 @@ def test_data_creation_users_as_normal_user_1(
         normal_user_1: the first normal user.
         test_normal_user: a USER user to create.
     """
-    with raises(PermissionDeniedError):
-        with my_data.get_context(user=normal_user_1) as context:
-            context.users.create(test_normal_user)
+    with (
+        raises(PermissionDeniedError),
+        my_data.get_context(user=normal_user_1) as context,
+    ):
+        context.users.create(test_normal_user)
 
 
 def test_data_creation_users_as_normal_user_2(
@@ -91,9 +95,11 @@ def test_data_creation_users_as_normal_user_2(
         normal_user_2: the first normal user.
         test_normal_user: a USER user to create.
     """
-    with raises(PermissionDeniedError):
-        with my_data.get_context(user=normal_user_2) as context:
-            context.users.create(test_normal_user)
+    with (
+        raises(PermissionDeniedError),
+        my_data.get_context(user=normal_user_2) as context,
+    ):
+        context.users.create(test_normal_user)
 
 
 def test_data_creation_tags_as_root(
@@ -187,9 +193,11 @@ def test_data_creation_tag_as_service_account(
         service_user: the service user.
         test_tags: a list with tags to add.
     """
-    with raises(PermissionDeniedError):
-        with my_data.get_context(user=service_user) as context:
-            context.tags.create(test_tags)
+    with (
+        raises(PermissionDeniedError),
+        my_data.get_context(user=service_user) as context,
+    ):
+        context.tags.create(test_tags)
 
 
 def test_data_creation_tag_as_normal_user_1_wrong_user_id(
@@ -205,12 +213,14 @@ def test_data_creation_tag_as_normal_user_1_wrong_user_id(
         normal_user_2: the first normal user.
         test_tags: a list with tags to add.
     """
-    with my_data.get_context(user=normal_user_2) as context:
-        with raises(PermissionDeniedError):
-            # Set the wrong user IDs
-            for tag in test_tags:
-                tag.user_id = 1
-            context.tags.create(test_tags)
+    with (
+        my_data.get_context(user=normal_user_2) as context,
+        raises(PermissionDeniedError),
+    ):
+        # Set the wrong user IDs
+        for tag in test_tags:
+            tag.user_id = 1
+        context.tags.create(test_tags)
 
 
 def test_data_creation_api_clients_as_root(
@@ -310,9 +320,11 @@ def test_data_creation_api_clients_as_service_account(
         service_user: the service user.
         test_api_clients: a list with API clients to add.
     """
-    with raises(PermissionDeniedError):
-        with my_data.get_context(user=service_user) as context:
-            context.api_clients.create(test_api_clients)
+    with (
+        raises(PermissionDeniedError),
+        my_data.get_context(user=service_user) as context,
+    ):
+        context.api_clients.create(test_api_clients)
 
 
 def test_data_creation_api_clients_as_normal_user_1_wrong_user_id(
@@ -328,12 +340,14 @@ def test_data_creation_api_clients_as_normal_user_1_wrong_user_id(
         normal_user_2: the first normal user.
         test_api_clients: a list with API clients to add.
     """
-    with my_data.get_context(user=normal_user_2) as context:
-        with raises(PermissionDeniedError):
-            # Set the wrong user IDs
-            for api_client in test_api_clients:
-                api_client.user_id = 1
-            context.api_clients.create(test_api_clients)
+    with (
+        my_data.get_context(user=normal_user_2) as context,
+        raises(PermissionDeniedError),
+    ):
+        # Set the wrong user IDs
+        for api_client in test_api_clients:
+            api_client.user_id = 1
+        context.api_clients.create(test_api_clients)
 
 
 def test_data_creation_api_tokens_as_root(
@@ -433,9 +447,11 @@ def test_data_creation_api_tokens_as_service_account(
         service_user: the service user.
         test_api_tokens: a list with API tokens to add.
     """
-    with raises(PermissionDeniedError):
-        with my_data.get_context(user=service_user) as context:
-            context.api_tokens.create(test_api_tokens)
+    with (
+        raises(PermissionDeniedError),
+        my_data.get_context(user=service_user) as context,
+    ):
+        context.api_tokens.create(test_api_tokens)
 
 
 def test_data_creation_api_tokens_as_normal_user_1_wrong_user_id(
@@ -451,12 +467,14 @@ def test_data_creation_api_tokens_as_normal_user_1_wrong_user_id(
         normal_user_2: the first normal user.
         test_api_tokens: a list with API token to add.
     """
-    with my_data.get_context(user=normal_user_2) as context:
-        with raises(PermissionDeniedError):
-            # Set the wrong user IDs
-            for api_token in test_api_tokens:
-                api_token.user_id = 1
-            context.api_tokens.create(test_api_tokens)
+    with (
+        my_data.get_context(user=normal_user_2) as context,
+        raises(PermissionDeniedError),
+    ):
+        # Set the wrong user IDs
+        for api_token in test_api_tokens:
+            api_token.user_id = 1
+        context.api_tokens.create(test_api_tokens)
 
 
 def test_data_creation_user_settings_as_root(
@@ -574,12 +592,14 @@ def test_data_creation_user_settings_as_normal_user_1_wrong_user_id(
         normal_user_2: the first normal user.
         test_user_settings: a list with User Settings to add.
     """
-    with my_data.get_context(user=normal_user_2) as context:
-        with raises(PermissionDeniedError):
-            # Set the wrong user IDs
-            for user_setting in test_user_settings:
-                user_setting.user_id = 1
-            context.user_settings.create(test_user_settings)
+    with (
+        my_data.get_context(user=normal_user_2) as context,
+        raises(PermissionDeniedError),
+    ):
+        # Set the wrong user IDs
+        for user_setting in test_user_settings:
+            user_setting.user_id = 1
+        context.user_settings.create(test_user_settings)
 
 
 def test_data_creation_user_settings_as_service_account(
@@ -595,9 +615,11 @@ def test_data_creation_user_settings_as_service_account(
         service_user: the service user.
         test_user_settings: a list with API tokens to add.
     """
-    with raises(PermissionDeniedError):
-        with my_data.get_context(user=service_user) as context:
-            context.user_settings.create(test_user_settings)
+    with (
+        raises(PermissionDeniedError),
+        my_data.get_context(user=service_user) as context,
+    ):
+        context.user_settings.create(test_user_settings)
 
 
 def test_data_creation_users_as_normal_user_1_and_aborting_it(

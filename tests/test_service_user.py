@@ -38,9 +38,11 @@ def test_retrieving_user_objects_by_username_wrong_user(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user() as context:
-        with raises(UnknownUserAccountError):
-            context.get_user_account_by_username('wrong.user.1')
+    with (
+        my_data.get_context_for_service_user() as context,
+        raises(UnknownUserAccountError),
+    ):
+        context.get_user_account_by_username('wrong.user.1')
 
 
 def test_retrieving_user_objects_by_api_token(my_data: MyData) -> None:
@@ -71,9 +73,11 @@ def test_retrieving_user_objects_by_api_token_wrong_token(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user() as context:
-        with raises(UnknownUserAccountError):
-            context.get_user_account_by_api_token('wrong_token')
+    with (
+        my_data.get_context_for_service_user() as context,
+        raises(UnknownUserAccountError),
+    ):
+        context.get_user_account_by_api_token('wrong_token')
 
 
 def test_retrieving_token_objects_by_api_token(my_data: MyData) -> None:
@@ -104,9 +108,11 @@ def test_retrieving_token_objects_by_api_token_wrong_token(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user() as context:
-        with raises(UnknownUserAccountError):
-            context.get_api_token_object_by_api_token('wrong_token')
+    with (
+        my_data.get_context_for_service_user() as context,
+        raises(UnknownUserAccountError),
+    ):
+        context.get_api_token_object_by_api_token('wrong_token')
 
 
 def test_retrieving_api_scopes(my_data: MyData) -> None:

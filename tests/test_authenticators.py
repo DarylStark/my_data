@@ -1,6 +1,5 @@
 """Tests for the Authenticator class and it's authenticators."""
-# pylint: disable=protected-access
-# pylint: disable=unused-argument
+# ruff: noqa: SLF001
 
 import pytest
 from my_data import MyData

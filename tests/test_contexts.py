@@ -1,5 +1,6 @@
 """Unit tests for Context objects."""
 
+# ruff: noqa: SLF001
 import pytest
 from my_data import MyData
 from my_data.exceptions import (
@@ -7,8 +8,6 @@ from my_data.exceptions import (
     ServiceUserNotConfiguredError,
 )
 from my_model import User
-
-# pylint: disable=protected-access
 
 
 def test_creating_user_context_with_service_account(
@@ -22,9 +21,11 @@ def test_creating_user_context_with_service_account(
         my_data: the MyData object to test with.
         service_user: a service user to test with.
     """
-    with pytest.raises(PermissionDeniedError):
-        with my_data.get_context(user=service_user):
-            ...
+    with (
+        pytest.raises(PermissionDeniedError),
+        my_data.get_context(user=service_user),
+    ):
+        ...
 
 
 def test_creating_a_service_context_no_credentials(my_data: MyData) -> None:

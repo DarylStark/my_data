@@ -28,4 +28,4 @@ def test_usercreator_wrong_manipulator_exception(
         with pytest.raises(WrongDataManipulatorError):
             updater.update(Tag(title='test'))
     else:
-        assert False, 'MyData not configured'
+        raise AssertionError()

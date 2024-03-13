@@ -1,7 +1,6 @@
 """Tests for the APITokenAuthorizer class and it's authorizers."""
 
-# pylint: disable=protected-access
-# pylint: disable=unused-argument
+# ruff: noqa: SLF001
 import pytest
 from my_data import MyData
 from my_data.authorizer import (

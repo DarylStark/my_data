@@ -1,6 +1,5 @@
 """Tests for API Client objects."""
 
-# pylint: disable=redefined-outer-name
 import pytest
 from my_model import APIClient
 from pytest import fixture, raises
@@ -24,7 +23,7 @@ def example_api_client() -> APIClient:
 def test_api_client_invalid_token_regex(
     example_api_client: APIClient, token: str
 ) -> None:
-    """Unit test to test invalid tokens
+    """Unit test to test invalid tokens.
 
     Args:
         example_api_client: a API client to test.
@@ -38,7 +37,7 @@ def test_api_client_invalid_token_regex(
 def test_api_client_valid_token_regex(
     example_api_client: APIClient, token: str
 ) -> None:
-    """Unit test to test valid tokens
+    """Unit test to test valid tokens.
 
     Args:
         example_api_client: a API client to test.

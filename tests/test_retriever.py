@@ -29,7 +29,7 @@ def test_base_class_exception(my_data: MyData, root_user: User) -> None:
         with pytest.raises(BaseClassCallError):
             retriever.get_context_filters()
     else:
-        assert False, 'MyData not configured'
+        raise AssertionError()
 
 
 def test_userscoped_wrong_manipulator_exception(
@@ -52,7 +52,7 @@ def test_userscoped_wrong_manipulator_exception(
         with pytest.raises(WrongDataManipulatorError):
             creator.get_context_filters()
     else:
-        assert False, 'MyData not configured'
+        raise AssertionError()
 
 
 def test_usercreator_wrong_manipulator_exception(
@@ -75,4 +75,4 @@ def test_usercreator_wrong_manipulator_exception(
         with pytest.raises(WrongDataManipulatorError):
             creator.get_context_filters()
     else:
-        assert False, 'MyData not configured'
+        raise AssertionError()
