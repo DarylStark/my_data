@@ -3,11 +3,11 @@
 This module tests the things a Service user needs to do, like retrieving
 User objects or API tokens.
 """
-from pytest import raises
-import pytest
 
-from my_data.exceptions import UnknownUserAccountException
+import pytest
+from my_data.exceptions import UnknownUserAccountError
 from my_data.my_data import MyData
+from pytest import raises
 
 
 def test_retrieving_user_objects_by_username(my_data: MyData) -> None:
@@ -27,7 +27,8 @@ def test_retrieving_user_objects_by_username(my_data: MyData) -> None:
 
 
 def test_retrieving_user_objects_by_username_wrong_user(
-        my_data: MyData) -> None:
+    my_data: MyData,
+) -> None:
     """Unit test to retrieve a User object by the username.
 
     This unit test tries to log in with a Service user and retrieve a User
@@ -37,9 +38,11 @@ def test_retrieving_user_objects_by_username_wrong_user(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user() as context:
-        with raises(UnknownUserAccountException):
-            context.get_user_account_by_username('wrong.user.1')
+    with (
+        my_data.get_context_for_service_user() as context,
+        raises(UnknownUserAccountError),
+    ):
+        context.get_user_account_by_username('wrong.user.1')
 
 
 def test_retrieving_user_objects_by_api_token(my_data: MyData) -> None:
@@ -53,13 +56,15 @@ def test_retrieving_user_objects_by_api_token(my_data: MyData) -> None:
     """
     with my_data.get_context_for_service_user() as context:
         user = context.get_user_account_by_api_token(
-            'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
+            'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+        )
         assert user is not None
         assert user.username == 'normal.user.2'
 
 
 def test_retrieving_user_objects_by_api_token_wrong_token(
-        my_data: MyData) -> None:
+    my_data: MyData,
+) -> None:
     """Unit test to retrieve a User object by the API token.
 
     This unit test tries to log in with a Service user and retrieve a User
@@ -68,10 +73,11 @@ def test_retrieving_user_objects_by_api_token_wrong_token(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user() as context:
-        with raises(UnknownUserAccountException):
-            context.get_user_account_by_api_token(
-                'wrong_token')
+    with (
+        my_data.get_context_for_service_user() as context,
+        raises(UnknownUserAccountError),
+    ):
+        context.get_user_account_by_api_token('wrong_token')
 
 
 def test_retrieving_token_objects_by_api_token(my_data: MyData) -> None:
@@ -85,13 +91,15 @@ def test_retrieving_token_objects_by_api_token(my_data: MyData) -> None:
     """
     with my_data.get_context_for_service_user() as context:
         token = context.get_api_token_object_by_api_token(
-            'aRlIytpyz61JX2TvczLxJZUsRzk578pE')
+            'aRlIytpyz61JX2TvczLxJZUsRzk578pE'
+        )
         assert token is not None
         assert token.user.username == 'normal.user.2'
 
 
 def test_retrieving_token_objects_by_api_token_wrong_token(
-        my_data: MyData) -> None:
+    my_data: MyData,
+) -> None:
     """Unit test to retrieve a APIToken object by the API token.
 
     This unit test tries to log in with a Service user and retrieve a User
@@ -100,10 +108,11 @@ def test_retrieving_token_objects_by_api_token_wrong_token(
     Args:
         my_data: a instance of a MyData object.
     """
-    with my_data.get_context_for_service_user() as context:
-        with raises(UnknownUserAccountException):
-            context.get_api_token_object_by_api_token(
-                'wrong_token')
+    with (
+        my_data.get_context_for_service_user() as context,
+        raises(UnknownUserAccountError),
+    ):
+        context.get_api_token_object_by_api_token('wrong_token')
 
 
 def test_retrieving_api_scopes(my_data: MyData) -> None:
@@ -121,12 +130,10 @@ def test_retrieving_api_scopes(my_data: MyData) -> None:
         assert len(scopes) == 9
 
 
-@pytest.mark.parametrize('module', [
-    "users"
-])
+@pytest.mark.parametrize('module', ['users'])
 def test_retrieving_api_scopes_filtered_on_module(
-        my_data: MyData,
-        module: str) -> None:
+    my_data: MyData, module: str
+) -> None:
     """Unit test to retrieve a APIScope objects filtered on module.
 
     This unit test tries to log in with a Service user and retrieve a APIScope
@@ -142,17 +149,19 @@ def test_retrieving_api_scopes_filtered_on_module(
         assert len(scopes) == 5
 
 
-@pytest.mark.parametrize('subject, count', [
-    ['create', 2],
-    ['retrieve', 2],
-    ['update', 2],
-    ['delete', 2],
-    ['updatepw', 1],
-])
+@pytest.mark.parametrize(
+    'subject, count',
+    [
+        ['create', 2],
+        ['retrieve', 2],
+        ['update', 2],
+        ['delete', 2],
+        ['updatepw', 1],
+    ],
+)
 def test_retrieving_api_scopes_filtered_on_subject(
-        my_data: MyData,
-        subject: str,
-        count: int) -> None:
+    my_data: MyData, subject: str, count: int
+) -> None:
     """Unit test to retrieve a APIScope objects filtered on subject.
 
     This unit test tries to log in with a Service user and retrieve a APIScope
@@ -169,21 +178,23 @@ def test_retrieving_api_scopes_filtered_on_subject(
         assert len(scopes) == count
 
 
-@pytest.mark.parametrize('module, subject', [
-    ("users", "create"),
-    ("users", "retrieve"),
-    ("users", "update"),
-    ("users", "delete"),
-    ("users", "updatepw"),
-    ("tags", "create"),
-    ("tags", "retrieve"),
-    ("tags", "update"),
-    ("tags", "delete"),
-])
+@pytest.mark.parametrize(
+    'module, subject',
+    [
+        ('users', 'create'),
+        ('users', 'retrieve'),
+        ('users', 'update'),
+        ('users', 'delete'),
+        ('users', 'updatepw'),
+        ('tags', 'create'),
+        ('tags', 'retrieve'),
+        ('tags', 'update'),
+        ('tags', 'delete'),
+    ],
+)
 def test_retrieving_api_scopes_filtered_on_module_and_subject(
-        my_data: MyData,
-        module: str,
-        subject: str) -> None:
+    my_data: MyData, module: str, subject: str
+) -> None:
     """Unit test to retrieve a APIScope objects filtered on module and subject.
 
     This unit test tries to log in with a Service user and retrieve a APIScope
@@ -195,8 +206,6 @@ def test_retrieving_api_scopes_filtered_on_module_and_subject(
         subject: the subject to filter on.
     """
     with my_data.get_context_for_service_user() as context:
-        scopes = context.get_api_scopes(
-            module=module,
-            subject=subject)
+        scopes = context.get_api_scopes(module=module, subject=subject)
         assert scopes is not None
         assert len(scopes) == 1

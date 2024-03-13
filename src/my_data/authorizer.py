@@ -1,16 +1,19 @@
 """APITokenAuthorizer class and Authorizers."""
-from datetime import datetime
+
 import logging
 from abc import ABC, abstractmethod
+from datetime import datetime
 from typing import Optional
 
 from my_model import APIToken, User, UserRole
 
 from my_data import MyData
-from my_data.exceptions import UnknownUserAccountException
+from my_data.exceptions import UnknownUserAccountError
 
-from .exceptions import (APITokenAuthorizerAlreadySetException,
-                         AuthorizationFailed)
+from .exceptions import (
+    APITokenAuthorizerAlreadySetError,
+    AuthorizationFailedError,
+)
 
 
 class APITokenAuthorizer:
@@ -22,10 +25,11 @@ class APITokenAuthorizer:
     """
 
     def __init__(
-            self,
-            my_data_object: MyData,
-            api_token: str | None = None,
-            authorizer: 'Authorizer | None' = None):
+        self,
+        my_data_object: MyData,
+        api_token: str | None = None,
+        authorizer: 'Authorizer | None' = None,
+    ) -> None:
         """Initialize the API token authorizer.
 
         Args:
@@ -63,8 +67,9 @@ class APITokenAuthorizer:
         with my_data.get_context_for_service_user() as context:
             try:
                 user = context.get_user_account_by_api_token(
-                    api_token=self._api_token_str)
-            except UnknownUserAccountException:
+                    api_token=self._api_token_str
+                )
+            except UnknownUserAccountError:
                 pass
             else:
                 return user
@@ -86,12 +91,13 @@ class APITokenAuthorizer:
         with my_data.get_context_for_service_user() as context:
             try:
                 token = context.get_api_token_object_by_api_token(
-                    api_token=self._api_token_str)
+                    api_token=self._api_token_str
+                )
                 # We have to load the scopes because they are laz loaded. We
                 # don't save the scopes to somewhere else, because they are
                 # already in the APIToken object.
                 _ = token.token_scopes
-            except UnknownUserAccountException:
+            except UnknownUserAccountError:
                 pass
             else:
                 return token
@@ -237,29 +243,27 @@ class APITokenAuthorizer:
         Returns:
             True if the token is valid, False otherwise.
         """
-        return (self.is_valid_user and
-                self.is_not_expired and
-                self.is_enabled)
+        return self.is_valid_user and self.is_not_expired and self.is_enabled
 
 
 class Authorizer(ABC):
     """Base class for authorizers."""
 
     def __init__(
-            self,
-            api_token_authorizer: Optional[APITokenAuthorizer] = None
+        self, api_token_authorizer: Optional[APITokenAuthorizer] = None
     ) -> None:
         """Initialize the authorizer.
 
         Args:
             api_token_authorizer: the API token authorizer.
         """
-        self._api_token_authorizer: Optional[APITokenAuthorizer] = \
+        self._api_token_authorizer: Optional[APITokenAuthorizer] = (
             api_token_authorizer
+        )
 
     def set_api_token_authorizer(
-            self,
-            api_token_authorizer: APITokenAuthorizer) -> None:
+        self, api_token_authorizer: APITokenAuthorizer
+    ) -> None:
         """Set the API token authorizer.
 
         Fails if the API token authorizer is already set.
@@ -272,8 +276,9 @@ class Authorizer(ABC):
                 authorizer is already set.
         """
         if self._api_token_authorizer is not None:
-            raise APITokenAuthorizerAlreadySetException(
-                'API token authorizer is already set.')
+            raise APITokenAuthorizerAlreadySetError(
+                'API token authorizer is already set.'
+            )
         self._api_token_authorizer = api_token_authorizer
 
     @abstractmethod
@@ -297,9 +302,11 @@ class InvalidTokenAuthorizer(Authorizer):
         Raises:
             AuthorizationFailed: when the user it logged on.
         """
-        if (self._api_token_authorizer and
-                self._api_token_authorizer.is_valid_user):
-            raise AuthorizationFailed
+        if (
+            self._api_token_authorizer
+            and self._api_token_authorizer.is_valid_user
+        ):
+            raise AuthorizationFailedError
 
 
 class ValidTokenAuthorizer(Authorizer):
@@ -319,9 +326,11 @@ class ValidTokenAuthorizer(Authorizer):
         Raises:
             AuthorizationFailed: when the user it not logged on.
         """
-        if (not self._api_token_authorizer or
-                not self._api_token_authorizer.is_valid_token):
-            raise AuthorizationFailed
+        if (
+            not self._api_token_authorizer
+            or not self._api_token_authorizer.is_valid_token
+        ):
+            raise AuthorizationFailedError
 
 
 class ShortLivedTokenAuthorizer(ValidTokenAuthorizer):
@@ -343,9 +352,11 @@ class ShortLivedTokenAuthorizer(ValidTokenAuthorizer):
                 short lived token.
         """
         super().authorize()
-        if (not self._api_token_authorizer or
-                not self._api_token_authorizer.is_short_lived_token):
-            raise AuthorizationFailed
+        if (
+            not self._api_token_authorizer
+            or not self._api_token_authorizer.is_short_lived_token
+        ):
+            raise AuthorizationFailedError
 
 
 class APIScopeAuthorizer(ValidTokenAuthorizer):
@@ -356,9 +367,9 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
     argument 'allow_short_lived' is set to False.
     """
 
-    def __init__(self,
-                 required_scopes: list[str] | str,
-                 allow_short_lived: bool = True) -> None:
+    def __init__(
+        self, required_scopes: list[str] | str, allow_short_lived: bool = True
+    ) -> None:
         """Set the allowed scopes.
 
         Args:
@@ -391,13 +402,17 @@ class APIScopeAuthorizer(ValidTokenAuthorizer):
             api_token = self._api_token_authorizer.api_token
             if api_token:
                 if self._api_token_authorizer.is_long_lived_token:
-                    scopes = [scope.full_scope_name
-                              for scope in api_token.token_scopes]
+                    scopes = [
+                        scope.full_scope_name
+                        for scope in api_token.token_scopes
+                    ]
                     for allowed_scope in self._required_scopes:
                         if allowed_scope not in scopes:
-                            raise AuthorizationFailed
+                            raise AuthorizationFailedError
                     return
-                if self._api_token_authorizer.is_short_lived_token:
-                    if self._allow_short_lived:
-                        return
-        raise AuthorizationFailed
+                if (
+                    self._api_token_authorizer.is_short_lived_token
+                    and self._allow_short_lived
+                ):
+                    return
+        raise AuthorizationFailedError

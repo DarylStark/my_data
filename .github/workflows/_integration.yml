@@ -78,14 +78,8 @@ jobs:
         run: pip install poetry
       - name: Install main and dev requirements
         run: poetry install --with dev
-      - name: PyCodeStyle (source code)
-        run: poetry run pycodestyle --show-pep8 src/
-      - name: PyLint (source code)
-        run: poetry run pylint src/
-      - name: Flake8 (source code)
-        run: poetry run flake8 src/
-      - name: PyDocStyle (source code)
-        run: poetry run pydocstyle src/
+      - name: Ruff (source dode)
+        run: poetry run ruff check src/
       - name: MyPy (source code)
         run: poetry run mypy src/
   code-quality-tests:
@@ -104,13 +98,7 @@ jobs:
         run: pip install poetry
       - name: Install main and dev requirements
         run: poetry install --with dev
-      - name: PyCodeStyle (tests)
-        run: poetry run pycodestyle --show-pep8 tests/
-      - name: PyLint (tests)
-        run: poetry run pylint tests/
-      - name: Flake8 (tests)
-        run: poetry run flake8 tests/
-      - name: PyDocStyle (tests)
-        run: poetry run pydocstyle tests/
+      - name: Ruff (tests)
+        run: poetry run ruff check tests/
       - name: MyPy (tests)
         run: poetry run mypy tests/

@@ -3,12 +3,15 @@
 This module contains the updator classes. These classes are used to update data
 in the database. The ResourceManager uses these classes.
 """
+
 from typing import TypeVar
 
 from my_model import MyModel, User, UserRole
 
-from my_data.exceptions import (PermissionDeniedException,
-                                WrongDataManipulatorException)
+from my_data.exceptions import (
+    PermissionDeniedError,
+    WrongDataManipulatorError,
+)
 
 from .data_manipulator import DataManipulator
 
@@ -36,7 +39,8 @@ class Updater(DataManipulator[T]):
         self._logger.debug(
             'User "%s" is updating data for model "%s".',
             self._context_data.user,
-            self._database_model)
+            self._database_model,
+        )
         return self._add_models_to_session(models)
 
 
@@ -92,8 +96,9 @@ class UserUpdater(Updater[T]):
             A list with the created data models.
         """
         if self._database_model is not User:
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a User')
+            raise WrongDataManipulatorError(
+                f'The model "{self._database_model}" is not a User'
+            )
 
         # Make sure the `models` are always a list
         models = self._convert_model_to_list(models)
@@ -102,15 +107,16 @@ class UserUpdater(Updater[T]):
         # same as the current user if this user is a USER user.
         for model in models:
             if not isinstance(model, User):
-                raise PermissionDeniedException(  # pragma: no cover
-                    f'Expected "{self._database_model}", got "{type(model)}".')
+                raise PermissionDeniedError(  # pragma: no cover
+                    f'Expected "{self._database_model}", got "{type(model)}".'
+                )
 
-            if self._context_data.user.role == UserRole.USER:
-                if model.id != self._context_data.user.id:
-                    raise PermissionDeniedException(
-                        'User is not allowed to edit this user.')
-                if model.role != self._context_data.user.role:
-                    raise PermissionDeniedException(
-                        'User is not allowed to change his own role.')
+            if (
+                self._context_data.user.role == UserRole.USER
+                and model.id != self._context_data.user.id
+            ):
+                raise PermissionDeniedError(
+                    'User is not allowed to edit this user.'
+                )
 
         return super().update(models)

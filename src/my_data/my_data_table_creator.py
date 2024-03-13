@@ -2,6 +2,7 @@
 
 This class can be used to create the database tables.
 """
+
 import logging
 
 from sqlmodel import SQLModel
@@ -44,6 +45,7 @@ class MyDataTableCreator:
             if drop_tables:
                 self._logger.warning('Dropping tables first!')
                 SQLModel.metadata.drop_all(
-                    self._my_data_object.database_engine)
+                    self._my_data_object.database_engine
+                )
             SQLModel.metadata.create_all(self._my_data_object.database_engine)
             self._logger.info('Database tables created')

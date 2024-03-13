@@ -6,11 +6,10 @@ Fixture to create a test database for PyTest.
 
 import os
 
-from pytest import fixture
-
 from my_data import MyData
 from my_data.data_loader import DataLoader, JSONDataSource
 from my_data.my_data_table_creator import MyDataTableCreator
+from pytest import fixture
 
 
 def test_filename() -> str:
@@ -35,11 +34,9 @@ def my_data() -> MyData:
     my_data = MyData()
     my_data.configure(
         db_connection_str='sqlite:///:memory:',
-        database_args={
-            'echo': True
-        },
+        database_args={'echo': True},
         service_username='service.user',
-        service_password='service_password'
+        service_password='service_password',
     )
 
     # Create the engine
@@ -51,9 +48,8 @@ def my_data() -> MyData:
 
     # Create testdata
     loader = DataLoader(
-        my_data_object=my_data,
-        data_source=JSONDataSource(
-            test_filename()))
+        my_data_object=my_data, data_source=JSONDataSource(test_filename())
+    )
     loader.load()
 
     # Return the created object

@@ -8,19 +8,21 @@ which contains the data for the context (like a User to work with). The Context
 makes sure that every manipulation of the database is done with the permissions
 of the Context.s
 """
+
 import logging
 from types import TracebackType
 
+from my_model import APIClient, APIScope, APIToken, Tag, User, UserSetting
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import select
 
-from my_model import APIClient, APIScope, APIToken, Tag, User, UserSetting
-
 from .context_data import ContextData
-from .exceptions import UnknownUserAccountException
-from .resource_manager import (UserResourceManagerFactory,
-                               UserScopedResourceManagerFactory)
+from .exceptions import UnknownUserAccountError
+from .resource_manager import (
+    UserResourceManagerFactory,
+    UserScopedResourceManagerFactory,
+)
 
 
 class Context:
@@ -41,9 +43,9 @@ class Context:
         _context_data: specifies in what context to use Context.
     """
 
-    def __init__(self,
-                 database_engine: Engine,
-                 context_data: ContextData) -> None:
+    def __init__(
+        self, database_engine: Engine, context_data: ContextData
+    ) -> None:
         """Set the default values and create the needed DataManipulators.
 
         The initializer sets the values for the database engine and the context
@@ -70,10 +72,12 @@ class Context:
         self._logger.debug('Context object as context manager started')
         return self
 
-    def __exit__(self,
-                 exception_type: BaseException | None,
-                 exception_value: BaseException | None,
-                 traceback: TracebackType | None) -> bool:
+    def __exit__(
+        self,
+        exception_type: BaseException | None,
+        exception_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool:
         """Exit of a Python context manager.
 
         The end of the context manager. Checks if there are any unhandled
@@ -129,9 +133,9 @@ class UserContext(Context):
     the data model.
     """
 
-    def __init__(self,
-                 database_engine: Engine,
-                 context_data: ContextData) -> None:
+    def __init__(
+        self, database_engine: Engine, context_data: ContextData
+    ) -> None:
         """Init the UserContext.
 
         The initializer set the values and creates the needed DataManipulator
@@ -149,23 +153,28 @@ class UserContext(Context):
         self.users = UserResourceManagerFactory(
             database_model=User,
             database_engine=database_engine,
-            context_data=self._context_data).create()
+            context_data=self._context_data,
+        ).create()
         self.tags = UserScopedResourceManagerFactory(
             database_model=Tag,
             database_engine=database_engine,
-            context_data=self._context_data).create()
+            context_data=self._context_data,
+        ).create()
         self.api_clients = UserScopedResourceManagerFactory(
             database_model=APIClient,
             database_engine=database_engine,
-            context_data=self._context_data).create()
+            context_data=self._context_data,
+        ).create()
         self.api_tokens = UserScopedResourceManagerFactory(
             database_model=APIToken,
             database_engine=database_engine,
-            context_data=self._context_data).create()
+            context_data=self._context_data,
+        ).create()
         self.user_settings = UserScopedResourceManagerFactory(
             database_model=UserSetting,
             database_engine=database_engine,
-            context_data=self._context_data).create()
+            context_data=self._context_data,
+        ).create()
 
     def __enter__(self) -> 'UserContext':
         """Start a Python context manager for a UserContext.
@@ -209,8 +218,9 @@ class ServiceContext(Context):
             if len(user_object) == 1:
                 self._logger.debug('User account: "%d"', user_object[0].id)
                 return user_object[0]
-        raise UnknownUserAccountException(
-            f'User with username "{username}" is not found.')
+        raise UnknownUserAccountError(
+            f'User with username "{username}" is not found.'
+        )
 
     def get_api_token_object_by_api_token(self, api_token: str) -> APIToken:
         """Get a User account using via a API token.
@@ -234,8 +244,7 @@ class ServiceContext(Context):
         if len(api_tokens) == 1:
             self._logger.debug('API token object: "%d"', api_tokens[0].id)
             return api_tokens[0]
-        raise UnknownUserAccountException(
-            f'Token "{api_token}" is not found.')
+        raise UnknownUserAccountError(f'Token "{api_token}" is not found.')
 
     def get_user_account_by_api_token(self, api_token: str) -> User:
         """Get a User account using via a API token.
@@ -252,9 +261,9 @@ class ServiceContext(Context):
         self._logger.debug('Retrieving API token object by API token')
         return self.get_api_token_object_by_api_token(api_token).user
 
-    def get_api_scopes(self,
-                       module: str | None = None,
-                       subject: str | None = None) -> list[APIScope]:
+    def get_api_scopes(
+        self, module: str | None = None, subject: str | None = None
+    ) -> list[APIScope]:
         """Get the API scopes from the database.
 
         Retrieves the API scopes from the database. Can be filtered with
@@ -286,7 +295,8 @@ class ServiceContext(Context):
         api_scopes: list[APIScope] = []
         if self._context_data.db_session:
             api_scopes = list(
-                self._context_data.db_session.exec(sql_query).all())
+                self._context_data.db_session.exec(sql_query).all()
+            )
 
         # Return the items
         return api_scopes

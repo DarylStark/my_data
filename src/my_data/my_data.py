@@ -7,18 +7,19 @@ the complete project.
 import logging
 from typing import Any, Optional
 
+from my_model import User, UserRole
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.future import Engine
 from sqlmodel import Session, and_, create_engine, select
 
-from my_model import User, UserRole
-
 from .context import ServiceContext, UserContext
 from .context_data import ContextData
-from .exceptions import (DatabaseConnectionException,
-                         DatabaseNotConfiguredException,
-                         PermissionDeniedException,
-                         ServiceUserNotConfiguredException)
+from .exceptions import (
+    DatabaseConnectionError,
+    DatabaseNotConfiguredError,
+    PermissionDeniedError,
+    ServiceUserNotConfiguredError,
+)
 
 
 class MyData:
@@ -53,11 +54,13 @@ class MyData:
         self._service_password: str | None = None
         self._service_user_account: Optional[User] = None
 
-    def configure(self,
-                  db_connection_str: str,
-                  database_args: dict[str, Any] | None = None,
-                  service_username: str | None = None,
-                  service_password: str | None = None) -> None:
+    def configure(
+        self,
+        db_connection_str: str,
+        database_args: dict[str, Any] | None = None,
+        service_username: str | None = None,
+        service_password: str | None = None,
+    ) -> None:
         """Set the database configuration.
 
         The database configuration is used when the database connection has to
@@ -78,7 +81,9 @@ class MyData:
         # Logging
         self._logger.info('MyData object configured')
 
-    def _validate_service_user(self,) -> User:
+    def _validate_service_user(
+        self,
+    ) -> User:
         """Validate the service user.
 
         Method to check if the service user is configured. If not, it will
@@ -95,34 +100,42 @@ class MyData:
         self.create_engine()
 
         if not self._service_username or not self._service_password:
-            raise ServiceUserNotConfiguredException(
-                'Service user is not configured yet')
+            raise ServiceUserNotConfiguredError(
+                'Service user is not configured yet'
+            )
 
         if not self._service_user_account:
             with Session(self.database_engine) as session:
                 sql_query = select(User)
                 sql_query = sql_query.where(
-                    and_(User.username == self._service_username,
-                         User.role == UserRole.SERVICE))
+                    and_(
+                        User.username == self._service_username,
+                        User.role == UserRole.SERVICE,
+                    )
+                )
                 users = session.exec(sql_query).all()
 
             # Check the amount of users we got
             if len(users) != 1:
-                raise PermissionDeniedException(
-                    f'Service account "{self._service_username}" does ' +
-                    'not exist')
+                raise PermissionDeniedError(
+                    f'Service account "{self._service_username}" does '
+                    + 'not exist'
+                )
 
             # Check if the provided credentials are correct
             user = users[0]
             if not user.verify_credentials(
-                    username=self._service_username,
-                    password=self._service_password):
-                raise PermissionDeniedException(
-                    'Password for Service account ' +
-                    f'"{self._service_username}" is incorrect')
+                username=self._service_username,
+                password=self._service_password,
+            ):
+                raise PermissionDeniedError(
+                    'Password for Service account '
+                    + f'"{self._service_username}" is incorrect'
+                )
 
-            self._logger.info('Service user "%s" vaild',
-                              self._service_username)
+            self._logger.info(
+                'Service user "%s" vaild', self._service_username
+            )
             self._service_user_account = user
 
         return self._service_user_account
@@ -144,19 +157,18 @@ class MyData:
         """
         # Stop if there is already a database engine
         if self.database_engine is not None and not force:
-            self._logger.debug('Database engine nog created beacause it ' +
-                               'already exists and force is not set to True')
+            self._logger.debug(
+                'Database engine nog created beacause it '
+                + 'already exists and force is not set to True'
+            )
             return
 
         # Check if the database connection is set
         if self._database_str is None:
-            raise DatabaseNotConfiguredException(
-                'Database is not configured yet')
+            raise DatabaseNotConfiguredError('Database is not configured yet')
 
         # Connect to the database
-        database_args: dict[str, Any] = {
-            'url': self._database_str
-        }
+        database_args: dict[str, Any] = {'url': self._database_str}
         if self._database_args:
             database_args.update(self._database_args)
 
@@ -165,8 +177,9 @@ class MyData:
             self.database_engine = create_engine(**database_args)
             self._logger.info('Database engine created')
         except OperationalError as sa_error:  # pragma: no cover
-            raise DatabaseConnectionException(
-                'Couldn\'t connect to database') from sa_error
+            raise DatabaseConnectionError(
+                "Couldn't connect to database"
+            ) from sa_error
 
     def get_context(self, user: User) -> UserContext:
         """Get a Context object for this database.
@@ -190,18 +203,16 @@ class MyData:
         self.create_engine()
 
         if user.role not in (UserRole.USER, UserRole.ROOT):
-            raise PermissionDeniedException(
-                'User does not have the correct role')
+            raise PermissionDeniedError('User does not have the correct role')
 
         if not self.database_engine:  # pragma: no cover
-            raise DatabaseNotConfiguredException(
-                'Database is not configured yet')
+            raise DatabaseNotConfiguredError('Database is not configured yet')
 
         return UserContext(
             database_engine=self.database_engine,
             context_data=ContextData(
-                database_engine=self.database_engine,
-                user=user)
+                database_engine=self.database_engine, user=user
+            ),
         )
 
     def get_context_for_service_user(self) -> ServiceContext:
@@ -220,14 +231,15 @@ class MyData:
         """
         self.create_engine()
         if not self.database_engine:
-            raise DatabaseNotConfiguredException(  # pragma: no cover
-                'Database is not configured yet')
+            raise DatabaseNotConfiguredError(  # pragma: no cover
+                'Database is not configured yet'
+            )
 
         service_user = self._validate_service_user()
 
         return ServiceContext(
             database_engine=self.database_engine,
             context_data=ContextData(
-                database_engine=self.database_engine,
-                user=service_user)
+                database_engine=self.database_engine, user=service_user
+            ),
         )

@@ -3,13 +3,17 @@
 This module contains the creator classes. These classes are used to create data
 in the database. The ResourceManager uses these classes.
 """
+
 from typing import TypeVar
 
 from my_model import MyModel, User, UserRole, UserScopedModel
 
 from .data_manipulator import DataManipulator
-from .exceptions import (BaseClassCallException, PermissionDeniedException,
-                         WrongDataManipulatorException)
+from .exceptions import (
+    BaseClassCallError,
+    PermissionDeniedError,
+    WrongDataManipulatorError,
+)
 
 T = TypeVar('T', bound=MyModel)
 
@@ -30,7 +34,7 @@ class Creator(DataManipulator[T]):
         Raises:
             BaseClassCallException: BaseClass method is used.
         """
-        raise BaseClassCallException('Method not implemented in baseclass')
+        raise BaseClassCallError('Method not implemented in baseclass')
 
     def create(self, models: list[T] | T) -> list[T]:
         """Create data.
@@ -50,12 +54,14 @@ class Creator(DataManipulator[T]):
         self._logger.debug(
             'User "%s" is creating data for model "%s".',
             self._context_data.user,
-            self._database_model)
+            self._database_model,
+        )
 
         if not self.is_authorized():
-            raise PermissionDeniedException(
-                'Not allowed to create this kind of object within the ' +
-                'set context.')
+            raise PermissionDeniedError(
+                'Not allowed to create this kind of object within the '
+                + 'set context.'
+            )
         return self._add_models_to_session(models)
 
 
@@ -81,8 +87,9 @@ class UserScopedCreator(Creator[T]):
             True when the user can create these types of objects.
         """
         if not issubclass(self._database_model, UserScopedModel):
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a UserScopedModel')
+            raise WrongDataManipulatorError(
+                f'The model "{self._database_model}" is not a UserScopedModel'
+            )
         return self._context_data.user.role in (UserRole.ROOT, UserRole.USER)
 
     def create(self, models: list[T] | T) -> list[T]:
@@ -110,9 +117,10 @@ class UserScopedCreator(Creator[T]):
         for model in models:
             user_id = getattr(model, 'user_id', None)
             if user_id is not None and user_id != self._context_data.user.id:
-                raise PermissionDeniedException(
-                    'This user is not allowed to create this resource')
-            setattr(model, 'user_id', self._context_data.user.id)
+                raise PermissionDeniedError(
+                    'This user is not allowed to create this resource'
+                )
+            model.user_id = self._context_data.user.id
 
         return super().create(models)
 
@@ -139,7 +147,10 @@ class UserCreator(Creator[T]):
             True is this user can create Users and False if this user can't.
         """
         if self._database_model is not User:
-            raise WrongDataManipulatorException(
-                f'The model "{self._database_model}" is not a UserScopedModel')
-        return (not self._context_data.user or
-                self._context_data.user.role == UserRole.ROOT)
+            raise WrongDataManipulatorError(
+                f'The model "{self._database_model}" is not a UserScopedModel'
+            )
+        return (
+            not self._context_data.user
+            or self._context_data.user.role == UserRole.ROOT
+        )
