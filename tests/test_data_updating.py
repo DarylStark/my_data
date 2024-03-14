@@ -401,8 +401,8 @@ def test_data_updating_user_setting_as_root(
 
         # Get the setting again and check the value
         user_setting = context.user_settings.retrieve(
-            UserSetting.value == 'test_value_new'
-        )[0]  # type:ignore
+            UserSetting.value == 'test_value_new'  # type:ignore
+        )[0]
         assert user_setting.value == 'test_value_new'
 
         # Reset the name again
@@ -434,8 +434,8 @@ def test_data_updating_user_setting_as_normal_user_1(
 
         # Get the setting again and check the value
         user_setting = context.user_settings.retrieve(
-            UserSetting.value == 'test_value_new'
-        )[0]  # type:ignore
+            UserSetting.value == 'test_value_new'  # type:ignore
+        )[0]
         assert user_setting.value == 'test_value_new'
 
         # Reset the name again

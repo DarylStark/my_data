@@ -34,8 +34,8 @@ def test_data_creation_users_as_root(
 
         # Check if they exist
         created_users = context.users.retrieve(
-            User.username.like('creation_test_%')
-        )  # type: ignore
+            User.username.like('creation_test_%')  # type:ignore
+        )
 
         assert len(created_users) == 2
         assert created_users[0].username == 'creation_test_root_user_1'
@@ -119,8 +119,8 @@ def test_data_creation_tags_as_root(
 
         # Check if they exist
         created_tags = context.tags.retrieve(
-            Tag.title.like('test_creation_tag_%')
-        )  # type: ignore
+            Tag.title.like('test_creation_tag_%')  # type:ignore
+        )
 
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
@@ -145,8 +145,8 @@ def test_data_creation_tag_as_normal_user_1(
 
         # Check if they exist
         created_tags = context.tags.retrieve(
-            Tag.title.like('test_creation_tag_%')
-        )  # type: ignore
+            Tag.title.like('test_creation_tag_%')  # type:ignore
+        )
 
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
@@ -171,8 +171,8 @@ def test_data_creation_tag_as_normal_user_2(
 
         # Check if they exist
         created_tags = context.tags.retrieve(
-            Tag.title.like('test_creation_tag_%')
-        )  # type: ignore
+            Tag.title.like('test_creation_tag_%')  # type:ignore
+        )
 
         assert len(created_tags) == 3
         assert created_tags[0].title == 'test_creation_tag_1'
@@ -641,7 +641,7 @@ def test_data_creation_users_as_normal_user_1_and_aborting_it(
     with my_data.get_context(user=normal_user_1) as context:
         # Check if they exist
         created_tags = context.tags.retrieve(
-            Tag.title == 'test_creation_tag_1_abort'
-        )  # type: ignore
+            Tag.title == 'test_creation_tag_1_abort'  # type:ignore
+        )
 
         assert len(created_tags) == 0
