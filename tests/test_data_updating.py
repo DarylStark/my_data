@@ -6,7 +6,7 @@ update, it checks if the data has been updated.
 
 from my_data.exceptions import PermissionDeniedError
 from my_data.my_data import MyData
-from my_model import APIClient, APIToken, Tag, User, UserSetting, UserRole
+from my_model import APIClient, APIToken, Tag, User, UserRole, UserSetting
 from pytest import raises
 
 
