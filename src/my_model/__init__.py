@@ -9,6 +9,32 @@ complete validation of Pydantic can be used, and the ORM database structure
 of SQLalchemy can be used, without having to use two seperate data schemas.
 """
 
-from .model import *  # noqa: F401, F403
+from .model import (
+    APIClient,
+    APIScope,
+    APIToken,
+    APITokenScope,
+    MyModel,
+    Tag,
+    TokenModel,
+    User,
+    UserRole,
+    UserScopedModel,
+    UserSetting,
+)
 
 __version__ = '1.2.3-dev'
+
+__all__ = [
+    'MyModel',
+    'UserRole',
+    'User',
+    'APITokenScope',
+    'APIScope',
+    'UserScopedModel',
+    'TokenModel',
+    'APIClient',
+    'APIToken',
+    'Tag',
+    'UserSetting',
+]

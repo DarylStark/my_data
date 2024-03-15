@@ -170,8 +170,9 @@ class User(MyModel, table=True):
         Returns:
             The generated second factor secret.
         """
-        self.second_factor = random_base32()
-        return self.second_factor
+        random_string = random_base32()
+        self.second_factor = random_string
+        return random_string
 
     @validate_call
     def disable_second_factor(self) -> None:
