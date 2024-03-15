@@ -33,8 +33,7 @@ def my_data() -> MyData:
     # Configure the database
     my_data = MyData()
     my_data.configure(
-        # db_connection_str='sqlite:///:memory:',
-        db_connection_str='sqlite:////home/vscode/db.sqlite3',
+        db_connection_str='sqlite:///:memory:',
         database_args={'echo': True},
         service_username='service.user',
         service_password='service_password',
