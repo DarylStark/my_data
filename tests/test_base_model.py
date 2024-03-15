@@ -2,7 +2,7 @@
 # pylint: disable=redefined-outer-name
 
 import pytest
-from my_model import MyModel
+from my_model import Resource
 
 
 @pytest.mark.parametrize(
@@ -15,7 +15,7 @@ def test_base_model_get_random_token(min_value: int, max_value: int) -> None:
         min_value: the minimum password length.
         max_value: the maximum password length.
     """
-    model = MyModel()
+    model = Resource()
     random_string = model.get_random_string(
         min_length=min_value, max_length=max_value, include_punctation=True
     )

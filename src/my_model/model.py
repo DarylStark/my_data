@@ -1,15 +1,14 @@
-"""Module that contains the classes for all models.
+"""Module that contains the classes for all resources.
 
-This module contains the classes for models that are specific for a user, like
-the User model itself and models that are created within the user namespace.
-Examples for these models are API Tokens and Tags. To make sure we don't have
-any code duplication, we use specific base classes: UserScopedModel for models
-that are namespaced within a User and TokenModel for models that contain a
-token of some sort.
+This module contains the data model for the `My project`. It contains
+`resources`, which are models for specific objects that users can create. Some
+of these resources are user scoped, which means that they are only available to
+a specific user. The user model is also defined in this module.
 
-There are also some classes that are used to link models together, like
-APITokenScope, which is used to link API Tokens to API Scopes. To get this
-working, we have to define the APIScope model in this module too.
+We use `SQLmodel` to create these classes. `SQLmodel` uses `Pydantic` for the
+data validation of these classes, and uses `SQLalchemy` to create the database
+schema. This means that these classes can be used for both the data model and
+the database schema.
 """
 
 import random
@@ -21,23 +20,47 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from pydantic import validate_call
 from pyotp import TOTP, random_base32
-from sqlmodel import Field, Relationship, SQLModel
+from sqlalchemy import event
+from sqlmodel import Field, Relationship, Session, SQLModel
 from sqlmodel._compat import SQLModelConfig
 
 
-class MyModel(SQLModel):
-    """SQLmodel basemodel for all models.
+class Resource(SQLModel):
+    """SQLmodel basemodel for all resources.
 
-    Should be used for all models. This base class defines the Pydantic
-    configuration that all models should use. Because we use SQLmodel, these
-    models are usable for generic modeling _and_ for SQLalchemy ORM.
+    Should be used for all resource models. This base class defines the
+    Pydantic configuration that all models should use. Because we use SQLmodel,
+    these models are usable for generic modeling _and_ for SQLalchemy ORM.
 
     Attributes:
         id: the unique ID for this object. If this object is used for a SQL
             database, it is the primary key.
     """
 
+    # Fields for all models
     id: int | None = Field(default=None, primary_key=True)
+    created: datetime = Field(default_factory=datetime.utcnow)
+    updated: datetime = Field(default_factory=datetime.utcnow)
+
+    @staticmethod
+    @event.listens_for(Session, 'before_commit')
+    def before_commit(session: Session) -> None:
+        """SQLalchemy event to update the `updated` and `created` fields.
+
+        By doing this in a `before_commit` event, we can make sure that the
+        fields are always updated before the commit is done.
+
+        Args:
+            session: the SQLalchemy session that is used to commit the changes.
+        """
+        for obj in session.new:
+            if isinstance(obj, Resource):
+                obj.created = datetime.utcnow()
+        for obj in session.dirty:
+            if isinstance(obj, Resource):
+                obj.updated = datetime.utcnow()
+
+    # Pydantic configuration
     model_config = SQLModelConfig(validate_assignment=True)
 
     # The `__pydantic_extra__` attribute is set to None, just to make sure the
@@ -99,7 +122,7 @@ class UserRole(Enum):
     USER = 3
 
 
-class User(MyModel, table=True):
+class User(Resource, table=True):
     """Model for Users.
 
     The user model is meant for local useraccounts.
@@ -120,7 +143,6 @@ class User(MyModel, table=True):
         user_settings: a list of settings for this user.
     """
 
-    created: datetime = Field(default_factory=datetime.utcnow)
     fullname: str = Field(
         schema_extra={'pattern': r'^[A-Za-z0-9\- ]+$'}, max_length=128
     )
@@ -230,7 +252,7 @@ class APITokenScope(SQLModel, table=True):
     )
 
 
-class APIScope(MyModel, table=True):
+class APIScope(Resource, table=True):
     """Model for API scopes.
 
     Attributes:
@@ -258,12 +280,11 @@ class APIScope(MyModel, table=True):
         return f'{self.module}.{self.subject}'
 
 
-class UserScopedModel(MyModel):
-    """Basemodel for models that are user scoped.
+class UserScopedResource(Resource):
+    """Basemodel for resources that are user scoped.
 
-    Defines the `user_id` attribute for models that are scoped to a specific
-    user. By putting this in a seperate base class, we can prevent duplicate
-    code.
+    Defines the `user_id` attribute for resources that are scoped to a specific
+    user.
 
     Attributes:
         user_id: the unique ID for a user.
@@ -272,7 +293,7 @@ class UserScopedModel(MyModel):
     user_id: int | None = Field(default=None, foreign_key='user.id')
 
 
-class TokenModel(UserScopedModel):
+class TokenModel(UserScopedResource):
     """Basemodel for classes that use tokens.
 
     Defines the `set_random_token` method that can and should be used to
@@ -332,7 +353,6 @@ class APIClient(TokenModel, table=True):
         user: the user object for the owner.
     """
 
-    created: datetime = Field(default_factory=datetime.utcnow)
     expires: datetime = Field(default_factory=datetime.utcnow)
     enabled: bool = True
     app_name: str = Field(max_length=64)
@@ -359,7 +379,6 @@ class APIToken(TokenModel, table=True):
         user: the user object for the owner.
     """
 
-    created: datetime = Field(default_factory=datetime.utcnow)
     expires: datetime = Field(default_factory=datetime.utcnow)
     api_client_id: int | None = Field(default=None, foreign_key='apiclient.id')
     enabled: bool = True
@@ -373,7 +392,7 @@ class APIToken(TokenModel, table=True):
     )
 
 
-class Tag(UserScopedModel, table=True):
+class Tag(UserScopedResource, table=True):
     """Model for Tags.
 
     The tag model is meant to represent a tag. A tag can be given to a
@@ -400,7 +419,7 @@ class Tag(UserScopedModel, table=True):
     user: User = Relationship(back_populates='tags')
 
 
-class UserSetting(UserScopedModel, table=True):
+class UserSetting(UserScopedResource, table=True):
     """Model for User Settings.
 
     The User Settings model should be used by services that use this model to

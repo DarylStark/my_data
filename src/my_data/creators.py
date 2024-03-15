@@ -6,7 +6,7 @@ in the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model import MyModel, User, UserRole, UserScopedModel
+from my_model import Resource, User, UserRole, UserScopedResource
 
 from .data_manipulator import DataManipulator
 from .exceptions import (
@@ -15,7 +15,7 @@ from .exceptions import (
     WrongDataManipulatorError,
 )
 
-T = TypeVar('T', bound=MyModel)
+T = TypeVar('T', bound=Resource)
 
 
 class Creator(DataManipulator[T]):
@@ -86,7 +86,7 @@ class UserScopedCreator(Creator[T]):
         Returns:
             True when the user can create these types of objects.
         """
-        if not issubclass(self._database_model, UserScopedModel):
+        if not issubclass(self._database_model, UserScopedResource):
             raise WrongDataManipulatorError(
                 f'The model "{self._database_model}" is not a UserScopedModel'
             )

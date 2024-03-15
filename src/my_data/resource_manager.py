@@ -8,7 +8,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Generic, Type, TypeVar
 
-from my_model import MyModel
+from my_model import Resource
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 
@@ -18,7 +18,7 @@ from .deleters import Deleter, UserDeleter, UserScopedDeleter
 from .retrievers import Retriever, UserRetriever, UserScopedRetriever
 from .updaters import Updater, UserScopedUpdater, UserUpdater
 
-T = TypeVar('T', bound=MyModel)
+T = TypeVar('T', bound=Resource)
 
 
 class ResourceManager(Generic[T]):

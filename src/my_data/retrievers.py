@@ -6,7 +6,7 @@ data from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model import MyModel, User, UserRole, UserScopedModel
+from my_model import Resource, User, UserRole, UserScopedResource
 from sqlalchemy.sql.elements import ColumnElement
 from sqlalchemy.sql.expression import func
 from sqlmodel import select
@@ -15,7 +15,7 @@ from sqlmodel.sql.expression import SelectOfScalar
 from .data_manipulator import DataManipulator
 from .exceptions import BaseClassCallError, WrongDataManipulatorError
 
-T = TypeVar('T', bound=MyModel)
+T = TypeVar('T', bound=Resource)
 SelectT = TypeVar('SelectT')
 
 
@@ -167,7 +167,7 @@ class UserScopedRetriever(Retriever[T]):
         Returns:
             A list with the SQLalchmey filters.
         """
-        if not issubclass(self._database_model, UserScopedModel):
+        if not issubclass(self._database_model, UserScopedResource):
             raise WrongDataManipulatorError(
                 f'The model "{self._database_model}" is not a UserScopedModel'
             )

@@ -6,7 +6,7 @@ from the database. The ResourceManager uses these classes.
 
 from typing import TypeVar
 
-from my_model import MyModel, User, UserRole
+from my_model import Resource, User, UserRole
 
 from my_data.exceptions import (
     PermissionDeniedError,
@@ -15,7 +15,7 @@ from my_data.exceptions import (
 
 from .data_manipulator import DataManipulator
 
-T = TypeVar('T', bound=MyModel)
+T = TypeVar('T', bound=Resource)
 
 
 class Deleter(DataManipulator[T]):

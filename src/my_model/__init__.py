@@ -14,24 +14,24 @@ from .model import (
     APIScope,
     APIToken,
     APITokenScope,
-    MyModel,
+    Resource,
     Tag,
     TokenModel,
     User,
     UserRole,
-    UserScopedModel,
+    UserScopedResource,
     UserSetting,
 )
 
 __version__ = '1.2.3-dev'
 
 __all__ = [
-    'MyModel',
+    'Resource',
     'UserRole',
     'User',
     'APITokenScope',
     'APIScope',
-    'UserScopedModel',
+    'UserScopedResource',
     'TokenModel',
     'APIClient',
     'APIToken',
