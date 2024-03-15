@@ -10,7 +10,7 @@ from my_model import (
     APIScope,
     APIToken,
     APITokenScope,
-    MyModel,
+    Resource,
     Tag,
     User,
     UserSetting,
@@ -52,7 +52,7 @@ class JSONDataSource(DataSource):
         resources_to_add: list[SQLModel] = []
 
         # Dict with userscoped resources as found in the JSON file.
-        user_scoped_resources: dict[str, Type[MyModel]] = {
+        user_scoped_resources: dict[str, Type[Resource]] = {
             '_tags': Tag,
             '_api_clients': APIClient,
             '_api_tokens': APIToken,

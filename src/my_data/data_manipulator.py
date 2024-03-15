@@ -7,7 +7,7 @@ for other DataManipulator classes.
 import logging
 from typing import Generic, Type, TypeVar
 
-from my_model import UserScopedModel
+from my_model import UserScopedResource
 from sqlalchemy.future import Engine
 
 from .context_data import ContextData
@@ -89,7 +89,7 @@ class DataManipulator(Generic[T]):
             A list with the resources.
         """
         # Check if it is a subtype of UserScopedModel
-        if not issubclass(self._database_model, UserScopedModel):
+        if not issubclass(self._database_model, UserScopedResource):
             raise WrongDataManipulatorError(  # pragma: no cover
                 f'The model "{self._database_model}" is not a UserScopedModel'
             )
