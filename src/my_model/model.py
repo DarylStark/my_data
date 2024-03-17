@@ -373,7 +373,6 @@ class APIToken(TokenModel, table=True):
     """Model for API clients.
 
     Attributes:
-        created: the datetime when this token was created.
         expires: the datetime when this token will expire.
         api_client_id: the API Client for this token. This field is optional
             because
