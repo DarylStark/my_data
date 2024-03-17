@@ -442,3 +442,10 @@ class UserSetting(UserScopedResource, table=True):
 
     # Relationships
     user: User = Relationship(back_populates='user_settings')
+
+    # SQL constraints
+    __table_args__ = (
+        UniqueConstraint(
+            'setting', 'user_id', name='unique_usersetting_title'
+        ),
+    )
