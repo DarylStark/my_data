@@ -173,6 +173,9 @@ class User(Resource, table=True):
     api_tokens: list['APIToken'] = Relationship(back_populates='user')
     tags: list['Tag'] = Relationship(back_populates='user')
     user_settings: list['UserSetting'] = Relationship(back_populates='user')
+    temporary_tokens: list['TemporaryToken'] = Relationship(
+        back_populates='user'
+    )
 
     @validate_call
     def set_password(self, password: str) -> None:
@@ -449,3 +452,29 @@ class UserSetting(UserScopedResource, table=True):
             'setting', 'user_id', name='unique_usersetting_title'
         ),
     )
+
+
+class TemporaryTokenType(Enum):
+    """The types for temporary tokens.
+
+    Attributes:
+        PASSWORD_RESET: for password reset tokens.
+    """
+
+    PASSWORD_RESET = 1
+
+
+class TemporaryToken(TokenModel, table=True):
+    """Model for Temporary tokens.
+
+    Attributes:
+        expires: the datetime when this token will expire.
+        user: the user object for the owner.
+        token_type: the type for the temporary token.
+    """
+
+    expires: datetime = Field(default_factory=datetime.utcnow)
+    token_type: TemporaryTokenType
+
+    # Relationships
+    user: User = Relationship(back_populates='temporary_tokens')

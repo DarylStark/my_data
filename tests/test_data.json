@@ -161,6 +161,11 @@
                     "setting": "normal_user_1_test_setting_3",
                     "value": "test_value_3"
                 }
+            ],
+            "_temporary_tokens": [
+                {
+                    "token_type": 1
+                }
             ]
         },
         {

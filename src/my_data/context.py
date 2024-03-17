@@ -13,6 +13,7 @@ import logging
 from types import TracebackType
 
 from my_model import APIClient, APIScope, APIToken, Tag, User, UserSetting
+from my_model.model import TemporaryToken
 from sqlalchemy.future import Engine
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import select
@@ -172,6 +173,11 @@ class UserContext(Context):
         ).create()
         self.user_settings = UserScopedResourceManagerFactory(
             database_model=UserSetting,
+            database_engine=database_engine,
+            context_data=self._context_data,
+        ).create()
+        self.temporary_tokens = UserScopedResourceManagerFactory(
+            database_model=TemporaryToken,
             database_engine=database_engine,
             context_data=self._context_data,
         ).create()
