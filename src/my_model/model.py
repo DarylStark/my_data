@@ -20,7 +20,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from pydantic import validate_call
 from pyotp import TOTP, random_base32
-from sqlalchemy import event
+from sqlalchemy import UniqueConstraint, event
 from sqlmodel import Field, Relationship, Session, SQLModel
 from sqlmodel._compat import SQLModelConfig
 
@@ -417,6 +417,11 @@ class Tag(UserScopedResource, table=True):
 
     # Relationships
     user: User = Relationship(back_populates='tags')
+
+    # SQL constraints
+    __table_args__ = (
+        UniqueConstraint('title', 'user_id', name='unique_tag_title'),
+    )
 
 
 class UserSetting(UserScopedResource, table=True):

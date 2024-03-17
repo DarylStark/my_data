@@ -10,6 +10,7 @@ from my_data import MyData
 from my_data.exceptions import PermissionDeniedError
 from my_model import APIClient, APIToken, Tag, User, UserSetting
 from pytest import raises
+from sqlalchemy.exc import IntegrityError
 
 
 def test_data_creation_users_as_root(
@@ -178,6 +179,42 @@ def test_data_creation_tag_as_normal_user_2(
         assert created_tags[0].title == 'test_creation_tag_1'
         assert created_tags[1].title == 'test_creation_tag_2'
         assert created_tags[2].title == 'test_creation_tag_3'
+
+
+def test_data_creation_tag_uniqness(
+    my_data: MyData, normal_user_1: User
+) -> None:
+    """Test creating a tags that already exists.
+
+    Should fail since douplicate tags are not allowed.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_1: the first normal user.
+    """
+    with raises(IntegrityError), my_data.get_context(
+        user=normal_user_1
+    ) as context:
+        context.tags.create(Tag(title='normal_user_1_tag_1'))
+
+
+def test_data_creation_tag_uniqness_non_existing(
+    my_data: MyData, normal_user_2: User
+) -> None:
+    """Test creating a tags that already exists.
+
+    Should not fail since this tag doesnt exist for this user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_2: the scecond normal user.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        tag_object = context.tags.create(Tag(title='normal_user_1_tag_1'))
+
+    # Delete the created that
+    with my_data.get_context(user=normal_user_2) as context:
+        context.tags.delete(tag_object)
 
 
 def test_data_creation_tag_as_service_account(
