@@ -9,6 +9,7 @@ creation, it checks if the data has been created.
 from my_data import MyData
 from my_data.exceptions import PermissionDeniedError
 from my_model import APIClient, APIToken, Tag, User, UserSetting
+from my_model.model import TemporaryToken, TemporaryTokenType
 from pytest import raises
 from sqlalchemy.exc import IntegrityError
 
@@ -682,3 +683,35 @@ def test_data_creation_users_as_normal_user_1_and_aborting_it(
         )
 
         assert len(created_tags) == 0
+
+
+def test_data_creation_temporary_token_as_normal_user_2(
+    my_data: MyData, normal_user_2: User
+) -> None:
+    """Test TemporaryToken creation as a USER user.
+
+    Creates a temporary token as a normal user.
+
+    Args:
+        my_data: a instance of a MyData object.
+        normal_user_2: the first normal user.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        temp_token = TemporaryToken(
+            token_type=TemporaryTokenType.PASSWORD_RESET
+        )
+        temp_token.set_random_token()
+        token = context.temporary_tokens.create(temp_token)
+
+    with my_data.get_context(user=normal_user_2) as context:
+        # Check if they exist
+        created_temporary_tokens = context.temporary_tokens.retrieve(
+            TemporaryToken.token == token[0].token  # type:ignore
+        )
+
+        assert len(created_temporary_tokens) == 1
+
+    # Delete it again
+    with my_data.get_context(user=normal_user_2) as context:
+        # Check if they exist
+        context.temporary_tokens.delete(token)

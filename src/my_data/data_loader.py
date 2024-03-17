@@ -15,6 +15,7 @@ from my_model import (
     User,
     UserSetting,
 )
+from my_model.model import TemporaryToken
 from sqlmodel import Session, SQLModel
 
 from my_data.my_data import MyData
@@ -57,6 +58,7 @@ class JSONDataSource(DataSource):
             '_api_clients': APIClient,
             '_api_tokens': APIToken,
             '_user_settings': UserSetting,
+            '_temporary_tokens': TemporaryToken,
         }
 
         # Load the JSON data

@@ -581,3 +581,20 @@ def test_data_count_retrieval_all_tags_as_normal_user_2(
     with my_data.get_context(user=normal_user_2) as context:
         tag_count = context.tags.count()
         assert tag_count == 3
+
+
+def test_data_retrieval_all_temporary_tokens_as_normal_user_1(
+    my_data: MyData, normal_user_1: User
+) -> None:
+    """Test Temporary Token retrieval as a USER user.
+
+    Retrieves Temporary Tokens from the database as a normal user. Should
+    retrieve only Temporary Tokens for his own account.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_1: the first normal user.
+    """
+    with my_data.get_context(user=normal_user_1) as context:
+        tags = context.temporary_tokens.retrieve()
+        assert len(tags) == 1
