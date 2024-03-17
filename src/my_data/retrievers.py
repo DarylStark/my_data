@@ -60,7 +60,7 @@ class Retriever(DataManipulator[T]):
     def retrieve(
         self,
         flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
-        sort: ColumnElement[T] | None = None,
+        sort: list[ColumnElement[T]] | ColumnElement[T] | None = None,
         start: int | None = None,
         max_items: int | None = None,
     ) -> list[T]:
@@ -89,7 +89,17 @@ class Retriever(DataManipulator[T]):
         sql_query = self._add_filters_to_query(sql_query, flt)
 
         # Sort the resources
-        sql_query = sql_query.order_by(sort)
+        if sort is not None:
+            # Make sure sorting is case insensitive
+            if isinstance(sort, list):
+                sort = [
+                    func.lower(column) if isinstance(column, str) else column
+                    for column in sort
+                ]
+                sql_query = sql_query.order_by(*sort)
+            else:
+                sort = func.lower(sort) if isinstance(sort, str) else sort
+                sql_query = sql_query.order_by(sort)
 
         # Pagination
         if start is not None and max_items is not None:
