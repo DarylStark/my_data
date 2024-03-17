@@ -208,6 +208,34 @@ def test_data_retrieval_all_tags_as_normal_user_2_reverse_sort(
 
 
 @pytest.mark.parametrize(
+    'index, title',
+    [
+        (0, 'normal_user_2_tag_3'),
+        (1, 'normal_user_2_tag_2'),
+        (2, 'normal_user_2_tag_1'),
+    ],
+)
+def test_data_retrieval_all_tags_as_normal_user_2_multiple_sort_fields(
+    my_data: MyData, normal_user_2: User, index: int, title: str
+) -> None:
+    """Test Tag retrieval as a USER user and sort it on multiple fields.
+
+    Retrieves Tags from the database as a normal user and sort it on title
+    reversed and ID in normal order.
+
+    Args:
+        my_data: a instance to a MyData object.
+        normal_user_2: the second normal user.
+        index: test index.
+        title: test title.
+    """
+    with my_data.get_context(user=normal_user_2) as context:
+        tags = context.tags.retrieve(sort=[desc(Tag.title), Tag.id])  # type:ignore
+        assert len(tags) == 3
+        assert tags[index].title == title
+
+
+@pytest.mark.parametrize(
     'start, title',
     [
         (0, 'normal_user_2_tag_1'),

@@ -109,7 +109,7 @@ class ResourceManager(Generic[T]):
     def retrieve(
         self,
         flt: list[ColumnElement[bool]] | ColumnElement[bool] | None = None,
-        sort: ColumnElement[T] | None = None,
+        sort: list[ColumnElement[T]] | ColumnElement[T] | None = None,
         start: int | None = None,
         max_items: int | None = None,
     ) -> list[T]:
