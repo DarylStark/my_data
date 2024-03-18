@@ -93,7 +93,10 @@ class Context:
             False if there are unhandled exceptions, True if there are none.
         """
         self._logger.debug('Context object as context manager closed')
-        self.commit_session()
+        if exception_type is None:
+            self.commit_session()
+        else:
+            self.abort_session()
         self.close_session()
         return exception_type is None
 
@@ -119,10 +122,11 @@ class Context:
     def abort_session(self) -> None:
         """Abort the database session.
 
-        Method to abort the changes in the session. This is not done
-        automatically and should be invoked by the user when he made changes
-        that should be aborted before commited. After the abort, the session
-        is _not_ closed; the user has to do that himself.
+        Method to abort the changes in the session. This is done automatically
+        when there are any exceptions in the session. It can also be invoked
+        by the user when he made changes that should be aborted before being
+        commited. After the abort, the session is _not_ closed; the user has to
+        do that himself.
         """
         self._context_data.abort_session()
 
