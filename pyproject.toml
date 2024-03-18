@@ -110,3 +110,6 @@ quote-style = 'single'
 indent-style = 'space'
 docstring-code-format = true
 exclude = ["docs/*.py"]
+
+[tool.mypy]
+exclude = ["docs/", "tools/"]
