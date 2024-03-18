@@ -1,9 +1,10 @@
 """Version chek tool."""
+# type: ignore
 
 import re
 import sys
 
-import toml
+import toml  # type: ignore
 
 invalid_versions = [
     r'-?dev[0-9]*$',
