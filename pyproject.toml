@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ds-my-data"
-version = "1.2.3"
+version = "1.2.4-dev"
 description = "The data methods for the My project"
 authors = ["Daryl Stark <daryl@dstark.nl>"]
 license = "MIT"
@@ -46,7 +46,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.bumpver]
-current_version = "1.2.3"
+current_version = "1.2.4-dev"
 version_pattern = "MAJOR.MINOR.PATCH[-TAG]"
 commit_message = "Version {new_version}"
 commit = true
