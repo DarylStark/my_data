@@ -7,6 +7,6 @@ a database containing the objects for the `my_model` package.
 
 from .my_data import MyData
 
-__version__ = '1.2.3-dev'
+__version__ = '1.2.3'
 
 __all__ = ['MyData']
