@@ -461,6 +461,8 @@ class TemporaryTokenType(Enum):
     """
 
     PASSWORD_RESET = 1
+    ENABLE_2FA = 2
+    DISABLE_2FA = 3
 
 
 class TemporaryToken(TokenModel, table=True):
