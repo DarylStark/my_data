@@ -16,6 +16,8 @@ from .model import (
     APITokenScope,
     Resource,
     Tag,
+    TemporaryToken,
+    TemporaryTokenType,
     TokenModel,
     User,
     UserRole,
@@ -23,7 +25,7 @@ from .model import (
     UserSetting,
 )
 
-__version__ = '1.2.4'
+__version__ = '1.2.5-dev'
 
 __all__ = [
     'Resource',
@@ -37,4 +39,6 @@ __all__ = [
     'APIToken',
     'Tag',
     'UserSetting',
+    'TemporaryTokenType',
+    'TemporaryToken',
 ]
