@@ -16,6 +16,8 @@ from .model import (
     APITokenScope,
     Resource,
     Tag,
+    TemporaryToken,
+    TemporaryTokenType,
     TokenModel,
     User,
     UserRole,
@@ -37,4 +39,6 @@ __all__ = [
     'APIToken',
     'Tag',
     'UserSetting',
+    'TemporaryTokenType',
+    'TemporaryToken',
 ]
