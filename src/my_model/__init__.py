@@ -25,7 +25,7 @@ from .model import (
     UserSetting,
 )
 
-__version__ = '1.2.5-dev'
+__version__ = '1.2.5'
 
 __all__ = [
     'Resource',
